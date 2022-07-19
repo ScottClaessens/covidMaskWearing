@@ -67,6 +67,22 @@ loadOwid <- function(fileOwid) {
     mutate(date = dmy(date))
 }
 
+# compare average levels of descriptive and injunctive norms
+fitNormCompare <- function(d) {
+  # get data in long format
+  dLong <-
+    d %>%
+    select(starts_with("DesNorms") | starts_with("InjNorms")) %>%
+    mutate(id = 1:nrow(.)) %>%
+    pivot_longer(cols = !id, 
+                 names_to = c("var", "time"),
+                 names_sep = "\\.") %>%
+    drop_na()
+  # fit multilevel model
+  m <- lmer(value ~ 1 + var + (1 + var | id) + (1 + var | time), data = dLong)
+  return(m)
+}
+
 fitRICLPM <- function(d, var1, var2, var3) {
   # model code for unconstrained 3-variable 8-wave riclpm with time-invariant controls
   # https://jeroendmulder.github.io/RI-CLPM/lavaan.html
@@ -230,6 +246,7 @@ plotUSMap <- function(d) {
     theme_void()
   # save plot
   ggsave(out, filename = "figures/map.pdf", height = 3, width = 5)
+  ggsave(out, filename = "figures/map.png", height = 3, width = 5)
   return(out)
 }
 
@@ -264,6 +281,7 @@ plotAttrition <- function(d) {
     theme_classic()
   # save
   ggsave(out, filename = "figures/attrition.pdf", width = 5, height = 3)
+  ggsave(out, filename = "figures/attrition.png", width = 5, height = 3)
   return(out)
 }
 
@@ -372,6 +390,7 @@ plotTimeline <- function(d, owid) {
   out <- plot_grid(pA, pB, pC, nrow = 3, align = "v", labels = c("a","b","c"))
   # save
   ggsave(out, filename = "figures/timeline.pdf", width = 5, height = 6)
+  ggsave(out, filename = "figures/timeline.png", width = 5, height = 6)
   return(out)
 }
 
@@ -407,6 +426,7 @@ plotDAG <- function() {
     theme_void()
   # save
   ggsave(out, filename = "figures/dag.pdf", height = 4.5, width = 5.6)
+  ggsave(out, filename = "figures/dag.png", height = 4.5, width = 5.6)
   return(out)
 }
 
@@ -417,8 +437,8 @@ plotRICLPM <- function(model) {
   var2 <- "Injunctive norm"
   var3 <- "Descriptive norm"
   col1 <- "#D55E00"
-  col2 <- "#0072B2"
-  col3 <- "#009E73"
+  col2 <- "#009E73"
+  col3 <- "#0072B2"
   # dates vector
   dates <- ymd(c("2020-10-27", "2020-11-28", "2021-01-27", "2021-05-27",
                  "2021-07-26", "2021-10-25", "2021-12-16", "2022-02-25"))
@@ -482,5 +502,6 @@ plotRICLPM <- function(model) {
           legend.key.width = unit(2, "cm"))
   # save
   ggsave(p, file = "figures/resultsRICLPM.pdf", width = 7, height = 3)
+  ggsave(p, file = "figures/resultsRICLPM.png", width = 7, height = 3)
   return(p)
 }

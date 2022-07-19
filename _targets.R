@@ -2,9 +2,9 @@ library(targets)
 library(tarchetypes)
 source("R/functions.R")
 options(tidyverse.quiet = TRUE)
-tar_option_set(packages = c("cowplot", "dagitty", "ggdag", "ggraph", "lavaan", 
-                            "lubridate", "rnaturalearth", "rnaturalearthdata", 
-                            "scales", "sf", "tidyverse", "zipcodeR"))
+tar_option_set(packages = c("cowplot", "dagitty", "ggdag", "ggraph", "lavaan", "lme4", 
+                            "lubridate", "rnaturalearth", "rnaturalearthdata", "scales",
+                            "sf", "tidyverse", "zipcodeR"))
 # workflow
 list(
   # files
@@ -17,9 +17,11 @@ list(
   tar_target(d, loadData(fileData, fileFIPS, fileElec, filePrev)),
   # load US covid counts from our world in data
   tar_target(owid, loadOwid(fileOwid)),
-  # fit model
+  # compare average levels of descriptive and injunctive norms
+  tar_target(desInj, fitNormCompare(d)),
+  tar_target(conf, confint(desInj)),
+  # fit riclpm
   tar_target(riclpm, fitRICLPM(d, var1 = "ContactsMask", var2 = "InjNorms", var3 = "DesNorms")),
-  # fit measures
   tar_target(fitMeasures, fitMeasures(riclpm)),
   # plots
   tar_target(plot1, plotUSMap(d)),
