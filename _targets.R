@@ -1,10 +1,11 @@
+library(tidyverse)
 library(targets)
 library(tarchetypes)
 source("R/functions.R")
 options(tidyverse.quiet = TRUE)
-tar_option_set(packages = c("cowplot", "dagitty", "ggdag", "ggraph", "lavaan", "lme4", 
-                            "lubridate", "rnaturalearth", "rnaturalearthdata", "scales",
-                            "sf", "tidyverse", "zipcodeR"))
+tar_option_set(packages = c("cowplot", "dagitty", "ggdag", "ggeffects", "ggraph", 
+                            "lavaan", "lme4", "lubridate", "rnaturalearth", 
+                            "rnaturalearthdata", "scales", "sf", "zipcodeR"))
 # workflow
 list(
   # files
@@ -17,10 +18,24 @@ list(
   tar_target(d, loadData(fileData, fileFIPS, fileElec, filePrev)),
   # load US covid counts from our world in data
   tar_target(owid, loadOwid(fileOwid)),
-  # compare average levels of descriptive and injunctive norms
-  tar_target(desInj, fitNormCompare(d)),
-  tar_target(conf, confint(desInj)),
-  # fit riclpm
+  # multilevel modelling
+  # correlations between behaviour and norms
+  tar_target(m1.1, fitCorBehNorm(d, predictor = "DesNorms")),
+  tar_target(m1.2, fitCorBehNorm(d, predictor = "InjNorms")),
+  # sensitivity to cdc guidelines
+  tar_target(m2.1, fitCDCSens(d, outcome = "ContactsMask")),
+  tar_target(m2.2, fitCDCSens(d, outcome = "DesNorms")),
+  tar_target(m2.3, fitCDCSens(d, outcome = "InjNorms")),
+  # difference between levels of descriptive and injunctive norms
+  tar_target(m3.1, fitNormCompare(d)),
+  # confidence intervals
+  tar_target(conf1.1, confint(m1.1, method = "Wald")),
+  tar_target(conf1.2, confint(m1.2, method = "Wald")),
+  tar_target(conf2.1, confint(m2.1, method = "Wald")),
+  tar_target(conf2.2, confint(m2.2, method = "Wald")),
+  tar_target(conf2.3, confint(m2.3, method = "Wald")),
+  tar_target(conf3.1, confint(m3.1, method = "Wald")),
+  # random-intercept cross-lagged panel model
   tar_target(riclpm, fitRICLPM(d, var1 = "ContactsMask", var2 = "InjNorms", var3 = "DesNorms")),
   tar_target(fitMeasures, fitMeasures(riclpm)),
   # plots
@@ -28,5 +43,10 @@ list(
   tar_target(plot2, plotAttrition(d)),
   tar_target(plot3, plotTimeline(d, owid)),
   tar_target(plot4, plotDAG()),
-  tar_target(plot5, plotRICLPM(riclpm))
+  tar_target(plot5, plotCorBehNorm(m1.1, m1.2)),
+  tar_target(plot6, plotCDCSens(m2.1, m2.2, m2.3)),
+  tar_target(plot7, plotNormCompare(m3.1)),
+  tar_target(plot8, plotRICLPM(riclpm)),
+  # print session info for reproducibility
+  tar_target(sessionInfo, writeLines(capture.output(sessionInfo()), "sessionInfo.txt"))
 )

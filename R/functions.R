@@ -67,6 +67,51 @@ loadOwid <- function(fileOwid) {
     mutate(date = dmy(date))
 }
 
+# correlations between behaviour and norms
+fitCorBehNorm <- function(d, predictor) {
+  # get data in long format
+  dLong <-
+    d %>%
+    select(starts_with("DesNorms") | starts_with("InjNorms") | starts_with("ContactsMask")) %>%
+    mutate(id = 1:nrow(.)) %>%
+    pivot_longer(cols = !id, 
+                 names_to = c(".value", "time"),
+                 names_sep = "\\.")
+  # fit multilevel model
+  f <- formula(paste0("ContactsMask ~ 1 + ", predictor, " + (1 + ", predictor, 
+               " | id) + (1 + ", predictor, " | time)"))
+  out <- lmer(f, data = dLong)
+  return(out)
+}
+
+# cdc sensitivity
+fitCDCSens <- function(d, outcome) {
+  # vector of dates
+  dates <- c("2020-09-27", "2020-10-27", "2020-11-28",
+             "2020-12-28", "2021-01-27", "2021-02-26",
+             "2021-03-28", "2021-04-27", "2021-05-27",
+             "2021-06-26", "2021-07-26", "2021-08-26",
+             "2021-10-25", "2021-12-16", "2022-02-25")
+  # get data in long format
+  dLong <-
+    d %>%
+    dplyr::select(starts_with("DesNorms") | starts_with("InjNorms") | starts_with("ContactsMask")) %>%
+    mutate(id = 1:nrow(.)) %>%
+    pivot_longer(cols = !id, 
+                 names_to = c(".value", "time"),
+                 names_sep = "\\.") %>%
+    # time as numeric dates, scaled between 0 and 1
+    mutate(timeCont = as.numeric(ymd(dates[as.numeric(time)])),
+           timeCont = timeCont - min(timeCont),
+           timeCont = timeCont / max(timeCont))
+  # formula with cutpoints at cdc events
+  f <- formula(paste0(outcome, " ~ 1 + timeCont + I(pmax(0,timeCont-0.314)) + I(pmax(0,timeCont-0.587)) + ",
+                      "(1 + timeCont + I(pmax(0,timeCont-0.314)) + I(pmax(0,timeCont-0.587)) | id)"))
+  # fit model
+  out <- lmer(f, data = dLong)
+  return(out)
+}
+
 # compare average levels of descriptive and injunctive norms
 fitNormCompare <- function(d) {
   # get data in long format
@@ -79,8 +124,8 @@ fitNormCompare <- function(d) {
                  names_sep = "\\.") %>%
     drop_na()
   # fit multilevel model
-  m <- lmer(value ~ 1 + var + (1 + var | id) + (1 + var | time), data = dLong)
-  return(m)
+  out <- lmer(value ~ 1 + var + (1 + var | id) + (1 + var | time), data = dLong)
+  return(out)
 }
 
 fitRICLPM <- function(d, var1, var2, var3) {
@@ -430,7 +475,98 @@ plotDAG <- function() {
   return(out)
 }
 
-# plot model results - autoregressive and cross-lagged effects
+# plot model results - correlation between behaviour and norms
+plotCorBehNorm <- function(m1.1, m1.2) {
+  # first plot
+  pA <-
+    plot(ggpredict(m1.1, terms = "DesNorms [1:7 by=0.01]")) +
+    scale_x_continuous(name = "Perceived strength of\ndescriptive norms", limits = c(1, 7), breaks = 1:7) +
+    scale_y_continuous(name = "Self-reported mask wearing behavior", limits = c(1, 5), breaks = 1:5) +
+    ggtitle(NULL) +
+    theme_classic()
+  # second plot
+  pB <-
+    plot(ggpredict(m1.2, terms = "InjNorms [1:7 by=0.01]")) +
+    scale_x_continuous(name = "Perceived strength of\ninjunctive norms", limits = c(1, 7), breaks = 1:7) +
+    scale_y_continuous(name = "", limits = c(1, 5), breaks = 1:5) +
+    ggtitle(NULL) +
+    theme_classic()
+  # update alphas and colours of ribbons
+  pA$layers[[2]]$aes_params$alpha <- 0.35
+  pB$layers[[2]]$aes_params$alpha <- 0.35
+  pA$layers[[2]]$aes_params$fill <- "#0072B2"
+  pB$layers[[2]]$aes_params$fill <- "#009E73"
+  # combine
+  out <- plot_grid(pA, pB, nrow = 1, labels = c("a", "b"))
+  # save
+  ggsave(out, filename = "figures/corBehNorm.pdf", width = 6.5, height = 3.8)
+  ggsave(out, filename = "figures/corBehNorm.png", width = 6.5, height = 3.8)
+  return(out)
+}
+
+# plot model results - change points regression
+plotCDCSens <- function(m2.1, m2.2, m2.3) {
+  # first plot
+  pA <-
+    plot(ggpredict(m2.1, terms = "timeCont [0:1 by=0.01]")) +
+    geom_vline(xintercept = 0.314, linetype = "dashed", colour = "grey") +
+    geom_vline(xintercept = 0.587, linetype = "dashed", colour = "grey") +
+    scale_x_continuous(name = "", limits = c(0, 1), breaks = seq(0, 1, by = 0.25)) +
+    scale_y_continuous(name = "Self-reported\nmask wearing\nbehavior", limits = c(1, 5), breaks = 1:5) +
+    ggtitle(NULL) +
+    theme_classic()
+  # second plot
+  pB <-
+    plot(ggpredict(m2.2, terms = "timeCont [0:1 by=0.01]")) +
+    geom_vline(xintercept = 0.314, linetype = "dashed", colour = "grey") +
+    geom_vline(xintercept = 0.587, linetype = "dashed", colour = "grey") +
+    scale_x_continuous(name = "", limits = c(0, 1), breaks = seq(0, 1, by = 0.25)) +
+    scale_y_continuous(name = "Perceived\nstrength of\ndescriptive norms", limits = c(1, 7), breaks = 1:7) +
+    ggtitle(NULL) +
+    theme_classic()
+  # second plot
+  pC <-
+    plot(ggpredict(m2.3, terms = "timeCont [0:1 by=0.01]")) +
+    geom_vline(xintercept = 0.314, linetype = "dashed", colour = "grey") +
+    geom_vline(xintercept = 0.587, linetype = "dashed", colour = "grey") +
+    scale_x_continuous(name = "Time", limits = c(0, 1), breaks = seq(0, 1, by = 0.25)) +
+    scale_y_continuous(name = "Perceived\nstrength of\ninjunctive norms", limits = c(1, 7), breaks = 1:7) +
+    ggtitle(NULL) +
+    theme_classic()
+  # update alphas and colours of ribbons
+  pA$layers[[2]]$aes_params$alpha <- 0.35
+  pB$layers[[2]]$aes_params$alpha <- 0.35
+  pC$layers[[2]]$aes_params$alpha <- 0.35
+  pA$layers[[2]]$aes_params$fill <- "#D55E00"
+  pB$layers[[2]]$aes_params$fill <- "#0072B2"
+  pC$layers[[2]]$aes_params$fill <- "#009E73"
+  # combine
+  out <- plot_grid(pA, pB, pC, ncol = 1, labels = letters[1:3])
+  # save
+  ggsave(out, filename = "figures/CDCSens.pdf", height = 6, width = 4)
+  ggsave(out, filename = "figures/CDCSens.png", height = 6, width = 4)
+  return(out)
+}
+
+# plot model results - difference between descriptive and injunctive norms
+plotNormCompare <- function(m3.1) {
+  # plot
+  out <-
+    ggpredict(m3.1, terms = "var") %>%
+    as_tibble() %>%
+    mutate(`Norm type` = ifelse(x == "DesNorms", "Descriptive\nnorms", "Injunctive\nnorms")) %>%
+    ggplot(aes(x = `Norm type`, y = predicted, ymin = conf.low, ymax = conf.high)) +
+    geom_errorbar(width = 0.2) +
+    geom_point() +
+    scale_y_continuous(name = "Perceived strength\nof social norm", limits = c(1, 7), breaks = 1:7) +
+    theme_classic()
+  # save
+  ggsave(out, filename = "figures/normCompare.pdf", width = 3.5, height = 3.5)
+  ggsave(out, filename = "figures/normCompare.png", width = 3.5, height = 3.5)
+  return(out)
+}
+
+# plot model results - riclpm autoregressive and cross-lagged effects
 plotRICLPM <- function(model) {
   # variables
   var1 <- "Mask wearing"
@@ -501,7 +637,7 @@ plotRICLPM <- function(model) {
           axis.title = element_blank(),
           legend.key.width = unit(2, "cm"))
   # save
-  ggsave(p, file = "figures/resultsRICLPM.pdf", width = 7, height = 3)
-  ggsave(p, file = "figures/resultsRICLPM.png", width = 7, height = 3)
+  ggsave(p, file = "figures/riclpm.pdf", width = 7, height = 3)
+  ggsave(p, file = "figures/riclpm.png", width = 7, height = 3)
   return(p)
 }
