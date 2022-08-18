@@ -3,9 +3,11 @@ library(targets)
 library(tarchetypes)
 source("R/functions.R")
 options(tidyverse.quiet = TRUE)
-tar_option_set(packages = c("cowplot", "dagitty", "ggdag", "ggeffects", "ggraph", 
-                            "lavaan", "lme4", "lubridate", "rnaturalearth", 
-                            "rnaturalearthdata", "scales", "sf", "zipcodeR"))
+tar_option_set(packages = c("arm", "cowplot", "dagitty", "ggdag", "ggeffects", 
+                            "ggraph", "huxtable", "jtools", "knitr", "kableExtra", 
+                            "lavaan", "lme4", "lubridate", "MuMIn", "papaja", 
+                            "rnaturalearth", "rnaturalearthdata", "scales", 
+                            "sf", "zipcodeR"))
 # workflow
 list(
   # files
@@ -18,6 +20,9 @@ list(
   tar_target(d, loadData(fileData, fileFIPS, fileElec, filePrev)),
   # load US covid counts from our world in data
   tar_target(owid, loadOwid(fileOwid)),
+  # t-tests: construct validity
+  tar_target(constructValDes, testConstructValidity(d, type = "Descriptive")),
+  tar_target(constructValInj, testConstructValidity(d, type = "Injunctive")),
   # multilevel modelling
   # correlations between behaviour and norms
   tar_target(m1.1, fitCorBehNorm(d, predictor = "DesNorms")),
@@ -47,6 +52,12 @@ list(
   tar_target(plot6, plotCDCSens(m2.1, m2.2, m2.3)),
   tar_target(plot7, plotNormCompare(m3.1)),
   tar_target(plot8, plotRICLPM(riclpm)),
+  # tables
+  tar_target(itemTable, makeItemTable()),
+  tar_target(changePointsTable, makeChangePointsTable(m2.1, m2.2, m2.3)),
+  tar_target(lavaanTable, makeLavaanTable(riclpm)),
+  # manuscript
+  tar_render(manuscript, "manuscript.Rmd"),
   # print session info for reproducibility
   tar_target(sessionInfo, writeLines(capture.output(sessionInfo()), "sessionInfo.txt"))
 )

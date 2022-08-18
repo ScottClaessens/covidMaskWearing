@@ -1,0 +1,146 @@
+---
+output:
+  pdf_document: default
+  html_document: default
+---
+\renewcommand{\appendixname}{\textbf{Supplementary Materials}}
+\renewcommand{\thefigure}{S\arabic{figure}} \setcounter{figure}{0}
+\renewcommand{\thetable}{S\arabic{table}} \setcounter{table}{0}
+\renewcommand{\theequation}{S\arabic{table}} \setcounter{equation}{0}
+
+#
+
+## Supplementary Results
+
+### Construct validity for measures of perceived descriptive and injunctive norms
+
+To evaluate the construct validity of our measures of perceived descriptive and injunctive norms, at Time 7 we asked participants to rate the extent to which each perceived norm item provided descriptive and injunctive information. For each item, participants were asked whether the item provided information about what people are doing, and whether the item provided information about what people should be doing. Participants responded on a 7-point Likert scale, from (1) Not At All to (7) Very Strongly. For a full list of questions, see Supplementary Table \@ref(tab:itemTable).
+
+Results showed that participants did differentiate the perceived norm items as expected. Participants rated the perceived descriptive norm items as providing more descriptive information than the perceived injunctive norm items, _t_(`r printnum(constructValDes$parameter, digits = 0)`) = `r printnum(constructValDes$statistic)`, _p_ `r printp(constructValDes$p.value)` (mean descriptive items = `r printnum(mean((d$DescriptiveLearning3.7 + d$DescriptiveLearning4.7) / 2, na.rm = T))`; mean injunctive items = `r printnum(mean((d$DescriptiveLearning1.7 + d$DescriptiveLearning2.7) / 2, na.rm = T))`). By contrast, participants rated the perceived injunctive norm items as providing more injunctive information than the perceived descriptive norm items, _t_(`r printnum(constructValInj$parameter, digits = 0)`) = `r printnum(constructValInj$statistic)`, _p_ `r printp(constructValInj$p.value)` (mean descriptive items = `r printnum(mean((d$InjunctiveLearning3.7 + d$InjunctiveLearning4.7) / 2, na.rm = T))`; mean injunctive items = `r printnum(mean((d$InjunctiveLearning1.7 + d$InjunctiveLearning2.7) / 2, na.rm = T))`).
+
+\newpage
+
+## Supplementary Figures
+
+(ref:plotUSMapCaption) _Map of the United States with participant zip code locations._
+
+```{r plotUSMap, echo=F, fig.width=5, fig.height=3, fig.cap="(ref:plotUSMapCaption)"}
+plot1
+```
+
+\newpage
+
+(ref:plotAttritionCaption) _Attrition across the course of the study._
+
+```{r plotAttrition, echo=F, fig.width=5, fig.height=3, fig.cap="(ref:plotAttritionCaption)"}
+plot2
+```
+
+\newpage
+
+(ref:plotDAGCaption) _Directed acyclic graph reflecting causal assumptions._ In this model, a general unobserved sensitivity to social norms (NormSens) causes perceptions of descriptive social norms (DesNorm) and perceptions of injunctive social norms (InjNorm), and perceptions of descriptive and injunctive norms cause mask wearing behavior (Mask). County-level COVID-19 prevalence (CovidPrev) and political leaning (CountyPol) are also posited to be common causes of perceptions of social norms and mask wearing behavior. Using the backdoor criterion (Pearl, 1995), this causal model implies that it is necessary to control for perceptions of injunctive norms, county-level COVID-19 prevalence, and county-level political leaning to estimate the direct causal effect of perceived descriptive norms on mask wearing. Similarly, it is necessary to control for perceptions of descriptive norms, county-level COVID-19 prevalence, and county-level political leaning to estimate the direct causal effect of perceived injunctive norms on mask wearing.
+
+```{r plotDAG, echo=F, fig.width=5.6, fig.height=4.5, fig.cap="(ref:plotDAGCaption)"}
+plot4
+```
+
+\newpage
+
+(ref:plotCorBehNormCaption) _Predictions from multilevel models with self-reported mask wearing behavior as the outcome variable and (a) perceived strength of descriptive norms and (b) perceived strength of injunctive norms as independent predictor variables._ Lines are fixed effect regression lines from multilevel models, shaded areas are 95% confidence intervals.
+
+```{r plotCorBehNorm, echo=F, fig.width=6.5, fig.height=3.8, fig.cap="(ref:plotCorBehNormCaption)"}
+plot5
+```
+
+\newpage
+
+(ref:plotCDCSensCaption) _Predictions from multilevel models with change points in line with changes in CDC mask wearing recommendations._ These models track temporal changes in (a) self-reported mask wearing behavior, (b) perceived strength of descriptive norms, and (c) perceived strength of injunctive norms. Time is included as a continuous linear predictor, scaled between 0 and 1, with two forced change points (dashed lines). The first dashed line (left) indicates when the CDC relaxed their mask wearing recommendations in March 2021, and the second dashed line (right) indicates when the CDC strengthened their mask wearing recommendations in July 2021. This results in the estimation of four fixed effect parameters: the initial intercept, the slope in the first window, the slope in the second window, and the slope in the third window. Bolded lines and shaded areas represent fixed effect regression lines from multilevel models and 95% confidence intervals, respectively.
+
+```{r plotCDCSens, echo=F, fig.width=4, fig.height=6, fig.cap="(ref:plotCDCSensCaption)"}
+plot6
+```
+
+\newpage
+
+(ref:plotNormCompareCaption) _Predictions from multilevel model of the difference between the perceived strength of descriptive and injunctive social norms._ Points and error bars represent estimated marginal means and 95% confidence intervals, respectively.
+
+```{r plotNormCompare, echo=F, fig.width=3.5, fig.height=3.5, fig.cap="(ref:plotNormCompareCaption)"}
+plot7
+```
+
+\newpage
+
+## Supplementary Tables
+
+(ref:itemTableCaption) List of norm interpretation questions asked at Time 7. _These questions were preceded by the following text:_ "There may or may not be a difference between what people around you are doing and what they should be doing. You can learn about what people are doing and what they should be doing in different ways. For each of the following information sources, we want to know if you can learn from it what people are doing, what people should be doing, or both". _Participants answered all questions on a 7-point Likert scale, from (1) Not At All to (7) Very Strongly._
+
+```{r itemTable, echo=F, warning=F, message=F}
+apa_table(
+  itemTable,
+  booktabs = TRUE,
+  longtable = TRUE,
+  align = c("m{2.5cm}", "m{2.5cm}", "m{9cm}"),
+  caption = "(ref:itemTableCaption)"
+)
+```
+
+\newpage
+
+(ref:modelSummaryTable1Caption) Unstandardized fixed effect parameters from multilevel models: perceptions of social norm strength predicting self-reported mask wearing. _Standard errors are included in brackets._
+
+```{r modelSummaryTable1, echo=F, warning=F, message=F, results="asis"}
+export_summs(m1.1, m1.2, stars = NULL,
+             coefs = c("Intercept" = "(Intercept)",
+                       "Descriptive norms" = "DesNorms",
+                       "Injunctive norms" = "InjNorms")) %>% 
+  set_caption("(ref:modelSummaryTable1Caption)") %>%
+  set_label("tab:modelSummaryTable1")
+```
+
+\newpage
+
+(ref:changePointsTableCaption) Unstandardized fixed effect parameters from multilevel models: trends over time with change points at CDC events.
+
+```{r changePointsTable, echo=F, warning=F, message=F}
+apa_table(
+  changePointsTable,
+  booktabs = TRUE,
+  longtable = TRUE,
+  align = c("l", "c", "c", "c"),
+  caption = "(ref:changePointsTableCaption)"
+)
+```
+
+\newpage
+
+(ref:modelSummaryTable2Caption) Unstandardized fixed effect parameters from multilevel model: difference between perceived strength of descriptive and injunctive social norms. _Standard errors are included in brackets._
+
+```{r modelSummaryTable2, echo=F, warning=F, message=F, results="asis"}
+export_summs(m3.1, stars = NULL,
+             coefs = c("Intercept" = "(Intercept)",
+                       "Difference between norm types" = "varInjNorms")) %>% 
+  set_caption("(ref:modelSummaryTable2Caption)") %>%
+  set_label("tab:modelSummaryTable2")
+```
+
+\newpage
+
+(ref:lavaanTableCaption) Standardised autoregressive and cross-lagged parameters from random-intercept cross-lagged panel model. _Variable name prefixes: Mask = mask wearing, Des = perceived descriptive norms, Inj = perceived injunctive norms. Variable name suffixes indicate time points. Arrows indicate the direction of prediction._
+
+(ref:rightArrow) →
+
+```{r lavaanTable, echo=F, warning=F, message=F}
+apa_table(
+  lavaanTable,
+  booktabs = TRUE,
+  longtable = TRUE,
+  align = c("l", rep("c", 5)),
+  caption = "(ref:lavaanTableCaption)"
+)
+```
+
+\newpage
+
+## Supplementary References
+
+Pearl, J. (1995). Causal diagrams for empirical research. _Biometrika_, _82_(4), 669–688, https://doi.org/10.1093/biomet/82.4.669

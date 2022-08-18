@@ -32,14 +32,14 @@ loadData <- function(fileData, fileFIPS, fileElec, filePrev) {
   # load county-level political election results
   elec <-
     read.csv(fileElec) %>%
-    select(county_fips, winningparty) %>%
+    dplyr::select(county_fips, winningparty) %>%
     unique() %>%
     mutate(winningparty = ifelse(winningparty == "REPUBLICAN", 1,
                                  ifelse(winningparty == "DEMOCRAT", 0, NA)))
   # attach data to fips (county) and zip codes
   zip <-
     read.csv(fileFIPS) %>%
-    select(ZIP, STCOUNTYFP) %>%
+    dplyr::select(ZIP, STCOUNTYFP) %>%
     # join county-level COVID-19 prevalence data
     left_join(prev, by = c("STCOUNTYFP" = "county_fips")) %>%
     # join county-level political election results
@@ -55,7 +55,7 @@ loadData <- function(fileData, fileFIPS, fileElec, filePrev) {
   # join to main data frame
   out <- left_join(out, zip, by = c("Zip.1" = "ZIP"))
   # add further data on zip codes
-  zip <- reverse_zipcode(unique(out$Zip.1)) %>% mutate(zipcode = as.numeric(zipcode))
+  zip <- zipcodeR::reverse_zipcode(unique(out$Zip.1)) %>% mutate(zipcode = as.numeric(zipcode))
   out <- left_join(out, zip, by = c("Zip.1" = "zipcode"))
   return(out)
 }
@@ -67,12 +67,22 @@ loadOwid <- function(fileOwid) {
     mutate(date = dmy(date))
 }
 
+# t-test: construct validity
+testConstructValidity <- function(d, type) {
+  # how much information do the descriptive items give about X type of norms?
+  y1 <- (d[,paste0(type, "Learning1.7")] + d[,paste0(type, "Learning2.7")]) / 2
+  # how much information do the injunctive items give about X type of norms?
+  y2 <- (d[,paste0(type, "Learning3.7")] + d[,paste0(type, "Learning4.7")]) / 2
+  # paired t-test
+  t.test(y1[,1], y2[,1], paired = TRUE)
+}
+
 # correlations between behaviour and norms
 fitCorBehNorm <- function(d, predictor) {
   # get data in long format
   dLong <-
     d %>%
-    select(starts_with("DesNorms") | starts_with("InjNorms") | starts_with("ContactsMask")) %>%
+    dplyr::select(starts_with("DesNorms") | starts_with("InjNorms") | starts_with("ContactsMask")) %>%
     mutate(id = 1:nrow(.)) %>%
     pivot_longer(cols = !id, 
                  names_to = c(".value", "time"),
@@ -117,7 +127,7 @@ fitNormCompare <- function(d) {
   # get data in long format
   dLong <-
     d %>%
-    select(starts_with("DesNorms") | starts_with("InjNorms")) %>%
+    dplyr::select(starts_with("DesNorms") | starts_with("InjNorms")) %>%
     mutate(id = 1:nrow(.)) %>%
     pivot_longer(cols = !id, 
                  names_to = c("var", "time"),
@@ -372,7 +382,7 @@ plotTimeline <- function(d, owid) {
              label = "CDC: recommend\nbooster shots\nfor adults") +
     # add main geoms
     geom_line(colour = "#D55E00") +
-    geom_pointrange(size = 0.5, fatten = 2, colour = "#D55E00") +
+    geom_pointrange(size = 0.5, fatten = 1.5, colour = "#D55E00") +
     # axes and themes
     scale_x_date(name = NULL, date_labels = "%b\n%Y", date_breaks = "2 month", limits = c(ymd("2020-09-20"), ymd("2022-03-05"))) +
     scale_y_continuous(name = "Self-reported\nmask wearing\nbehavior", limits = c(1, 5), breaks = 1:5) +
@@ -405,7 +415,7 @@ plotTimeline <- function(d, owid) {
     geom_vline(xintercept = ymd("2021-11-29"), linetype = "dashed", colour = "grey") +
     # add main geoms
     geom_line() +
-    geom_pointrange(size = 0.5, fatten = 2) +
+    geom_pointrange(size = 0.5, fatten = 1.5) +
     # axes and themes
     scale_x_date(name = NULL, date_labels = "%b\n%Y", date_breaks = "2 month", limits = c(ymd("2020-09-20"), ymd("2022-03-05"))) +
     scale_y_continuous(name = "Perceived\nstrength of\nsocial norm", limits = c(1, 7), breaks = 1:7) +
@@ -591,7 +601,7 @@ plotRICLPM <- function(model) {
     as_tibble() %>%
     left_join(as_tibble(parameterEstimates(model)), by = c("lhs", "op", "rhs")) %>%
     filter(op == "~" & !(rhs %in% c("logCovidCasesPer100k","winningparty"))) %>%
-    select(lhs, rhs, est.std, pvalue.y)
+    dplyr::select(lhs, rhs, est.std, pvalue.y)
   # loop over coefficients and get arrow data
   draw <- tibble()
   for (i in 1:63) {
@@ -640,4 +650,99 @@ plotRICLPM <- function(model) {
   ggsave(p, file = "figures/riclpm.pdf", width = 7, height = 3)
   ggsave(p, file = "figures/riclpm.png", width = 7, height = 3)
   return(p)
+}
+
+# make supp item table
+makeItemTable <- function() {
+  tibble(
+    Interpretation = c("Provides descriptive information", "", "", "",
+                       "Provides injunctive information", "", "", ""),
+    `Perceived norm item` = c("Descriptive", "", "Injunctive", "",
+                              "Descriptive", "", "Injunctive", ""),
+    Question = c(paste0("Does noticing the proportion of people in your area that wear ",
+                        "a mask while doing recreational/social activities indoors (e.g., ",
+                        "going to the gym, eating at a restaurant, attending a party) tell ",
+                        "you what everyone is doing?"),
+                 paste0("Does noticing the proportion of people in your area that wear a mask ",
+                        "while doing routine activities indoors (e.g., running errands, shopping, ",
+                        "going to work) tell you what everyone is doing?"),
+                 paste0("Do mask-wearing rules encouraged in your area (e.g., by local or state ",
+                        "government officials, businesses, etc.) tell you what everyone is doing?"),
+                 paste0("Does how often you see people that you respect and trust wearing a mask ",
+                        "(e.g., on tv, news, etc.) tell you what everyone is doing?"),
+                 paste0("Does noticing the proportion of people in your area that wear a mask while ",
+                        "doing recreational/social activities indoors (e.g., going to the gym, eating ",
+                        "at a restaurant, attending a party) tell you what everyone should be doing?"),
+                 paste0("Does noticing the proportion of people in your area that wear a mask while ",
+                        "doing routine activities indoors (e.g., running errands, shopping, going to ",
+                        "work) tell you what everyone should be doing?"),
+                 paste0("Do mask-wearing rules encouraged in your area (e.g., by local or state ",
+                        "government officials, businesses, etc.) tell you what everyone should be doing?"),
+                 paste0("Does how often you see people that you respect and trust wearing a mask (e.g., ",
+                        "on tv, news, etc.) tell you what everyone should be doing?")
+                 )
+  )
+}
+
+# make supp change points table
+makeChangePointsTable <- function(m2.1, m2.2, m2.3) {
+  # function for extracting pars
+  getPars <- function(model, outcome) {
+    s <- sim(model, n.sims = 2000)
+    tibble(
+      Intercept = s@fixef[,1],
+      Slope1    = s@fixef[,2],
+      Slope2    = s@fixef[,2] + s@fixef[,3],
+      Slope3    = s@fixef[,2] + s@fixef[,3] + s@fixef[,4]
+    ) %>%
+      pivot_longer(cols = everything(), names_to = "par") %>%
+      group_by(par) %>%
+      summarise(value = paste0(format(round(median(value), 2), nsmall = 2), ", 95% CI [",
+                               format(round(quantile(value, 0.025), 2), nsmall = 2), " ",
+                               format(round(quantile(value, 0.975), 2), nsmall = 2), "]")) %>%
+      transmute(outcome = outcome, par, value)
+  }
+  # extract pars for all models
+  getPars(m2.1, outcome = "Mask wearing") %>%
+    bind_rows(getPars(m2.2, outcome = "Descriptive norms")) %>%
+    bind_rows(getPars(m2.3, outcome = "Injunctive norms")) %>%
+    pivot_wider(names_from = outcome) %>%
+    # attach N for all models
+    bind_rows(tibble(par = "N", 
+                     `Mask wearing`      = as.character(summary(m2.1)$devcomp$dims["N"]),
+                     `Descriptive norms` = as.character(summary(m2.2)$devcomp$dims["N"]),
+                     `Injunctive norms`  = as.character(summary(m2.3)$devcomp$dims["N"]))) %>%
+    # attach marginal r squared for all models
+    bind_rows(tibble(par = "R2 (fixed)", 
+                     `Mask wearing`      = as.character(round(r.squaredGLMM(m2.1)[1], 2)),
+                     `Descriptive norms` = as.character(round(r.squaredGLMM(m2.2)[1], 2)),
+                     `Injunctive norms`  = as.character(round(r.squaredGLMM(m2.3)[1], 2)))) %>%
+    # attach total r squared for all models
+    bind_rows(tibble(par = "R2 (total)", 
+                     `Mask wearing`      = as.character(round(r.squaredGLMM(m2.1)[2], 2)),
+                     `Descriptive norms` = as.character(round(r.squaredGLMM(m2.2)[2], 2)),
+                     `Injunctive norms`  = as.character(round(r.squaredGLMM(m2.3)[2], 2)))) %>%
+    rename(` ` = par)
+}
+
+# make supp lavaan table
+makeLavaanTable <- function(riclpm) {
+  standardizedSolution(riclpm) %>%
+    as_tibble() %>%
+    filter(op == "~" & !(rhs %in% c("logCovidCasesPer100k", "winningparty"))) %>%
+    mutate_if(is.numeric, function(x) format(round(x, 2), nsmall = 2)) %>%
+    mutate(lhs = str_replace(lhs, fixed("w1"), "Mask"),
+           lhs = str_replace(lhs, fixed("w2"), "Inj"),
+           lhs = str_replace(lhs, fixed("w3"), "Des"),
+           rhs = str_replace(rhs, fixed("w1"), "Mask"),
+           rhs = str_replace(rhs, fixed("w2"), "Inj"),
+           rhs = str_replace(rhs, fixed("w3"), "Des")) %>%
+    arrange(rhs) %>%
+    transmute(
+      Parameter = paste0(rhs, " (ref:rightArrow) ", lhs),
+      Estimate = est.std,
+      SE = se,
+      `2.5%` = ci.lower,
+      `97.5%` = ci.upper
+    )
 }
