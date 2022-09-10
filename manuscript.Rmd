@@ -9,7 +9,7 @@ author:
   - name          : "Scott Claessens"
     affiliation   : "2"
     equal_contrib : yes
-  - name          : "Edward R. Hurt"
+  - name          : "Edward R. Hirt"
     affiliation   : "1"
   - name          : "Peter M. Todd"
     affiliation   : "1,3"
