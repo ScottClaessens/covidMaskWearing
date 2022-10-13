@@ -38,7 +38,7 @@ plot2
 
 \newpage
 
-(ref:plotDAGCaption) _Directed acyclic graph reflecting causal assumptions._ In this model, a general unobserved sensitivity to social norms (NormSens) causes perceptions of descriptive social norms (DesNorm) and perceptions of injunctive social norms (InjNorm), and perceptions of descriptive and injunctive norms cause mask wearing behavior (Mask). County-level COVID-19 prevalence (CovidPrev) and political leaning (CountyPol) are also posited to be common causes of perceptions of social norms and mask wearing behavior. Using the backdoor criterion (Pearl, 1995), this causal model implies that it is necessary to control for perceptions of injunctive norms, county-level COVID-19 prevalence, and county-level political leaning to estimate the direct causal effect of perceived descriptive norms on mask wearing. Similarly, it is necessary to control for perceptions of descriptive norms, county-level COVID-19 prevalence, and county-level political leaning to estimate the direct causal effect of perceived injunctive norms on mask wearing.
+(ref:plotDAGCaption) _Directed acyclic graph reflecting causal assumptions._ In this model, a general unobserved sensitivity to social norms (NormSens) causes perceptions of descriptive social norms (DesNorm) and perceptions of injunctive social norms (InjNorm), and perceptions of descriptive and injunctive norms directly cause mask wearing behavior (Mask). Perceptions of descriptive and injunctive norms also indirectly cause mask wearing behavior through non-social beliefs, specifically factual beliefs (Fact) and personal normative beliefs (PersNorm). Finally, political orientation (PolOri) is an exogenous variable that is a common cause of all other variables. Using the backdoor criterion (Pearl, 1995), this causal model implies that it is necessary to control for perceptions of injunctive norms, factual beliefs, personal normative beliefs, and political orientation to estimate the direct causal effect of perceived descriptive norms on mask wearing. Similarly, it is necessary to control for perceptions of descriptive norms, factual beliefs, personal normative beliefs, and political orientation to estimate the direct causal effect of perceived injunctive norms on mask wearing.
 
 ```{r plotDAG, echo=F, fig.width=5.6, fig.height=4.5, fig.cap="(ref:plotDAGCaption)"}
 plot4
@@ -105,7 +105,7 @@ apa_table(
 
 \newpage
 
-(ref:lavaanTableCaption) Standardised autoregressive and cross-lagged parameters from random-intercept cross-lagged panel model. _Variable name prefixes: Mask = mask wearing, Des = perceived descriptive norms, Inj = perceived injunctive norms. Variable name suffixes indicate time points. Arrows indicate the direction of prediction._
+(ref:lavaanTableCaption) Standardised autoregressive and cross-lagged parameters from random-intercept cross-lagged panel model. _Variable name prefixes: Mask = mask wearing, Des = perceived descriptive norms, Inj = perceived injunctive norms, Fact = factual beliefs, Pers = personal normative beliefs. Variable name suffixes indicate time points. Arrows indicate the direction of prediction._
 
 (ref:rightArrow) →
 
@@ -114,6 +114,7 @@ apa_table(
   lavaanTable,
   booktabs = TRUE,
   longtable = TRUE,
+  font_size = "footnotesize",
   align = c("l", rep("c", 5)),
   caption = "(ref:lavaanTableCaption)"
 )

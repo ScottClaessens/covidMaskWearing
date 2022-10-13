@@ -553,7 +553,7 @@ plotTimeline <- function(d, owid) {
     annotate("text", x = ymd("2021-02-03"), y = 2.5, colour = "grey", size = 2.8, angle = 90, lineheight = 0.85,
              label = "CDC: fully vaccinated\npeople can gather\nindoors without masks") +
     annotate("text", x = ymd("2021-06-07"), y = 2.0, colour = "grey", size = 2.8, angle = 90, lineheight = 0.85,
-             label = "CDC: updated\nguidelines for\nindoor mask\nuse in high\nrisk areas") +
+             label = "CDC: guidelines\nreinstated for\nindoor mask\nuse in high\nrisk areas") +
     annotate("text", x = ymd("2021-10-26"), y = 2.2, colour = "grey", size = 2.8, angle = 90, lineheight = 0.85,
              label = "CDC: recommend\nbooster shots\nfor adults") +
     annotate("text", x = ymd("2022-01-22"), y = 2.2, colour = "grey", size = 2.8, angle = 90, lineheight = 0.85,
@@ -789,7 +789,7 @@ plotRICLPM <- function(model) {
       xend   = as.Date(dates[as.numeric(substr(lhs, 4, 5))]),
       y      = c(var1, var2, var3)[as.numeric(substr(rhs, 2, 2))],
       yend   = c(var1, var2, var3)[as.numeric(substr(lhs, 2, 2))],
-      size   = abs(est.std),
+      size   = ifelse(est.std >= 0, est.std, 0), # for visualisation, min effect = 0
       colour = ifelse(pvalue.y < 0.05, "black", "lightgrey")
     )
   # plot
