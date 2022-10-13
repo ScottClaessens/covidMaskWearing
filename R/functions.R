@@ -1,60 +1,68 @@
 # custom functions
 
-loadData <- function(fileData, fileFIPS, fileElec, filePrev) {
+loadData <- function(fileData) {
   # load data
   out <-
-    read.csv(file = fileData, sep = '\t') %>%
-    as_tibble() %>%
-    # create composite measures of injunctive and descriptive norms
-    mutate(InjNorms.2  = (MaskRespect.2    + MaskEncouraged.2 ) / 2,
-           InjNorms.3  = (MaskRespect.3    + MaskEncouraged.3 ) / 2,
-           InjNorms.5  = (MaskRespect.5    + MaskEncouraged.5 ) / 2,
-           InjNorms.9  = (MaskRespect.9    + MaskEncouraged.9 ) / 2,
-           InjNorms.11 = (MaskRespect.11   + MaskEncouraged.11) / 2,
-           InjNorms.13 = (MaskRespect.13   + MaskEncouraged.13) / 2,
-           InjNorms.14 = (MaskRespect.14   + MaskEncouraged.14) / 2,
-           InjNorms.15 = (MaskRespect.15   + MaskEncouraged.15) / 2,
-           DesNorms.2  = (NeighborMask1.2  + NeighborMask2.2  ) / 2,
-           DesNorms.3  = (NeighborMask1.3  + NeighborMask2.3  ) / 2,
-           DesNorms.5  = (NeighborMask1.5  + NeighborMask2.5  ) / 2,
-           DesNorms.9  = (NeighborMask1.9  + NeighborMask2.9  ) / 2,
-           DesNorms.11 = (NeighborMask1.11 + NeighborMask2.11 ) / 2,
-           DesNorms.13 = (NeighborMask1.13 + NeighborMask2.13 ) / 2,
-           DesNorms.14 = (NeighborMask1.14 + NeighborMask2.14 ) / 2,
-           DesNorms.15 = (NeighborMask1.15 + NeighborMask2.15 ) / 2
+    read_csv(file = fileData) %>%
+    # fix some mask motives items (7 coded as 8 in qualtrics)
+    mutate_at(vars(contains("MaskMotives")), function(x) ifelse(x == 8, 7, x)) %>%
+    mutate_at(vars(contains("MaskMotivates")), function(x) ifelse(x == 8, 7, x)) %>%
+    # fix mask legality items
+    mutate_at(vars(contains("MaskLegal")), function(x) ifelse(x %in% 1:2, x - 1, NA)) %>%
+    # create composite measures
+    mutate(
+      # injunctive norms
+      InjNorms.2  = (MaskRespect.2    + MaskEncouraged.2 ) / 2,
+      InjNorms.3  = (MaskRespect.3    + MaskEncouraged.3 ) / 2,
+      InjNorms.5  = (MaskRespect.5    + MaskEncouraged.5 ) / 2,
+      InjNorms.9  = (MaskRespect.9    + MaskEncouraged.9 ) / 2,
+      InjNorms.11 = (MaskRespect.11   + MaskEncouraged.11) / 2,
+      InjNorms.13 = (MaskRespect.13   + MaskEncouraged.13) / 2,
+      InjNorms.14 = (MaskRespect.14   + MaskEncouraged.14) / 2,
+      InjNorms.15 = (MaskRespect.15   + MaskEncouraged.15) / 2,
+      InjNorms.16 = (MaskRespect.16   + MaskEncouraged.16) / 2,
+      InjNorms.17 = (MaskRespect.17   + MaskEncouraged.17) / 2,
+      InjNorms.18 = (MaskRespect.18   + MaskEncouraged.18) / 2,
+      # descriptive norms
+      DesNorms.2  = (NeighborMask1.2  + NeighborMask2.2  ) / 2,
+      DesNorms.3  = (NeighborMask1.3  + NeighborMask2.3  ) / 2,
+      DesNorms.5  = (NeighborMask1.5  + NeighborMask2.5  ) / 2,
+      DesNorms.9  = (NeighborMask1.9  + NeighborMask2.9  ) / 2,
+      DesNorms.11 = (NeighborMask1.11 + NeighborMask2.11 ) / 2,
+      DesNorms.13 = (NeighborMask1.13 + NeighborMask2.13 ) / 2,
+      DesNorms.14 = (NeighborMask1.14 + NeighborMask2.14 ) / 2,
+      DesNorms.15 = (NeighborMask1.15 + NeighborMask2.15 ) / 2,
+      DesNorms.16 = (NeighborMask1.16 + NeighborMask2.16 ) / 2,
+      DesNorms.17 = (NeighborMask1.17 + NeighborMask2.17 ) / 2,
+      DesNorms.18 = (NeighborMask1.18 + NeighborMask2.18 ) / 2,
+      # factual beliefs
+      FactBeliefs.2  = (MaskMotives1.2  + MaskMotives2.2 ) / 2,
+      FactBeliefs.4  = (MaskMotives1.4  + MaskMotives2.4 ) / 2,
+      FactBeliefs.5  = (MaskMotives1.5  + MaskMotives2.5 ) / 2,
+      FactBeliefs.7  = (MaskMotives1.7  + MaskMotives2.7 ) / 2,
+      FactBeliefs.9  = (MaskMotives1.9  + MaskMotives2.9 ) / 2,
+      FactBeliefs.11 = (MaskMotives1.11 + MaskMotives2.11) / 2,
+      FactBeliefs.13 = (MaskMotives1.13 + MaskMotives2.13) / 2,
+      FactBeliefs.14 = (MaskMotives1.14 + MaskMotives2.14) / 2,
+      FactBeliefs.15 = (MaskMotives1.15 + MaskMotives2.15) / 2,
+      FactBeliefs.16 = (MaskMotives1.16 + MaskMotives2.16) / 2,
+      FactBeliefs.17 = (MaskMotivates1.17 + MaskMotivates2.17) / 2,
+      FactBeliefs.18 = (MaskMotivates1.18 + MaskMotivates2.18) / 2,
+      # personal norms
+      PersNorms.2  = MaskMotives3.2,
+      PersNorms.4  = MaskMotives3.4,
+      PersNorms.5  = MaskMotives3.5,
+      PersNorms.7  = MaskMotives3.7,
+      PersNorms.9  = MaskMotives3.9,
+      PersNorms.11 = MaskMotives3.11,
+      PersNorms.13 = MaskMotives3.13,
+      PersNorms.14 = MaskMotives3.14,
+      PersNorms.15 = MaskMotives3.15,
+      PersNorms.16 = MaskMotives3.16,
+      PersNorms.17 = MaskMotivates3.17,
+      PersNorms.18 = MaskMotivates3.18
     )
-  # load county-level COVID-19 prevalence data
-  prev <-
-    read.csv(filePrev) %>% 
-    # get average log COVID-19 prevalence across all county entries
-    group_by(county_fips) %>%
-    summarise(logCovidCasesPer100k = log(mean(covid_cases_per_100k)))
-  # load county-level political election results
-  elec <-
-    read.csv(fileElec) %>%
-    dplyr::select(county_fips, winningparty) %>%
-    unique() %>%
-    mutate(winningparty = ifelse(winningparty == "REPUBLICAN", 1,
-                                 ifelse(winningparty == "DEMOCRAT", 0, NA)))
-  # attach data to fips (county) and zip codes
-  zip <-
-    read.csv(fileFIPS) %>%
-    dplyr::select(ZIP, STCOUNTYFP) %>%
-    # join county-level COVID-19 prevalence data
-    left_join(prev, by = c("STCOUNTYFP" = "county_fips")) %>%
-    # join county-level political election results
-    left_join(elec, by = c("STCOUNTYFP" = "county_fips")) %>%
-    # filter to zip codes in main data frame
-    filter(ZIP %in% out$Zip.1) %>%
-    # average within zip codes
-    group_by(ZIP) %>%
-    summarise(logCovidCasesPer100k = mean(logCovidCasesPer100k),
-              winningparty = mean(winningparty)) %>%
-    # get majority winning party within zip codes
-    mutate(winningparty = round(ifelse(winningparty == 0.5, NA, winningparty)))
-  # join to main data frame
-  out <- left_join(out, zip, by = c("Zip.1" = "ZIP"))
-  # add further data on zip codes
+  # add data on zip codes
   zip <- zipcodeR::reverse_zipcode(unique(out$Zip.1)) %>% mutate(zipcode = as.numeric(zipcode))
   out <- left_join(out, zip, by = c("Zip.1" = "zipcode"))
   return(out)
@@ -101,7 +109,8 @@ fitCDCSens <- function(d, outcome) {
              "2020-12-28", "2021-01-27", "2021-02-26",
              "2021-03-28", "2021-04-27", "2021-05-27",
              "2021-06-26", "2021-07-26", "2021-08-26",
-             "2021-10-25", "2021-12-16", "2022-02-25")
+             "2021-10-25", "2021-12-16", "2022-02-25",
+             "2022-04-26", "2022-06-25", "2022-08-29")
   # get data in long format
   dLong <-
     d %>%
@@ -115,172 +124,332 @@ fitCDCSens <- function(d, outcome) {
            timeCont = timeCont - min(timeCont),
            timeCont = timeCont / max(timeCont))
   # formula with cutpoints at cdc events
-  f <- formula(paste0(outcome, " ~ 1 + timeCont + I(pmax(0,timeCont-0.314)) + I(pmax(0,timeCont-0.587)) + ",
-                      "(1 + timeCont + I(pmax(0,timeCont-0.314)) + I(pmax(0,timeCont-0.587)) | id)"))
+  f <- formula(paste0(outcome, " ~ 1 + timeCont + I(pmax(0,timeCont-0.231)) + I(pmax(0,timeCont-0.432)) + I(pmax(0,timeCont-0.687)) + (1 | id)"))
   # fit model
   out <- lmer(f, data = dLong)
   return(out)
 }
 
-# compare average levels of descriptive and injunctive norms
-fitNormCompare <- function(d) {
-  # get data in long format
-  dLong <-
-    d %>%
-    dplyr::select(starts_with("DesNorms") | starts_with("InjNorms")) %>%
-    mutate(id = 1:nrow(.)) %>%
-    pivot_longer(cols = !id, 
-                 names_to = c("var", "time"),
-                 names_sep = "\\.") %>%
-    drop_na()
-  # fit multilevel model
-  out <- lmer(value ~ 1 + var + (1 + var | id) + (1 + var | time), data = dLong)
-  return(out)
-}
-
-fitRICLPM <- function(d, var1, var2, var3) {
-  # model code for unconstrained 3-variable 8-wave riclpm with time-invariant controls
+fitRICLPM <- function(d) {
+  # model code for unconstrained riclpm
   # https://jeroendmulder.github.io/RI-CLPM/lavaan.html
   model <- '# Create between components (random intercepts)
-            ri1 =~ 1*var1.2 + 1*var1.3 + 1*var1.5 + 1*var1.9 + 1*var1.11 + 1*var1.13 + 1*var1.14 + 1*var1.15
-            ri2 =~ 1*var2.2 + 1*var2.3 + 1*var2.5 + 1*var2.9 + 1*var2.11 + 1*var2.13 + 1*var2.14 + 1*var2.15
-            ri3 =~ 1*var3.2 + 1*var3.3 + 1*var3.5 + 1*var3.9 + 1*var3.11 + 1*var3.13 + 1*var3.14 + 1*var3.15
+            ri1 =~ 1*ContactsMask.2 + 1*ContactsMask.5 + 1*ContactsMask.9 + 1*ContactsMask.11 + 1*ContactsMask.13 + 1*ContactsMask.14 + 1*ContactsMask.15 + 1*ContactsMask.16 + 1*ContactsMask.17 + 1*ContactsMask.18
+            ri2 =~ 1*InjNorms.2 + 1*InjNorms.5 + 1*InjNorms.9 + 1*InjNorms.11 + 1*InjNorms.13 + 1*InjNorms.14 + 1*InjNorms.15 + 1*InjNorms.16 + 1*InjNorms.17 + 1*InjNorms.18
+            ri3 =~ 1*DesNorms.2 + 1*DesNorms.5 + 1*DesNorms.9 + 1*DesNorms.11 + 1*DesNorms.13 + 1*DesNorms.14 + 1*DesNorms.15 + 1*DesNorms.16 + 1*DesNorms.17 + 1*DesNorms.18
+            ri4 =~ 1*FactBeliefs.2 + 1*FactBeliefs.5 + 1*FactBeliefs.9 + 1*FactBeliefs.11 + 1*FactBeliefs.13 + 1*FactBeliefs.14 + 1*FactBeliefs.15 + 1*FactBeliefs.16 + 1*FactBeliefs.17 + 1*FactBeliefs.18
+            ri5 =~ 1*PersNorms.2 + 1*PersNorms.5 + 1*PersNorms.9 + 1*PersNorms.11 + 1*PersNorms.13 + 1*PersNorms.14 + 1*PersNorms.15 + 1*PersNorms.16 + 1*PersNorms.17 + 1*PersNorms.18
             
             # Create within-person centered variables
-            w1_02 =~ 1*var1.2
-            w1_03 =~ 1*var1.3
-            w1_05 =~ 1*var1.5
-            w1_09 =~ 1*var1.9
-            w1_11 =~ 1*var1.11
-            w1_13 =~ 1*var1.13
-            w1_14 =~ 1*var1.14
-            w1_15 =~ 1*var1.15
+            w1_02 =~ 1*ContactsMask.2
+            w1_05 =~ 1*ContactsMask.5
+            w1_09 =~ 1*ContactsMask.9
+            w1_11 =~ 1*ContactsMask.11
+            w1_13 =~ 1*ContactsMask.13
+            w1_14 =~ 1*ContactsMask.14
+            w1_15 =~ 1*ContactsMask.15
+            w1_16 =~ 1*ContactsMask.16
+            w1_17 =~ 1*ContactsMask.17
+            w1_18 =~ 1*ContactsMask.18
             
-            w2_02 =~ 1*var2.2
-            w2_03 =~ 1*var2.3
-            w2_05 =~ 1*var2.5
-            w2_09 =~ 1*var2.9
-            w2_11 =~ 1*var2.11
-            w2_13 =~ 1*var2.13
-            w2_14 =~ 1*var2.14
-            w2_15 =~ 1*var2.15
+            w2_02 =~ 1*InjNorms.2
+            w2_05 =~ 1*InjNorms.5
+            w2_09 =~ 1*InjNorms.9
+            w2_11 =~ 1*InjNorms.11
+            w2_13 =~ 1*InjNorms.13
+            w2_14 =~ 1*InjNorms.14
+            w2_15 =~ 1*InjNorms.15
+            w2_16 =~ 1*InjNorms.16
+            w2_17 =~ 1*InjNorms.17
+            w2_18 =~ 1*InjNorms.18
             
-            w3_02 =~ 1*var3.2
-            w3_03 =~ 1*var3.3
-            w3_05 =~ 1*var3.5
-            w3_09 =~ 1*var3.9
-            w3_11 =~ 1*var3.11
-            w3_13 =~ 1*var3.13
-            w3_14 =~ 1*var3.14
-            w3_15 =~ 1*var3.15
+            w3_02 =~ 1*DesNorms.2
+            w3_05 =~ 1*DesNorms.5
+            w3_09 =~ 1*DesNorms.9
+            w3_11 =~ 1*DesNorms.11
+            w3_13 =~ 1*DesNorms.13
+            w3_14 =~ 1*DesNorms.14
+            w3_15 =~ 1*DesNorms.15
+            w3_16 =~ 1*DesNorms.16
+            w3_17 =~ 1*DesNorms.17
+            w3_18 =~ 1*DesNorms.18
             
-            # Regression of observed variables on time-invariant predictors
-            var1.2 + var1.3 + var1.5 + var1.9 + var1.11 + var1.13 + var1.14 + var1.15 ~ logCovidCasesPer100k + winningparty
-            var2.2 + var2.3 + var2.5 + var2.9 + var2.11 + var2.13 + var2.14 + var2.15 ~ logCovidCasesPer100k + winningparty
-            var3.2 + var3.3 + var3.5 + var3.9 + var3.11 + var3.13 + var3.14 + var3.15 ~ logCovidCasesPer100k + winningparty
+            w4_02 =~ 1*FactBeliefs.2
+            w4_05 =~ 1*FactBeliefs.5
+            w4_09 =~ 1*FactBeliefs.9
+            w4_11 =~ 1*FactBeliefs.11
+            w4_13 =~ 1*FactBeliefs.13
+            w4_14 =~ 1*FactBeliefs.14
+            w4_15 =~ 1*FactBeliefs.15
+            w4_16 =~ 1*FactBeliefs.16
+            w4_17 =~ 1*FactBeliefs.17
+            w4_18 =~ 1*FactBeliefs.18
             
-            # Estimate the lagged effects between the within-person centered variables
-            w1_03 ~ w1_02 + w2_02 + w3_02
-            w1_05 ~ w1_03 + w2_03 + w3_03
-            w1_09 ~ w1_05 + w2_05 + w3_05
-            w1_11 ~ w1_09 + w2_09 + w3_09
-            w1_13 ~ w1_11 + w2_11 + w3_11
-            w1_14 ~ w1_13 + w2_13 + w3_13
-            w1_15 ~ w1_14 + w2_14 + w3_14
+            w5_02 =~ 1*PersNorms.2
+            w5_05 =~ 1*PersNorms.5
+            w5_09 =~ 1*PersNorms.9
+            w5_11 =~ 1*PersNorms.11
+            w5_13 =~ 1*PersNorms.13
+            w5_14 =~ 1*PersNorms.14
+            w5_15 =~ 1*PersNorms.15
+            w5_16 =~ 1*PersNorms.16
+            w5_17 =~ 1*PersNorms.17
+            w5_18 =~ 1*PersNorms.18
             
-            w2_03 ~ w1_02 + w2_02 + w3_02
-            w2_05 ~ w1_03 + w2_03 + w3_03
-            w2_09 ~ w1_05 + w2_05 + w3_05
-            w2_11 ~ w1_09 + w2_09 + w3_09
-            w2_13 ~ w1_11 + w2_11 + w3_11
-            w2_14 ~ w1_13 + w2_13 + w3_13
-            w2_15 ~ w1_14 + w2_14 + w3_14
+            # Regression of observed variables on time-invariant control 
+            ContactsMask.2 + ContactsMask.5 + ContactsMask.9 + ContactsMask.11 + ContactsMask.13 + ContactsMask.14 + ContactsMask.15 + ContactsMask.16 + ContactsMask.17 + ContactsMask.18 ~ PoliticalOrientation.1
+            InjNorms.2 + InjNorms.5 + InjNorms.9 + InjNorms.11 + InjNorms.13 + InjNorms.14 + InjNorms.15 + InjNorms.16 + InjNorms.17 + InjNorms.18 ~ PoliticalOrientation.1
+            DesNorms.2 + DesNorms.5 + DesNorms.9 + DesNorms.11 + DesNorms.13 + DesNorms.14 + DesNorms.15 + DesNorms.16 + DesNorms.17 + DesNorms.18 ~ PoliticalOrientation.1
+            FactBeliefs.2 + FactBeliefs.5 + FactBeliefs.9 + FactBeliefs.11 + FactBeliefs.13 + FactBeliefs.14 + FactBeliefs.15 + FactBeliefs.16 + FactBeliefs.17 + FactBeliefs.18 ~ PoliticalOrientation.1
+            PersNorms.2 + PersNorms.5 + PersNorms.9 + PersNorms.11 + PersNorms.13 + PersNorms.14 + PersNorms.15 + PersNorms.16 + PersNorms.17 + PersNorms.18 ~ PoliticalOrientation.1
             
-            w3_03 ~ w1_02 + w2_02 + w3_02
-            w3_05 ~ w1_03 + w2_03 + w3_03
-            w3_09 ~ w1_05 + w2_05 + w3_05
-            w3_11 ~ w1_09 + w2_09 + w3_09
-            w3_13 ~ w1_11 + w2_11 + w3_11
-            w3_14 ~ w1_13 + w2_13 + w3_13
-            w3_15 ~ w1_14 + w2_14 + w3_14
+            # Estimate the lagged effects between the within-person centered variables (with time-variant control)
+            w1_05 ~ w1_02 + w2_02 + w3_02 + w4_02 + w5_02
+            w1_09 ~ w1_05 + w2_05 + w3_05 + w4_05 + w5_05
+            w1_11 ~ w1_09 + w2_09 + w3_09 + w4_09 + w5_09
+            w1_13 ~ w1_11 + w2_11 + w3_11 + w4_11 + w5_11
+            w1_14 ~ w1_13 + w2_13 + w3_13 + w4_13 + w5_13
+            w1_15 ~ w1_14 + w2_14 + w3_14 + w4_14 + w5_14
+            w1_16 ~ w1_15 + w2_15 + w3_15 + w4_15 + w5_15
+            w1_17 ~ w1_16 + w2_16 + w3_16 + w4_16 + w5_16
+            w1_18 ~ w1_17 + w2_17 + w3_17 + w4_17 + w5_17
+            
+            w2_05 ~ w1_02 + w2_02 + w3_02 + w4_02 + w5_02
+            w2_09 ~ w1_05 + w2_05 + w3_05 + w4_05 + w5_05
+            w2_11 ~ w1_09 + w2_09 + w3_09 + w4_09 + w5_09
+            w2_13 ~ w1_11 + w2_11 + w3_11 + w4_11 + w5_11
+            w2_14 ~ w1_13 + w2_13 + w3_13 + w4_13 + w5_13
+            w2_15 ~ w1_14 + w2_14 + w3_14 + w4_14 + w5_14
+            w2_16 ~ w1_15 + w2_15 + w3_15 + w4_15 + w5_15
+            w2_17 ~ w1_16 + w2_16 + w3_16 + w4_16 + w5_16
+            w2_18 ~ w1_17 + w2_17 + w3_17 + w4_17 + w5_17
+            
+            w3_05 ~ w1_02 + w2_02 + w3_02 + w4_02 + w5_02
+            w3_09 ~ w1_05 + w2_05 + w3_05 + w4_05 + w5_05
+            w3_11 ~ w1_09 + w2_09 + w3_09 + w4_09 + w5_09
+            w3_13 ~ w1_11 + w2_11 + w3_11 + w4_11 + w5_11
+            w3_14 ~ w1_13 + w2_13 + w3_13 + w4_13 + w5_13
+            w3_15 ~ w1_14 + w2_14 + w3_14 + w4_14 + w5_14
+            w3_16 ~ w1_15 + w2_15 + w3_15 + w4_15 + w5_15
+            w3_17 ~ w1_16 + w2_16 + w3_16 + w4_16 + w5_16
+            w3_18 ~ w1_17 + w2_17 + w3_17 + w4_17 + w5_17
+            
+            w4_05 ~ w1_02 + w2_02 + w3_02 + w4_02 + w5_02
+            w4_09 ~ w1_05 + w2_05 + w3_05 + w4_05 + w5_05
+            w4_11 ~ w1_09 + w2_09 + w3_09 + w4_09 + w5_09
+            w4_13 ~ w1_11 + w2_11 + w3_11 + w4_11 + w5_11
+            w4_14 ~ w1_13 + w2_13 + w3_13 + w4_13 + w5_13
+            w4_15 ~ w1_14 + w2_14 + w3_14 + w4_14 + w5_14
+            w4_16 ~ w1_15 + w2_15 + w3_15 + w4_15 + w5_15
+            w4_17 ~ w1_16 + w2_16 + w3_16 + w4_16 + w5_16
+            w4_18 ~ w1_17 + w2_17 + w3_17 + w4_17 + w5_17
+            
+            w5_05 ~ w1_02 + w2_02 + w3_02 + w4_02 + w5_02
+            w5_09 ~ w1_05 + w2_05 + w3_05 + w4_05 + w5_05
+            w5_11 ~ w1_09 + w2_09 + w3_09 + w4_09 + w5_09
+            w5_13 ~ w1_11 + w2_11 + w3_11 + w4_11 + w5_11
+            w5_14 ~ w1_13 + w2_13 + w3_13 + w4_13 + w5_13
+            w5_15 ~ w1_14 + w2_14 + w3_14 + w4_14 + w5_14
+            w5_16 ~ w1_15 + w2_15 + w3_15 + w4_15 + w5_15
+            w5_17 ~ w1_16 + w2_16 + w3_16 + w4_16 + w5_16
+            w5_18 ~ w1_17 + w2_17 + w3_17 + w4_17 + w5_17
             
             # Estimate the covariance between the within-person centered variables at the first wave
             w1_02 ~~ w2_02
             w1_02 ~~ w3_02
+            w1_02 ~~ w4_02
+            w1_02 ~~ w5_02
             w2_02 ~~ w3_02
+            w2_02 ~~ w4_02
+            w2_02 ~~ w5_02
+            w3_02 ~~ w4_02
+            w3_02 ~~ w5_02
+            w4_02 ~~ w5_02
             
             # Estimate the covariances between the residuals of the within-person centered variables
-            w1_03 ~~ w2_03
             w1_05 ~~ w2_05
             w1_09 ~~ w2_09
             w1_11 ~~ w2_11
             w1_13 ~~ w2_13
             w1_14 ~~ w2_14
             w1_15 ~~ w2_15
+            w1_16 ~~ w2_16
+            w1_17 ~~ w2_17
+            w1_18 ~~ w2_18
             
-            w1_03 ~~ w3_03
             w1_05 ~~ w3_05
             w1_09 ~~ w3_09
             w1_11 ~~ w3_11
             w1_13 ~~ w3_13
             w1_14 ~~ w3_14
             w1_15 ~~ w3_15
+            w1_16 ~~ w3_16
+            w1_17 ~~ w3_17
+            w1_18 ~~ w3_18
             
-            w2_03 ~~ w3_03
+            w1_05 ~~ w4_05
+            w1_09 ~~ w4_09
+            w1_11 ~~ w4_11
+            w1_13 ~~ w4_13
+            w1_14 ~~ w4_14
+            w1_15 ~~ w4_15
+            w1_16 ~~ w4_16
+            w1_17 ~~ w4_17
+            w1_18 ~~ w4_18
+            
+            w1_05 ~~ w5_05
+            w1_09 ~~ w5_09
+            w1_11 ~~ w5_11
+            w1_13 ~~ w5_13
+            w1_14 ~~ w5_14
+            w1_15 ~~ w5_15
+            w1_16 ~~ w5_16
+            w1_17 ~~ w5_17
+            w1_18 ~~ w5_18
+            
             w2_05 ~~ w3_05
             w2_09 ~~ w3_09
             w2_11 ~~ w3_11
             w2_13 ~~ w3_13
             w2_14 ~~ w3_14
             w2_15 ~~ w3_15
+            w2_16 ~~ w3_16
+            w2_17 ~~ w3_17
+            w2_18 ~~ w3_18
+            
+            w2_05 ~~ w4_05
+            w2_09 ~~ w4_09
+            w2_11 ~~ w4_11
+            w2_13 ~~ w4_13
+            w2_14 ~~ w4_14
+            w2_15 ~~ w4_15
+            w2_16 ~~ w4_16
+            w2_17 ~~ w4_17
+            w2_18 ~~ w4_18
+            
+            w2_05 ~~ w5_05
+            w2_09 ~~ w5_09
+            w2_11 ~~ w5_11
+            w2_13 ~~ w5_13
+            w2_14 ~~ w5_14
+            w2_15 ~~ w5_15
+            w2_16 ~~ w5_16
+            w2_17 ~~ w5_17
+            w2_18 ~~ w5_18
+            
+            w3_05 ~~ w4_05
+            w3_09 ~~ w4_09
+            w3_11 ~~ w4_11
+            w3_13 ~~ w4_13
+            w3_14 ~~ w4_14
+            w3_15 ~~ w4_15
+            w3_16 ~~ w4_16
+            w3_17 ~~ w4_17
+            w3_18 ~~ w4_18
+            
+            w3_05 ~~ w5_05
+            w3_09 ~~ w5_09
+            w3_11 ~~ w5_11
+            w3_13 ~~ w5_13
+            w3_14 ~~ w5_14
+            w3_15 ~~ w5_15
+            w3_16 ~~ w5_16
+            w3_17 ~~ w5_17
+            w3_18 ~~ w5_18
+            
+            w4_05 ~~ w5_05
+            w4_09 ~~ w5_09
+            w4_11 ~~ w5_11
+            w4_13 ~~ w5_13
+            w4_14 ~~ w5_14
+            w4_15 ~~ w5_15
+            w4_16 ~~ w5_16
+            w4_17 ~~ w5_17
+            w4_18 ~~ w5_18
             
             # Estimate the variance and covariance of the random intercepts
             ri1 ~~ ri1
             ri2 ~~ ri2
             ri3 ~~ ri3
+            ri4 ~~ ri4
+            ri5 ~~ ri5
+            
             ri1 ~~ ri2
             ri1 ~~ ri3
+            ri1 ~~ ri4
+            ri1 ~~ ri5
             ri2 ~~ ri3
+            ri2 ~~ ri4
+            ri2 ~~ ri5
+            ri3 ~~ ri4
+            ri3 ~~ ri5
+            ri4 ~~ ri5
             
             # Estimate the (residual) variance of the within-person centered variables
             w1_02 ~~ w1_02
-            w1_03 ~~ w1_03
             w1_05 ~~ w1_05
             w1_09 ~~ w1_09
             w1_11 ~~ w1_11
             w1_13 ~~ w1_13
             w1_14 ~~ w1_14
             w1_15 ~~ w1_15
+            w1_16 ~~ w1_16
+            w1_17 ~~ w1_17
+            w1_18 ~~ w1_18
             
             w2_02 ~~ w2_02
-            w2_03 ~~ w2_03
             w2_05 ~~ w2_05
             w2_09 ~~ w2_09
             w2_11 ~~ w2_11
             w2_13 ~~ w2_13
             w2_14 ~~ w2_14
             w2_15 ~~ w2_15
+            w2_16 ~~ w2_16
+            w2_17 ~~ w2_17
+            w2_18 ~~ w2_18
             
             w3_02 ~~ w3_02
-            w3_03 ~~ w3_03
             w3_05 ~~ w3_05
             w3_09 ~~ w3_09
             w3_11 ~~ w3_11
             w3_13 ~~ w3_13
             w3_14 ~~ w3_14
             w3_15 ~~ w3_15
+            w3_16 ~~ w3_16
+            w3_17 ~~ w3_17
+            w3_18 ~~ w3_18
+            
+            w4_02 ~~ w4_02
+            w4_05 ~~ w4_05
+            w4_09 ~~ w4_09
+            w4_11 ~~ w4_11
+            w4_13 ~~ w4_13
+            w4_14 ~~ w4_14
+            w4_15 ~~ w4_15
+            w4_16 ~~ w4_16
+            w4_17 ~~ w4_17
+            w4_18 ~~ w4_18
+            
+            w5_02 ~~ w5_02
+            w5_05 ~~ w5_05
+            w5_09 ~~ w5_09
+            w5_11 ~~ w5_11
+            w5_13 ~~ w5_13
+            w5_14 ~~ w5_14
+            w5_15 ~~ w5_15
+            w5_16 ~~ w5_16
+            w5_17 ~~ w5_17
+            w5_18 ~~ w5_18
   
             # Estimate the means
-            var1.2 + var1.3 + var1.5 + var1.9 + var1.11 + var1.13 + var1.14 + var1.15 ~ 1
-            var2.2 + var2.3 + var2.5 + var2.9 + var2.11 + var2.13 + var2.14 + var2.15 ~ 1
-            var3.2 + var3.3 + var3.5 + var3.9 + var3.11 + var3.13 + var3.14 + var3.15 ~ 1'
-  # dynamically introduce variable names
-  model <- str_replace_all(model, fixed("var1"), var1)
-  model <- str_replace_all(model, fixed("var2"), var2)
-  model <- str_replace_all(model, fixed("var3"), var3)
+            ContactsMask.2 + ContactsMask.5 + ContactsMask.9 + ContactsMask.11 + ContactsMask.13 + ContactsMask.14 + ContactsMask.15 + ContactsMask.16 + ContactsMask.17 + ContactsMask.18 ~ 1
+            InjNorms.2 + InjNorms.5 + InjNorms.9 + InjNorms.11 + InjNorms.13 + InjNorms.14 + InjNorms.15 + InjNorms.16 + InjNorms.17 + InjNorms.18 ~ 1
+            DesNorms.2 + DesNorms.5 + DesNorms.9 + DesNorms.11 + DesNorms.13 + DesNorms.14 + DesNorms.15 + DesNorms.16 + DesNorms.17 + DesNorms.18 ~ 1
+            FactBeliefs.2 + FactBeliefs.5 + FactBeliefs.9 + FactBeliefs.11 + FactBeliefs.13 + FactBeliefs.14 + FactBeliefs.15 + FactBeliefs.16 + FactBeliefs.17 + FactBeliefs.18 ~ 1
+            PersNorms.2 + PersNorms.5 + PersNorms.9 + PersNorms.11 + PersNorms.13 + PersNorms.14 + PersNorms.15 + PersNorms.16 + PersNorms.17 + PersNorms.18 ~ 1'
   # fit model
-  out <- lavaan(model, data = d, missing = "fiml",
-                meanstructure = T, int.ov.free = T)
+  out <- lavaan(model, data = d, missing = "fiml", 
+                meanstructure = TRUE, int.ov.free = TRUE)
   return(out)
 }
 
@@ -312,12 +481,15 @@ plotAttrition <- function(d) {
              "2020-12-28", "2021-01-27", "2021-02-26",
              "2021-03-28", "2021-04-27", "2021-05-27",
              "2021-06-26", "2021-07-26", "2021-08-26",
-             "2021-10-25", "2021-12-16", "2022-02-25")
+             "2021-10-25", "2021-12-16", "2022-02-25",
+             "2022-04-26", "2022-06-25", "2022-08-29")
   # plot
   out <- 
     d %>%
     # pivot into long format
-    rename(StartDate.5 = StartDate_A, StartDate.7 = StartDate) %>%
+    rename(StartDate.5 = StartDate_A, 
+           StartDate.7 = StartDate...1230,
+           StartDate.16 = StartDate...2919) %>%
     pivot_longer((starts_with("StartDate"))) %>%
     separate(name, c("var", "time")) %>%
     # keep only relevant vars
@@ -331,12 +503,12 @@ plotAttrition <- function(d) {
     ggplot(aes(x = time, y = count)) +
     geom_point() +
     geom_line() +
-    scale_x_date(name = NULL, date_labels = "%b\n%Y", date_breaks = "2 month", limits = c(ymd("2020-09-20"), ymd("2022-03-05"))) +
+    scale_x_date(name = NULL, date_labels = "%b\n%Y", date_breaks = "2 month", limits = c(ymd("2020-09-20"), ymd("2022-09-05"))) +
     scale_y_continuous(name = "Number of participants in study", limits = c(0, 1000)) +
     theme_classic()
   # save
-  ggsave(out, filename = "figures/attrition.pdf", width = 5, height = 3)
-  ggsave(out, filename = "figures/attrition.png", width = 5, height = 3)
+  ggsave(out, filename = "figures/attrition.pdf", width = 5.5, height = 3)
+  ggsave(out, filename = "figures/attrition.png", width = 5.5, height = 3)
   return(out)
 }
 
@@ -347,7 +519,8 @@ plotTimeline <- function(d, owid) {
              "2020-12-28", "2021-01-27", "2021-02-26",
              "2021-03-28", "2021-04-27", "2021-05-27",
              "2021-06-26", "2021-07-26", "2021-08-26",
-             "2021-10-25", "2021-12-16", "2022-02-25")
+             "2021-10-25", "2021-12-16", "2022-02-25",
+             "2022-04-26", "2022-06-25", "2022-08-29")
   # first plot
   pA <- 
     d %>%
@@ -372,19 +545,26 @@ plotTimeline <- function(d, owid) {
     geom_vline(xintercept = ymd("2021-03-08"), linetype = "dashed", colour = "grey") +
     geom_vline(xintercept = ymd("2021-07-27"), linetype = "dashed", colour = "grey") +
     geom_vline(xintercept = ymd("2021-11-29"), linetype = "dashed", colour = "grey") +
-    annotate("text", x = ymd("2020-11-14"), y = 2.8, colour = "grey", size = 2.8, angle = 90, lineheight = 0.85,
+    geom_vline(xintercept = ymd("2022-03-03"), linetype = "dashed", colour = "grey") +
+    geom_vline(xintercept = ymd("2022-03-03"), linetype = "dashed", colour = "grey") +
+    geom_vline(xintercept = ymd("2022-05-12"), linetype = "dashed", colour = "grey") +
+    annotate("text", x = ymd("2020-11-08"), y = 2.8, colour = "grey", size = 2.8, angle = 90, lineheight = 0.85,
              label = "FDA authorizes\nfirst COVID-19\nvaccine") +
-    annotate("text", x = ymd("2021-02-09"), y = 2.5, colour = "grey", size = 2.8, angle = 90, lineheight = 0.85,
+    annotate("text", x = ymd("2021-02-03"), y = 2.5, colour = "grey", size = 2.8, angle = 90, lineheight = 0.85,
              label = "CDC: fully vaccinated\npeople can gather\nindoors without masks") +
-    annotate("text", x = ymd("2021-06-13"), y = 2.0, colour = "grey", size = 2.8, angle = 90, lineheight = 0.85,
+    annotate("text", x = ymd("2021-06-07"), y = 2.0, colour = "grey", size = 2.8, angle = 90, lineheight = 0.85,
              label = "CDC: updated\nguidelines for\nindoor mask\nuse in high\nrisk areas") +
-    annotate("text", x = ymd("2021-11-01"), y = 2.2, colour = "grey", size = 2.8, angle = 90, lineheight = 0.85,
+    annotate("text", x = ymd("2021-10-26"), y = 2.2, colour = "grey", size = 2.8, angle = 90, lineheight = 0.85,
              label = "CDC: recommend\nbooster shots\nfor adults") +
+    annotate("text", x = ymd("2022-01-22"), y = 2.2, colour = "grey", size = 2.8, angle = 90, lineheight = 0.85,
+             label = "CDC: update\ncommunity\nlevels and ease\nrestrictions") +
+    annotate("text", x = ymd("2022-04-10"), y = 1.8, colour = "grey", size = 2.8, angle = 90, lineheight = 0.85,
+             label = "US hits\n1,000,000\ndeaths") +
     # add main geoms
     geom_line(colour = "#D55E00") +
     geom_pointrange(size = 0.5, fatten = 1.5, colour = "#D55E00") +
     # axes and themes
-    scale_x_date(name = NULL, date_labels = "%b\n%Y", date_breaks = "2 month", limits = c(ymd("2020-09-20"), ymd("2022-03-05"))) +
+    scale_x_date(name = NULL, date_labels = "%b\n%Y", date_breaks = "2 month", limits = c(ymd("2020-09-20"), ymd("2022-09-05"))) +
     scale_y_continuous(name = "Self-reported\nmask wearing\nbehavior", limits = c(1, 5), breaks = 1:5) +
     theme_classic() +
     theme(legend.position = "none")
@@ -413,17 +593,20 @@ plotTimeline <- function(d, owid) {
     geom_vline(xintercept = ymd("2021-03-08"), linetype = "dashed", colour = "grey") +
     geom_vline(xintercept = ymd("2021-07-27"), linetype = "dashed", colour = "grey") +
     geom_vline(xintercept = ymd("2021-11-29"), linetype = "dashed", colour = "grey") +
+    geom_vline(xintercept = ymd("2022-03-03"), linetype = "dashed", colour = "grey") +
+    geom_vline(xintercept = ymd("2022-03-03"), linetype = "dashed", colour = "grey") +
+    geom_vline(xintercept = ymd("2022-05-12"), linetype = "dashed", colour = "grey") +
     # add main geoms
     geom_line() +
     geom_pointrange(size = 0.5, fatten = 1.5) +
     # axes and themes
-    scale_x_date(name = NULL, date_labels = "%b\n%Y", date_breaks = "2 month", limits = c(ymd("2020-09-20"), ymd("2022-03-05"))) +
+    scale_x_date(name = NULL, date_labels = "%b\n%Y", date_breaks = "2 month", limits = c(ymd("2020-09-20"), ymd("2022-09-05"))) +
     scale_y_continuous(name = "Perceived\nstrength of\nsocial norm", limits = c(1, 7), breaks = 1:7) +
     guides(colour = guide_legend(byrow = TRUE)) +
     scale_colour_manual(values = c("#009E73", "#0072B2")) +
     theme_classic() +
     theme(legend.title = element_blank(),
-          legend.position = c(0.25, 0.3),
+          legend.position = c(0.2, 0.3),
           legend.margin = margin(-2, 1, 2, 0),
           legend.box.background = element_rect(colour = "black", size = 1))
   # third plot
@@ -435,17 +618,20 @@ plotTimeline <- function(d, owid) {
     geom_vline(xintercept = ymd("2021-03-08"), linetype = "dashed", colour = "grey") +
     geom_vline(xintercept = ymd("2021-07-27"), linetype = "dashed", colour = "grey") +
     geom_vline(xintercept = ymd("2021-11-29"), linetype = "dashed", colour = "grey") +
+    geom_vline(xintercept = ymd("2022-03-03"), linetype = "dashed", colour = "grey") +
+    geom_vline(xintercept = ymd("2022-03-03"), linetype = "dashed", colour = "grey") +
+    geom_vline(xintercept = ymd("2022-05-12"), linetype = "dashed", colour = "grey") +
     # add geom
     geom_line() +
     # axes and theme
-    scale_x_date(name = NULL, date_labels = "%b\n%Y", date_breaks = "2 month", limits = c(ymd("2020-09-20"), ymd("2022-03-05"))) +
+    scale_x_date(name = NULL, date_labels = "%b\n%Y", date_breaks = "2 month", limits = c(ymd("2020-09-20"), ymd("2022-09-05"))) +
     scale_y_log10(name = "New\nCOVID-19 cases\nin United States", limits = c(1e+04, 1e+06), labels = trans_format("log10", math_format(10^.x))) +
     theme_classic()
   # put together
   out <- plot_grid(pA, pB, pC, nrow = 3, align = "v", labels = c("a","b","c"))
   # save
-  ggsave(out, filename = "figures/timeline.pdf", width = 5, height = 6)
-  ggsave(out, filename = "figures/timeline.png", width = 5, height = 6)
+  ggsave(out, filename = "figures/timeline.pdf", width = 6, height = 6)
+  ggsave(out, filename = "figures/timeline.png", width = 6, height = 6)
   return(out)
 }
 
@@ -453,15 +639,18 @@ plotTimeline <- function(d, owid) {
 plotDAG <- function() {
   # coordinates for plot
   dag_coords <- tibble(
-    name = c("Mask", "DesNorm", "InjNorm", "NormSens", "CovidPrev", "CountyPol"),
-    x    = c(0, -1, 1, 0, -0.25, 0.25),
-    y    = c(1, 0, 0, -1, 0.25, -0.25)
+    name = c("Mask", "DesNorm", "InjNorm", "Fact", "PersNorm", "NormSens", "PolOri"),
+    x    = c(0, -1, 1, -0.75, 0.75, 0, 0),
+    y    = c(1, 0, 0, 0.75, 0.75, -1, 0)
   )
   # plot
   out <-
-    dagify(Mask ~ DesNorm + InjNorm + CovidPrev + CountyPol,
-           DesNorm ~ NormSens + CovidPrev + CountyPol,
-           InjNorm ~ NormSens + CovidPrev + CountyPol,
+    dagify(Mask ~ DesNorm + InjNorm + Fact + PersNorm + PolOri,
+           DesNorm ~ NormSens + PolOri,
+           InjNorm ~ NormSens + PolOri,
+           Fact ~ DesNorm + InjNorm + PolOri,
+           PersNorm ~ DesNorm + InjNorm + PolOri,
+           NormSens ~ PolOri,
            latent = c("NormSens"),
            coords = dag_coords
     ) %>%
@@ -476,12 +665,13 @@ plotDAG <- function() {
     ) +
     geom_dag_text(colour = "black") +
     geom_dag_edges(start_cap = circle(11.5, 'mm'), 
-                   end_cap = circle(11.5, 'mm')) +
+                   end_cap = circle(11.5, 'mm'),
+                   arrow_directed = grid::arrow(length = grid::unit(8, "pt"), type = "closed")) +
     ylim(c(-1.3, 1.3)) +
     theme_void()
   # save
-  ggsave(out, filename = "figures/dag.pdf", height = 4.5, width = 5.6)
-  ggsave(out, filename = "figures/dag.png", height = 4.5, width = 5.6)
+  ggsave(out, filename = "figures/dag.pdf", height = 8, width = 8)
+  ggsave(out, filename = "figures/dag.png", height = 8, width = 8)
   return(out)
 }
 
@@ -519,8 +709,9 @@ plotCDCSens <- function(m2.1, m2.2, m2.3) {
   # first plot
   pA <-
     plot(ggpredict(m2.1, terms = "timeCont [0:1 by=0.01]")) +
-    geom_vline(xintercept = 0.314, linetype = "dashed", colour = "grey") +
-    geom_vline(xintercept = 0.587, linetype = "dashed", colour = "grey") +
+    geom_vline(xintercept = 0.231, linetype = "dashed", colour = "grey") +
+    geom_vline(xintercept = 0.432, linetype = "dashed", colour = "grey") +
+    geom_vline(xintercept = 0.687, linetype = "dashed", colour = "grey") +
     scale_x_continuous(name = "", limits = c(0, 1), breaks = seq(0, 1, by = 0.25)) +
     scale_y_continuous(name = "Self-reported\nmask wearing\nbehavior", limits = c(1, 5), breaks = 1:5) +
     ggtitle(NULL) +
@@ -528,8 +719,9 @@ plotCDCSens <- function(m2.1, m2.2, m2.3) {
   # second plot
   pB <-
     plot(ggpredict(m2.2, terms = "timeCont [0:1 by=0.01]")) +
-    geom_vline(xintercept = 0.314, linetype = "dashed", colour = "grey") +
-    geom_vline(xintercept = 0.587, linetype = "dashed", colour = "grey") +
+    geom_vline(xintercept = 0.231, linetype = "dashed", colour = "grey") +
+    geom_vline(xintercept = 0.432, linetype = "dashed", colour = "grey") +
+    geom_vline(xintercept = 0.687, linetype = "dashed", colour = "grey") +
     scale_x_continuous(name = "", limits = c(0, 1), breaks = seq(0, 1, by = 0.25)) +
     scale_y_continuous(name = "Perceived\nstrength of\ndescriptive norms", limits = c(1, 7), breaks = 1:7) +
     ggtitle(NULL) +
@@ -537,8 +729,9 @@ plotCDCSens <- function(m2.1, m2.2, m2.3) {
   # second plot
   pC <-
     plot(ggpredict(m2.3, terms = "timeCont [0:1 by=0.01]")) +
-    geom_vline(xintercept = 0.314, linetype = "dashed", colour = "grey") +
-    geom_vline(xintercept = 0.587, linetype = "dashed", colour = "grey") +
+    geom_vline(xintercept = 0.231, linetype = "dashed", colour = "grey") +
+    geom_vline(xintercept = 0.432, linetype = "dashed", colour = "grey") +
+    geom_vline(xintercept = 0.687, linetype = "dashed", colour = "grey") +
     scale_x_continuous(name = "Time", limits = c(0, 1), breaks = seq(0, 1, by = 0.25)) +
     scale_y_continuous(name = "Perceived\nstrength of\ninjunctive norms", limits = c(1, 7), breaks = 1:7) +
     ggtitle(NULL) +
@@ -558,24 +751,6 @@ plotCDCSens <- function(m2.1, m2.2, m2.3) {
   return(out)
 }
 
-# plot model results - difference between descriptive and injunctive norms
-plotNormCompare <- function(m3.1) {
-  # plot
-  out <-
-    ggpredict(m3.1, terms = "var") %>%
-    as_tibble() %>%
-    mutate(`Norm type` = ifelse(x == "DesNorms", "Descriptive\nnorms", "Injunctive\nnorms")) %>%
-    ggplot(aes(x = `Norm type`, y = predicted, ymin = conf.low, ymax = conf.high)) +
-    geom_errorbar(width = 0.2) +
-    geom_point() +
-    scale_y_continuous(name = "Perceived strength\nof social norm", limits = c(1, 7), breaks = 1:7) +
-    theme_classic()
-  # save
-  ggsave(out, filename = "figures/normCompare.pdf", width = 3.5, height = 3.5)
-  ggsave(out, filename = "figures/normCompare.png", width = 3.5, height = 3.5)
-  return(out)
-}
-
 # plot model results - riclpm autoregressive and cross-lagged effects
 plotRICLPM <- function(model) {
   # variables
@@ -585,53 +760,46 @@ plotRICLPM <- function(model) {
   col1 <- "#D55E00"
   col2 <- "#009E73"
   col3 <- "#0072B2"
-  # dates vector
-  dates <- ymd(c("2020-10-27", "2020-11-28", "2021-01-27", "2021-05-27",
-                 "2021-07-26", "2021-10-25", "2021-12-16", "2022-02-25"))
+  # vector of dates for plot
+  dates <- c("2020-09-27", "2020-10-27", "2020-11-28",
+             "2020-12-28", "2021-01-27", "2021-02-26",
+             "2021-03-28", "2021-04-27", "2021-05-27",
+             "2021-06-26", "2021-07-26", "2021-08-26",
+             "2021-10-25", "2021-12-16", "2022-02-25",
+             "2022-04-26", "2022-06-25", "2022-08-29")
   # main measurement occasions
   m <- 
     tibble(
-      date = rep(dates, times = 3),
-      var = factor(rep(c(var1, var2, var3), each = 8), levels = c(var1, var3, var2)),
-      col = factor(rep(c(col1, col2, col3), each = 8), levels = c(col1, col3, col2))
+      date = as.Date(rep(dates[c(2,5,9,11,13:18)], times = 3)),
+      var = factor(rep(c(var1, var2, var3), each = 10), levels = c(var1, var3, var2)),
+      col = factor(rep(c(col1, col2, col3), each = 10), levels = c(col1, col3, col2))
     )
   # standardised coefficients and significance
   sc <- 
     standardizedSolution(model) %>%
     as_tibble() %>%
     left_join(as_tibble(parameterEstimates(model)), by = c("lhs", "op", "rhs")) %>%
-    filter(op == "~" & !(rhs %in% c("logCovidCasesPer100k","winningparty"))) %>%
-    dplyr::select(lhs, rhs, est.std, pvalue.y)
-  # loop over coefficients and get arrow data
-  draw <- tibble()
-  for (i in 1:63) {
-    # get index for wave number
-    j <- ceiling(i / 3)
-    while (j > 7) j <- j - 7
-    # tibble for drawing
-    draw <-
-      bind_rows(
-        draw,
-        tibble(
-          x = dates[!!j], 
-          y = ifelse(!!i %% 3 == 1, var1,
-                     ifelse(!!i %% 3 == 2, var2, var3)), 
-          xend = dates[!!j + 1], 
-          yend = ifelse(!!i %in% 1:21, var1,
-                        ifelse(!!i %in% 22:42, var2, var3)),
-          size = abs(sc$est.std[i]),
-          colour = ifelse(sc$pvalue.y[i] < 0.05, "black", "lightgrey")
-        )
-      )
-  }
+    filter(substr(lhs, 1, 3) %in% c("w1_", "w2_", "w3_") &
+             substr(rhs, 1, 3) %in% c("w1_", "w2_", "w3_") &
+             op == "~") %>%
+    dplyr::select(lhs, rhs, est.std, pvalue.y) %>%
+    # loop over coefficients and get arrow data
+    mutate(
+      x      = as.Date(dates[as.numeric(substr(rhs, 4, 5))]),
+      xend   = as.Date(dates[as.numeric(substr(lhs, 4, 5))]),
+      y      = c(var1, var2, var3)[as.numeric(substr(rhs, 2, 2))],
+      yend   = c(var1, var2, var3)[as.numeric(substr(lhs, 2, 2))],
+      size   = abs(est.std),
+      colour = ifelse(pvalue.y < 0.05, "black", "lightgrey")
+    )
   # plot
   p <-
     # draw plot
     ggplot(m, aes(x = date, y = fct_rev(var))) + 
     geom_blank() +
     # add arrows
-    geom_segment(data = draw, aes(x = x, y = y, xend = xend, yend = yend,
-                                  size = size, colour = colour),
+    geom_segment(data = sc, aes(x = x, y = y, xend = xend, yend = yend,
+                                size = size, colour = colour),
                  arrow = arrow(length = unit(0.4, "cm"), type = "closed", angle = 15), 
                  show.legend = TRUE) +
     # add measurement occasions
@@ -639,7 +807,7 @@ plotRICLPM <- function(model) {
     # set colours, sizes, guides, and theme
     scale_colour_identity() +
     scale_size_continuous(range = c(0, 1), breaks = c(0.05, 0.25, 0.45)) +
-    scale_x_date(date_labels = "%b\n%Y", date_breaks = "2 month", limits = c(ymd("2020-09-20"), ymd("2022-03-05"))) +
+    scale_x_date(date_labels = "%b\n%Y", date_breaks = "2 month", limits = c(ymd("2020-09-20"), ymd("2022-09-05"))) +
     guides(size = guide_legend(title = "Std. effect size")) +
     theme_classic() +
     theme(axis.line.y = element_blank(),
@@ -647,8 +815,8 @@ plotRICLPM <- function(model) {
           axis.title = element_blank(),
           legend.key.width = unit(2, "cm"))
   # save
-  ggsave(p, file = "figures/riclpm.pdf", width = 7, height = 3)
-  ggsave(p, file = "figures/riclpm.png", width = 7, height = 3)
+  ggsave(p, file = "figures/riclpm.pdf", width = 7.5, height = 3.5)
+  ggsave(p, file = "figures/riclpm.png", width = 7.5, height = 3.5)
   return(p)
 }
 
@@ -693,7 +861,8 @@ makeChangePointsTable <- function(m2.1, m2.2, m2.3) {
       Intercept = s@fixef[,1],
       Slope1    = s@fixef[,2],
       Slope2    = s@fixef[,2] + s@fixef[,3],
-      Slope3    = s@fixef[,2] + s@fixef[,3] + s@fixef[,4]
+      Slope3    = s@fixef[,2] + s@fixef[,3] + s@fixef[,4],
+      Slope4    = s@fixef[,2] + s@fixef[,3] + s@fixef[,4] + s@fixef[,5]
     ) %>%
       pivot_longer(cols = everything(), names_to = "par") %>%
       group_by(par) %>%
@@ -729,14 +898,18 @@ makeChangePointsTable <- function(m2.1, m2.2, m2.3) {
 makeLavaanTable <- function(riclpm) {
   standardizedSolution(riclpm) %>%
     as_tibble() %>%
-    filter(op == "~" & !(rhs %in% c("logCovidCasesPer100k", "winningparty"))) %>%
+    filter(op == "~" & rhs != "PoliticalOrientation.1") %>%
     mutate_if(is.numeric, function(x) format(round(x, 2), nsmall = 2)) %>%
     mutate(lhs = str_replace(lhs, fixed("w1"), "Mask"),
-           lhs = str_replace(lhs, fixed("w2"), "Inj"),
-           lhs = str_replace(lhs, fixed("w3"), "Des"),
+           lhs = str_replace(lhs, fixed("w2"), "Inj" ),
+           lhs = str_replace(lhs, fixed("w3"), "Des" ),
+           lhs = str_replace(lhs, fixed("w4"), "Fact"),
+           lhs = str_replace(lhs, fixed("w5"), "Pers"),
            rhs = str_replace(rhs, fixed("w1"), "Mask"),
-           rhs = str_replace(rhs, fixed("w2"), "Inj"),
-           rhs = str_replace(rhs, fixed("w3"), "Des")) %>%
+           rhs = str_replace(rhs, fixed("w2"), "Inj" ),
+           rhs = str_replace(rhs, fixed("w3"), "Des" ),
+           rhs = str_replace(rhs, fixed("w4"), "Fact"),
+           rhs = str_replace(rhs, fixed("w5"), "Pers")) %>%
     arrange(rhs) %>%
     transmute(
       Parameter = paste0(rhs, " (ref:rightArrow) ", lhs),

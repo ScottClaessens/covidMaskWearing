@@ -32,7 +32,7 @@ plot1
 
 (ref:plotAttritionCaption) _Attrition across the course of the study._
 
-```{r plotAttrition, echo=F, fig.width=5, fig.height=3, fig.cap="(ref:plotAttritionCaption)"}
+```{r plotAttrition, echo=F, fig.width=5.5, fig.height=3, fig.cap="(ref:plotAttritionCaption)"}
 plot2
 ```
 
@@ -58,14 +58,6 @@ plot5
 
 ```{r plotCDCSens, echo=F, fig.width=4, fig.height=6, fig.cap="(ref:plotCDCSensCaption)"}
 plot6
-```
-
-\newpage
-
-(ref:plotNormCompareCaption) _Predictions from multilevel model of the difference between the perceived strength of descriptive and injunctive social norms._ Points and error bars represent estimated marginal means and 95% confidence intervals, respectively.
-
-```{r plotNormCompare, echo=F, fig.width=3.5, fig.height=3.5, fig.cap="(ref:plotNormCompareCaption)"}
-plot7
 ```
 
 \newpage
@@ -109,18 +101,6 @@ apa_table(
   align = c("l", "c", "c", "c"),
   caption = "(ref:changePointsTableCaption)"
 )
-```
-
-\newpage
-
-(ref:modelSummaryTable2Caption) Unstandardized fixed effect parameters from multilevel model: difference between perceived strength of descriptive and injunctive social norms. _Standard errors are included in brackets._
-
-```{r modelSummaryTable2, echo=F, warning=F, message=F, results="asis"}
-export_summs(m3.1, stars = NULL,
-             coefs = c("Intercept" = "(Intercept)",
-                       "Difference between norm types" = "varInjNorms")) %>% 
-  set_caption("(ref:modelSummaryTable2Caption)") %>%
-  set_label("tab:modelSummaryTable2")
 ```
 
 \newpage
