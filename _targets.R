@@ -5,9 +5,9 @@ source("R/functions.R")
 options(tidyverse.quiet = TRUE)
 tar_option_set(packages = c("arm", "broom.mixed", "cowplot", "dagitty", "ggdag", 
                             "ggeffects", "ggraph", "huxtable", "jtools", "knitr",
-                            "kableExtra", "lavaan", "lme4", "lubridate", "MuMIn",
-                            "papaja", "rnaturalearth", "rnaturalearthdata", "scales", 
-                            "semTools", "sf", "zipcodeR"))
+                            "kableExtra", "lavaan", "lme4", "lmerTest", "lubridate", 
+                            "MuMIn", "papaja", "rnaturalearth", "rnaturalearthdata", 
+                            "scales", "semTools", "sf", "zipcodeR"))
 # workflow
 list(
   # files

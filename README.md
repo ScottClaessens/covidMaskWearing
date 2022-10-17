@@ -11,10 +11,10 @@ To run this code, you will need to [install R](https://www.r-project.org/) and t
 ```
 install.packages(c("arm", "broom.mixed", "cowplot", "dagitty", "ggdag", 
                    "ggeffects", "ggraph", "huxtable", "jtools", "knitr",
-                   "kableExtra", "lavaan", "lme4", "lubridate", "MuMIn",
-                   "papaja", "rnaturalearth", "rnaturalearthdata", "scales", 
-                   "semTools", "sf", "targets", "tarchetypes", "tidyverse",
-                   "zipcodeR"))
+                   "kableExtra", "lavaan", "lme4", "lmerTest", "lubridate",
+                   "MuMIn", "papaja", "rnaturalearth", "rnaturalearthdata",
+                   "scales", "semTools", "sf", "targets", "tarchetypes",
+                   "tidyverse", "zipcodeR"))
 ```
 
 ### Executing code

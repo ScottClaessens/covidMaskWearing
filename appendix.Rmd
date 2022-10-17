@@ -14,7 +14,7 @@ output:
 
 ### Construct validity for measures of perceived descriptive and injunctive norms
 
-To evaluate the construct validity of our measures of perceived descriptive and injunctive norms, at Time 7 we asked participants to rate the extent to which each perceived norm item provided descriptive and injunctive information. For each item, participants were asked whether the item provided information about what people are doing, and whether the item provided information about what people should be doing. Participants responded on a 7-point Likert scale, from (1) Not At All to (7) Very Strongly. For a full list of questions, see Supplementary Table \@ref(tab:itemTable).
+To evaluate the construct validity of our measures of perceived descriptive and injunctive norms, at Time 7 we asked participants to rate the extent to which each perceived norm item provided descriptive and injunctive information. For each item, participants were asked whether the item provided information about what people _are_ doing, and whether the item provided information about what people _should_ be doing. Participants responded on a 7-point Likert scale, from (1) Not At All to (7) Very Strongly. For a full list of questions, see Supplementary Table \@ref(tab:itemTable).
 
 Results showed that participants did differentiate the perceived norm items as expected. Participants rated the perceived descriptive norm items as providing more descriptive information than the perceived injunctive norm items, _t_(`r printnum(constructValDes$parameter, digits = 0)`) = `r printnum(constructValDes$statistic)`, _p_ `r printp(constructValDes$p.value)` (mean descriptive items = `r printnum(mean((d$DescriptiveLearning3.7 + d$DescriptiveLearning4.7) / 2, na.rm = T))`; mean injunctive items = `r printnum(mean((d$DescriptiveLearning1.7 + d$DescriptiveLearning2.7) / 2, na.rm = T))`). By contrast, participants rated the perceived injunctive norm items as providing more injunctive information than the perceived descriptive norm items, _t_(`r printnum(constructValInj$parameter, digits = 0)`) = `r printnum(constructValInj$statistic)`, _p_ `r printp(constructValInj$p.value)` (mean descriptive items = `r printnum(mean((d$InjunctiveLearning3.7 + d$InjunctiveLearning4.7) / 2, na.rm = T))`; mean injunctive items = `r printnum(mean((d$InjunctiveLearning1.7 + d$InjunctiveLearning2.7) / 2, na.rm = T))`).
 
@@ -22,18 +22,18 @@ Results showed that participants did differentiate the perceived norm items as e
 
 ## Supplementary Figures
 
-(ref:plotUSMapCaption) _Map of the United States with participant zip code locations._
+(ref:plotCorBehNormCaption) _Predictions from multilevel models with self-reported mask wearing behavior as the outcome variable and (a) perceived strength of descriptive norms and (b) perceived strength of injunctive norms as independent predictor variables._ Models contain random intercepts for participants and time points. Lines are fixed effect regression lines from multilevel models, shaded areas are 95% confidence intervals.
 
-```{r plotUSMap, echo=F, fig.width=5, fig.height=3, fig.cap="(ref:plotUSMapCaption)"}
-plot1
+```{r plotCorBehNorm, echo=F, fig.width=6.5, fig.height=3.8, fig.cap="(ref:plotCorBehNormCaption)"}
+plot5
 ```
 
 \newpage
 
-(ref:plotAttritionCaption) _Attrition across the course of the study._
+(ref:plotCDCSensCaption) _Predictions from multilevel models with change points in line with changes in CDC mask wearing recommendations._ These models track temporal changes in (a) self-reported mask wearing behavior, (b) perceived strength of descriptive norms, and (c) perceived strength of injunctive norms. Time is included as a continuous linear predictor, scaled between 0 and 1, with three forced change points (dashed lines). From the left, the first dashed line indicates when the CDC relaxed their mask wearing recommendations in March 2021, the second dashed line indicates when the CDC strengthened their mask wearing recommendations in July 2021, and the third dashed line indicates when the CDC updated their community levels and relaxed their mask wearing recommendations in March 2022. This results in the estimation of five fixed effect parameters: the initial intercept, the slope in the first window, the slope in the second window, the slope in the third window, and the slope is the fourth window. Bolded lines and shaded areas represent fixed effect regression lines from multilevel models and 95% confidence intervals, respectively.
 
-```{r plotAttrition, echo=F, fig.width=5.5, fig.height=3, fig.cap="(ref:plotAttritionCaption)"}
-plot2
+```{r plotCDCSens, echo=F, fig.width=4, fig.height=6, fig.cap="(ref:plotCDCSensCaption)"}
+plot6
 ```
 
 \newpage
@@ -46,37 +46,23 @@ plot4
 
 \newpage
 
-(ref:plotCorBehNormCaption) _Predictions from multilevel models with self-reported mask wearing behavior as the outcome variable and (a) perceived strength of descriptive norms and (b) perceived strength of injunctive norms as independent predictor variables._ Lines are fixed effect regression lines from multilevel models, shaded areas are 95% confidence intervals.
+(ref:plotAttritionCaption) _Attrition across the course of the study._
 
-```{r plotCorBehNorm, echo=F, fig.width=6.5, fig.height=3.8, fig.cap="(ref:plotCorBehNormCaption)"}
-plot5
+```{r plotAttrition, echo=F, fig.width=5.5, fig.height=3, fig.cap="(ref:plotAttritionCaption)"}
+plot2
 ```
 
 \newpage
 
-(ref:plotCDCSensCaption) _Predictions from multilevel models with change points in line with changes in CDC mask wearing recommendations._ These models track temporal changes in (a) self-reported mask wearing behavior, (b) perceived strength of descriptive norms, and (c) perceived strength of injunctive norms. Time is included as a continuous linear predictor, scaled between 0 and 1, with two forced change points (dashed lines). The first dashed line (left) indicates when the CDC relaxed their mask wearing recommendations in March 2021, and the second dashed line (right) indicates when the CDC strengthened their mask wearing recommendations in July 2021. This results in the estimation of four fixed effect parameters: the initial intercept, the slope in the first window, the slope in the second window, and the slope in the third window. Bolded lines and shaded areas represent fixed effect regression lines from multilevel models and 95% confidence intervals, respectively.
+(ref:plotUSMapCaption) _Map of the United States with participant zip code locations._
 
-```{r plotCDCSens, echo=F, fig.width=4, fig.height=6, fig.cap="(ref:plotCDCSensCaption)"}
-plot6
+```{r plotUSMap, echo=F, fig.width=5, fig.height=3, fig.cap="(ref:plotUSMapCaption)"}
+plot1
 ```
 
 \newpage
 
 ## Supplementary Tables
-
-(ref:itemTableCaption) List of norm interpretation questions asked at Time 7. _These questions were preceded by the following text:_ "There may or may not be a difference between what people around you are doing and what they should be doing. You can learn about what people are doing and what they should be doing in different ways. For each of the following information sources, we want to know if you can learn from it what people are doing, what people should be doing, or both". _Participants answered all questions on a 7-point Likert scale, from (1) Not At All to (7) Very Strongly._
-
-```{r itemTable, echo=F, warning=F, message=F}
-apa_table(
-  itemTable,
-  booktabs = TRUE,
-  longtable = TRUE,
-  align = c("m{2.5cm}", "m{2.5cm}", "m{9cm}"),
-  caption = "(ref:itemTableCaption)"
-)
-```
-
-\newpage
 
 (ref:modelSummaryTable1Caption) Unstandardized fixed effect parameters from multilevel models: perceptions of social norm strength predicting self-reported mask wearing. _Standard errors are included in brackets._
 
@@ -117,6 +103,20 @@ apa_table(
   font_size = "footnotesize",
   align = c("l", rep("c", 5)),
   caption = "(ref:lavaanTableCaption)"
+)
+```
+
+\newpage
+
+(ref:itemTableCaption) List of norm interpretation questions asked at Time 7. _These questions were preceded by the following text:_ "There may or may not be a difference between what people around you are doing and what they should be doing. You can learn about what people are doing and what they should be doing in different ways. For each of the following information sources, we want to know if you can learn from it what people are doing, what people should be doing, or both". _Participants answered all questions on a 7-point Likert scale, from (1) Not At All to (7) Very Strongly._
+
+```{r itemTable, echo=F, warning=F, message=F}
+apa_table(
+  itemTable,
+  booktabs = TRUE,
+  longtable = TRUE,
+  #align = c("m{2.5cm}", "m{2.5cm}", "m{9cm}"),
+  caption = "(ref:itemTableCaption)"
 )
 ```
 

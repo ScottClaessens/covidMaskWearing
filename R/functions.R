@@ -557,7 +557,7 @@ plotTimeline <- function(d, owid) {
     annotate("text", x = ymd("2021-10-26"), y = 2.2, colour = "grey", size = 2.8, angle = 90, lineheight = 0.85,
              label = "CDC: recommend\nbooster shots\nfor adults") +
     annotate("text", x = ymd("2022-01-22"), y = 2.2, colour = "grey", size = 2.8, angle = 90, lineheight = 0.85,
-             label = "CDC: update\ncommunity\nlevels and ease\nrestrictions") +
+             label = "CDC: update\ncommunity levels\nand ease mask\nguidelines") +
     annotate("text", x = ymd("2022-04-10"), y = 1.8, colour = "grey", size = 2.8, angle = 90, lineheight = 0.85,
              label = "US hits\n1,000,000\ndeaths") +
     # add main geoms
