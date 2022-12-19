@@ -9,12 +9,12 @@ Using longitudinal random-intercept cross-lagged panel modelling to study the an
 To run this code, you will need to [install R](https://www.r-project.org/) and the following R packages:
 
 ```
-install.packages(c("arm", "broom.mixed", "cowplot", "dagitty", "ggdag", 
-                   "ggeffects", "ggraph", "huxtable", "jtools", "knitr",
-                   "kableExtra", "lavaan", "lme4", "lmerTest", "lubridate",
-                   "MuMIn", "papaja", "rnaturalearth", "rnaturalearthdata",
-                   "scales", "semTools", "sf", "targets", "tarchetypes",
-                   "tidyverse", "zipcodeR"))
+install.packages(c("arm", "broom.mixed", "cowplot", "dagitty", "ggarchery",
+                   "ggdag", "ggeffects", "ggraph", "huxtable", "jtools", 
+                   "knitr", "kableExtra", "lavaan", "lme4", "lmerTest", 
+                   "lubridate", "MuMIn", "papaja", "rnaturalearth", 
+                   "rnaturalearthdata", "scales", "semTools", "sf", 
+                   "targets", "tarchetypes", "tidyverse", "zipcodeR"))
 ```
 
 ### Executing code

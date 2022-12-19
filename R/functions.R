@@ -625,7 +625,7 @@ plotTimeline <- function(d, owid) {
     geom_line() +
     # axes and theme
     scale_x_date(name = NULL, date_labels = "%b\n%Y", date_breaks = "2 month", limits = c(ymd("2020-09-20"), ymd("2022-09-05"))) +
-    scale_y_log10(name = "New\nCOVID-19 cases\nin United States", limits = c(1e+04, 1e+06), labels = trans_format("log10", math_format(10^.x))) +
+    scale_y_log10(name = "Daily new\nCOVID-19 cases\nin United States", limits = c(1e+04, 1e+06), labels = trans_format("log10", math_format(10^.x))) +
     theme_classic()
   # put together
   out <- plot_grid(pA, pB, pC, nrow = 3, align = "v", labels = c("a","b","c"))
@@ -772,7 +772,8 @@ plotRICLPM <- function(model) {
     tibble(
       date = as.Date(rep(dates[c(2,5,9,11,13:18)], times = 3)),
       var = factor(rep(c(var1, var2, var3), each = 10), levels = c(var1, var3, var2)),
-      col = factor(rep(c(col1, col2, col3), each = 10), levels = c(col1, col3, col2))
+      col = factor(rep(c(col1, col2, col3), each = 10), levels = c(col1, col3, col2)),
+      varNum = rep(c(3,1,2), each = 10)
     )
   # standardised coefficients and significance
   sc <- 
@@ -787,33 +788,61 @@ plotRICLPM <- function(model) {
     mutate(
       x      = as.Date(dates[as.numeric(substr(rhs, 4, 5))]),
       xend   = as.Date(dates[as.numeric(substr(lhs, 4, 5))]),
-      y      = c(var1, var2, var3)[as.numeric(substr(rhs, 2, 2))],
-      yend   = c(var1, var2, var3)[as.numeric(substr(lhs, 2, 2))],
+      y      = c(3, 1, 2)[as.numeric(substr(rhs, 2, 2))],
+      yend   = c(3, 1, 2)[as.numeric(substr(lhs, 2, 2))],
       size   = ifelse(est.std >= 0, est.std, 0), # for visualisation, min effect = 0
       colour = ifelse(pvalue.y < 0.05, "black", "lightgrey")
-    )
+    ) %>%
+    arrange(desc(colour))
+  # number to multiply y-axis by
+  i <- 150
   # plot
   p <-
-    # draw plot
-    ggplot(m, aes(x = date, y = fct_rev(var))) + 
+    # draw initial plot
+    ggplot(m, aes(x = date, y = varNum*i)) + 
     geom_blank() +
     # add arrows
-    geom_segment(data = sc, aes(x = x, y = y, xend = xend, yend = yend,
-                                size = size, colour = colour),
-                 arrow = arrow(length = unit(0.4, "cm"), type = "closed", angle = 15), 
-                 show.legend = TRUE) +
+    geom_arrowsegment(data = sc, aes(x = x, y = y*i, xend = xend, yend = yend*i, 
+                                     colour = colour, fill = colour, size = size),
+                      arrows = arrow(length = unit(0.3, "cm"), type = "closed", angle = 15), 
+                      position = position_attractsegment(end_shave = 11, type_shave = "distance"),
+                      show.legend = TRUE) +
     # add measurement occasions
-    geom_point(aes(colour = col), size = 5, alpha = 0.2) +
-    # set colours, sizes, guides, and theme
+    geom_point(aes(colour = col), size = 3.5) +
+    # set colours, fills, sizes, guides, and theme
     scale_colour_identity() +
-    scale_size_continuous(range = c(0, 1), breaks = c(0.05, 0.25, 0.45)) +
+    scale_fill_identity() +
+    scale_size_continuous(range = c(0, 1.5), breaks = c(0.00, 0.25, 0.50)) +
+    scale_y_continuous(limits = c(0.7, 3.3)*i, breaks = 1:3*i,
+                       labels = function(x) c(var2, var3, var1)[x/i]) +
     scale_x_date(date_labels = "%b\n%Y", date_breaks = "2 month", limits = c(ymd("2020-09-20"), ymd("2022-09-05"))) +
     guides(size = guide_legend(title = "Std. effect size")) +
+    coord_fixed() +
     theme_classic() +
     theme(axis.line.y = element_blank(),
           axis.ticks.y = element_blank(),
           axis.title = element_blank(),
           legend.key.width = unit(2, "cm"))
+  # legend not working - get actual legend
+  # (replace geom_arrowsegment for geom_segment in plot above)
+  legend <-
+    cowplot::get_legend(
+      # draw initial plot
+      ggplot(m, aes(x = date, y = varNum*i)) + 
+        geom_blank() +
+        # add arrows
+        geom_segment(data = sc, aes(x = x, y = y*i, xend = xend, yend = yend*i, 
+                                    colour = colour, size = size),
+                     arrow = arrow(length = unit(0.3, "cm"), type = "closed", angle = 15), 
+                     show.legend = TRUE) +
+        scale_colour_identity() +
+        scale_size_continuous(range = c(0, 1.5), breaks = c(0.00, 0.25, 0.50)) +
+        guides(size = guide_legend(title = "Std. effect size")) +
+        theme_classic() +
+        theme(legend.key.width = unit(2, "cm"))
+    )
+  # replace legend
+  p <- plot_grid(p + theme(legend.position = "none"), legend, nrow = 1, rel_widths = c(1, 0.2))
   # save
   ggsave(p, file = "figures/riclpm.pdf", width = 7.5, height = 3.5)
   ggsave(p, file = "figures/riclpm.png", width = 7.5, height = 3.5)
@@ -852,29 +881,39 @@ makeItemTable <- function() {
   )
 }
 
-# make supp change points table
-makeChangePointsTable <- function(m2.1, m2.2, m2.3) {
-  # function for extracting pars
-  getPars <- function(model, outcome) {
-    s <- sim(model, n.sims = 2000)
-    tibble(
-      Intercept = s@fixef[,1],
-      Slope1    = s@fixef[,2],
-      Slope2    = s@fixef[,2] + s@fixef[,3],
-      Slope3    = s@fixef[,2] + s@fixef[,3] + s@fixef[,4],
-      Slope4    = s@fixef[,2] + s@fixef[,3] + s@fixef[,4] + s@fixef[,5]
+# function for extracting change point pars
+getChangePointPars <- function(model, outcome) {
+  set.seed(2113)
+  s <- sim(model, n.sims = 2000)
+  tibble(
+    Intercept = s@fixef[,1],
+    Slope1    = s@fixef[,2],
+    Slope2    = s@fixef[,2] + s@fixef[,3],
+    Slope3    = s@fixef[,2] + s@fixef[,3] + s@fixef[,4],
+    Slope4    = s@fixef[,2] + s@fixef[,3] + s@fixef[,4] + s@fixef[,5]
+  ) %>%
+    pivot_longer(cols = everything(), names_to = "par") %>%
+    group_by(par) %>%
+    summarise(
+      median = median(value),
+      lower95 = quantile(value, 0.025),
+      upper95 = quantile(value, 0.975)
     ) %>%
-      pivot_longer(cols = everything(), names_to = "par") %>%
-      group_by(par) %>%
-      summarise(value = paste0(format(round(median(value), 2), nsmall = 2), ", 95% CI [",
-                               format(round(quantile(value, 0.025), 2), nsmall = 2), " ",
-                               format(round(quantile(value, 0.975), 2), nsmall = 2), "]")) %>%
-      transmute(outcome = outcome, par, value)
-  }
+    mutate(
+      value = paste0(format(round(median, 2), nsmall = 2), ", 95% CI [",
+                     format(round(lower95, 2), nsmall = 2), " ",
+                     format(round(upper95, 2), nsmall = 2), "]")
+    ) %>%
+    transmute(outcome = outcome, par, median, lower95, upper95, value)
+}
+
+# make supp change points table
+makeChangePointsTable <- function(m2.1, m2.2, m2.3, pars2.1, pars2.2, pars2.3) {
   # extract pars for all models
-  getPars(m2.1, outcome = "Mask wearing") %>%
-    bind_rows(getPars(m2.2, outcome = "Descriptive norms")) %>%
-    bind_rows(getPars(m2.3, outcome = "Injunctive norms")) %>%
+  pars2.1 %>%
+    dplyr::select(outcome, par, value) %>%
+    bind_rows(pars2.2 %>% dplyr::select(outcome, par, value)) %>%
+    bind_rows(pars2.3 %>% dplyr::select(outcome, par, value)) %>%
     pivot_wider(names_from = outcome) %>%
     # attach N for all models
     bind_rows(tibble(par = "N", 

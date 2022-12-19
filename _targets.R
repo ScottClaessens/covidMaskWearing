@@ -3,11 +3,12 @@ library(targets)
 library(tarchetypes)
 source("R/functions.R")
 options(tidyverse.quiet = TRUE)
-tar_option_set(packages = c("arm", "broom.mixed", "cowplot", "dagitty", "ggdag", 
-                            "ggeffects", "ggraph", "huxtable", "jtools", "knitr",
-                            "kableExtra", "lavaan", "lme4", "lmerTest", "lubridate", 
-                            "MuMIn", "papaja", "rnaturalearth", "rnaturalearthdata", 
-                            "scales", "semTools", "sf", "zipcodeR"))
+tar_option_set(packages = c("arm", "broom.mixed", "cowplot", "dagitty", "ggarchery",
+                            "ggdag", "ggeffects", "ggraph", "huxtable", "jtools", 
+                            "knitr","kableExtra", "lavaan", "lme4", "lmerTest", 
+                            "lubridate", "MuMIn", "papaja", "rnaturalearth", 
+                            "rnaturalearthdata", "scales", "semTools", "sf", 
+                            "zipcodeR"))
 # workflow
 list(
   # files
@@ -34,6 +35,10 @@ list(
   tar_target(conf2.1, confint(m2.1, method = "Wald")),
   tar_target(conf2.2, confint(m2.2, method = "Wald")),
   tar_target(conf2.3, confint(m2.3, method = "Wald")),
+  # change point parameters
+  tar_target(pars2.1, getChangePointPars(m2.1, outcome = "Mask wearing")),
+  tar_target(pars2.2, getChangePointPars(m2.2, outcome = "Descriptive norms")),
+  tar_target(pars2.3, getChangePointPars(m2.3, outcome = "Injunctive norms")),
   # random-intercept cross-lagged panel models
   tar_target(riclpm, fitRICLPM(d)),
   # fit measures
@@ -48,7 +53,8 @@ list(
   tar_target(plot7, plotRICLPM(riclpm)),
   # tables
   tar_target(itemTable, makeItemTable()),
-  tar_target(changePointsTable, makeChangePointsTable(m2.1, m2.2, m2.3)),
+  tar_target(changePointsTable, makeChangePointsTable(m2.1, m2.2, m2.3,
+                                                      pars2.1, pars2.2, pars2.3)),
   tar_target(lavaanTable, makeLavaanTable(riclpm)),
   # manuscript
   tar_render(manuscript, "manuscript.Rmd"),

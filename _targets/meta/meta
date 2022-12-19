@@ -1,47 +1,51 @@
 name|type|data|command|depend|seed|path|time|size|bytes|format|repository|iteration|parent|children|seconds|warnings|error
-changePointsTable|stem|950cadbd030a132d|ece5e1dbb117f2ad|568a71d0119a557c|75275039||t19278.9315901785s|73b67a2c74ab1d06|458|rds|local|vector|||4.56|r.squaredGLMM now calculates a revised statistic. See the help page.|
-conf1.1|stem|5fa5c0706273fc9e|8cdf9cb37205fc2b|4cb9234d15552b52|1836699508||t19278.9306643683s|ed0b2f97180e0b86|205|rds|local|vector|||0.03||
-conf1.2|stem|c3a4843da96659c8|d38684457722cb9b|345d32d43563cd70|275977576||t19278.930686091s|ed0b2f97180e0b86|205|rds|local|vector|||0||
-conf2.1|stem|3031f87c70d0d0ad|68fb46fec600c91b|da9fd35a71693d60|-1223887942||t19278.9306863351s|c8c79f11dd07570f|276|rds|local|vector|||0.01||
-conf2.2|stem|85d7940aee587d87|839bbcbfbffdd6d7|5e8b151940f4e968|1319543563||t19278.9315185242s|ac5678394de34e6f|277|rds|local|vector|||0.01||
-conf2.3|stem|ace43b18c167d251|2517f3ad02e7401c|01ad349f86a62e8e|-1619475282||t19278.9315904221s|c8c79f11dd07570f|276|rds|local|vector|||0||
-constructValDes|stem|25af5eb592deb96c|b9a897ebdb921d3d|47d26793e6bd0624|2056730033||t19278.9306631447s|b4cfbff6ad8d48ed|358|rds|local|vector|||0.01||
-constructValInj|stem|f10d96b976ced8e7|03b963bd35bbf4f1|47d26793e6bd0624|1325907910||t19278.9306636179s|15a2beec65aeeb81|357|rds|local|vector|||0.02||
-d|stem|e70de8d836b84824|657a3af1a9391cde|6bda112f5fe852b0|592496261||t19278.9290122051s|e9fceb6f8e420c02|2735833|rds|local|vector|||11.44|No data found for ZIP code 2072. No data found for ZIP code 2472. No data found for ZIP code 606. No data found for ZIP code 5403. No data found for ZIP code 2152. No data found for ZIP code 2116. No data found for ZIP code 802031. No data found for ZIP code 5468. No data found for ZIP code 1772. No data found for ZIP code 7071. No data found for ZIP code 7748. No data found for ZIP code 3851. No data found for ZIP code 7502. No data found for ZIP code 89493. No data found for ZIP code NA. No data found for ZIP code 2916. No data found for ZIP code 8611. No data found for ZIP code 1960. No data found for ZIP code 2170. No data found for ZIP code 8722. No data found for ZIP code 3044. No data found for ZIP code 7733. No data found for ZIP code 2474. No data found for ZIP code 1545. No data found for ZIP code 8755. No data found for ZIP code 6605. No data found for ZIP code 2035. No data found for ZIP code 8094. No data found for ZIP code 3045. No data found for ZIP code 8854. No data found for ZIP code 8527. No data found for ZIP code 7093. No data found for ZIP code 1095. No data found for ZIP code 2370. No data found for ZIP code 7601. No data found for ZIP code 7920. No data found for ZIP code 8618. No data found for ZIP code 2176. No data found for ZIP code 8034. No data found for ZIP code 7747. No data found for ZIP code 7450. No data found for ZIP code 2911. No data found for ZIP code 7035. No data found for ZIP code 2139. No data found for ZIP code 2460. No data found for ZIP code 1929. No data found for ZIP code 7410. No data found for ZIP code 1930. No data found for ZIP code 7663. No data found for ZIP code 7504. No data found for ZIP code 2420. No data found for ZIP code 6897. No data found for ZIP code 3076. No data found for ZIP code 2760. No data found for ZIP code 455. No data found for ZIP code 8001. No data found for ZIP code 4240. No data found for ZIP code 6419. No data found for ZIP code 1000. No data found for ZIP code 544. No data found for ZIP code 3. No data found for ZIP code 7052. No data found for ZIP code 2001. No data found for ZIP code 2101. No data found for ZIP code 2054. No data found for ZIP code 90762. No data found for ZIP code 6825. No data found for ZIP code 6226. No data found for ZIP code 2720. No data found for ZIP code 5030. No data found for ZIP code 100243. No data found for ZIP code 8054. No data found for ZIP code 2360. No data found for ZIP code 40305. No data found for ZIP code 4107|
-fileData|stem|db8ac5903ac363be|1e2565cee40dca55|ef46db3751d8e999|-1990176534|data/usCohortCleanData_t1-t18.csv|t19255.0440267145s|19c03fbd7cdfe9a8|10770912|file|local|vector|||0||
-fileOwid|stem|625511b6242285db|c3a5e261ca72515c|ef46db3751d8e999|1459469550|data/owid-covid-data.csv|t19255.1262134183s|44d692e3da3db279|391940|file|local|vector|||7.33||
+changePointsTable|stem|dafb88619d51b488|572fbf0121de3294|a930ecac3d1e41e8|75275039||t19345.8554806706s|ab391a7f8bcafba3|473|rds|local|vector|||0.12|r.squaredGLMM now calculates a revised statistic. See the help page.|
+conf1.1|stem|5fa5c0706273fc9e|8cdf9cb37205fc2b|4cb9234d15552b52|1836699508||t19345.8554650582s|ed0b2f97180e0b86|205|rds|local|vector|||0||
+conf1.2|stem|c3a4843da96659c8|d38684457722cb9b|345d32d43563cd70|275977576||t19345.8554790664s|ed0b2f97180e0b86|205|rds|local|vector|||0||
+conf2.1|stem|3031f87c70d0d0ad|68fb46fec600c91b|da9fd35a71693d60|-1223887942||t19345.8553904007s|c8c79f11dd07570f|276|rds|local|vector|||0||
+conf2.2|stem|85d7940aee587d87|839bbcbfbffdd6d7|5e8b151940f4e968|1319543563||t19345.8554075407s|ac5678394de34e6f|277|rds|local|vector|||0.02||
+conf2.3|stem|ace43b18c167d251|2517f3ad02e7401c|01ad349f86a62e8e|-1619475282||t19345.85542845s|c8c79f11dd07570f|276|rds|local|vector|||0.02||
+constructValDes|stem|25af5eb592deb96c|b9a897ebdb921d3d|47d26793e6bd0624|2056730033||t19345.854660497s|b4cfbff6ad8d48ed|358|rds|local|vector|||0.01||
+constructValInj|stem|f10d96b976ced8e7|03b963bd35bbf4f1|47d26793e6bd0624|1325907910||t19345.8546599474s|15a2beec65aeeb81|357|rds|local|vector|||0||
+d|stem|e70de8d836b84824|657a3af1a9391cde|6bda112f5fe852b0|592496261||t19345.8531542106s|e9fceb6f8e420c02|2735833|rds|local|vector|||8.16|No data found for ZIP code 2072. No data found for ZIP code 2472. No data found for ZIP code 606. No data found for ZIP code 5403. No data found for ZIP code 2152. No data found for ZIP code 2116. No data found for ZIP code 802031. No data found for ZIP code 5468. No data found for ZIP code 1772. No data found for ZIP code 7071. No data found for ZIP code 7748. No data found for ZIP code 3851. No data found for ZIP code 7502. No data found for ZIP code 89493. No data found for ZIP code NA. No data found for ZIP code 2916. No data found for ZIP code 8611. No data found for ZIP code 1960. No data found for ZIP code 2170. No data found for ZIP code 8722. No data found for ZIP code 3044. No data found for ZIP code 7733. No data found for ZIP code 2474. No data found for ZIP code 1545. No data found for ZIP code 8755. No data found for ZIP code 6605. No data found for ZIP code 2035. No data found for ZIP code 8094. No data found for ZIP code 3045. No data found for ZIP code 8854. No data found for ZIP code 8527. No data found for ZIP code 7093. No data found for ZIP code 1095. No data found for ZIP code 2370. No data found for ZIP code 7601. No data found for ZIP code 7920. No data found for ZIP code 8618. No data found for ZIP code 2176. No data found for ZIP code 8034. No data found for ZIP code 7747. No data found for ZIP code 7450. No data found for ZIP code 2911. No data found for ZIP code 7035. No data found for ZIP code 2139. No data found for ZIP code 2460. No data found for ZIP code 1929. No data found for ZIP code 7410. No data found for ZIP code 1930. No data found for ZIP code 7663. No data found for ZIP code 7504. No data found for ZIP code 2420. No data found for ZIP code 6897. No data found for ZIP code 3076. No data found for ZIP code 2760. No data found for ZIP code 455. No data found for ZIP code 8001. No data found for ZIP code 4240. No data found for ZIP code 6419. No data found for ZIP code 1000. No data found for ZIP code 544. No data found for ZIP code 3. No data found for ZIP code 7052. No data found for ZIP code 2001. No data found for ZIP code 2101. No data found for ZIP code 2054. No data found for ZIP code 90762. No data found for ZIP code 6825. No data found for ZIP code 6226. No data found for ZIP code 2720. No data found for ZIP code 5030. No data found for ZIP code 100243. No data found for ZIP code 8054. No data found for ZIP code 2360. No data found for ZIP code 40305. No data found for ZIP code 4107|
+fileData|stem|db8ac5903ac363be|1e2565cee40dca55|ef46db3751d8e999|-1990176534|data/usCohortCleanData_t1-t18.csv|t19255.0440267145s|19c03fbd7cdfe9a8|10770912|file|local|vector|||0.02||
+fileOwid|stem|625511b6242285db|c3a5e261ca72515c|ef46db3751d8e999|1459469550|data/owid-covid-data.csv|t19255.1262134183s|44d692e3da3db279|391940|file|local|vector|||0||
 fitCDCSens|function|e5f4f35d395d23ce|||||||||||||||
 fitCorBehNorm|function|33ee48de06de0e46|||||||||||||||
-fitMeasures|stem|cee76cbd1fb07c29|599701a9f37d475a|84fb276a9e7ec6ff|2080361897||t19278.9315183049s|f5d61f50be96c4d1|647|rds|local|vector|||53.67||
+fitMeasures|stem|cee76cbd1fb07c29|599701a9f37d475a|512b102acb1d6d2d|2080361897||t19345.8552813668s|f5d61f50be96c4d1|647|rds|local|vector|||40.09||
 fitRICLPM|function|11693793514f3d09|||||||||||||||
-itemTable|stem|0007bdce00ec9e30|3f3726d7547d2474|2dc429ee64fa1859|864903669||t19278.9288621854s|f3cf95d7b5806e03|565|rds|local|vector|||0.02||
-lavaanTable|stem|7db7186d4d8c94cc|a35f94ab01ee2ead|e303e49c016dbd88|303442479||t19278.9308969213s|dd41daf976da3f1c|2421|rds|local|vector|||8.31||
+getChangePointPars|function|4c196cd11ae92c01|||||||||||||||
+itemTable|stem|0007bdce00ec9e30|3f3726d7547d2474|2dc429ee64fa1859|864903669||t19345.8530349362s|f3cf95d7b5806e03|565|rds|local|vector|||9.53|package ggarchery was built under R version 4.2.2|
+lavaanTable|stem|7db7186d4d8c94cc|a35f94ab01ee2ead|8b78cef6a1963c0d|303442479||t19345.8548176294s|dd41daf976da3f1c|2421|rds|local|vector|||9.04||
 loadData|function|adb70e69b875fabb|||||||||||||||
 loadOwid|function|40c0652ec5a90061|||||||||||||||
-m1.1|stem|79d1184787f4a05b|669fea6d73e11f8f|1f08103c6b9b56ee|-2105861842||t19278.9290670666s|aeae3733d11ea72b|3386137|rds|local|vector|||3.62||
-m1.2|stem|36670a25e0f9a3fa|08e1d32f4e25190b|1f08103c6b9b56ee|-1148974269||t19278.9291722085s|707878adadf048cf|3386564|rds|local|vector|||2.22||
-m2.1|stem|f5725be438c575d3|f12b32c9e947fb66|2e43e45f5f130872|707598435||t19278.9293106803s|f01da4be2bb4a2b0|3369655|rds|local|vector|||0.31||
-m2.2|stem|9f729a4646caba88|dde45efc6b326832|2e43e45f5f130872|1038860256||t19278.9306479531s|0045ca7637c685e6|3282244|rds|local|vector|||0.2||
-m2.3|stem|5b3deba0cf6ff7c8|345707efe6d77b3b|2e43e45f5f130872|1993224616||t19278.9306628603s|90b4381ae3096da2|3283034|rds|local|vector|||0.31||
-makeChangePointsTable|function|9435780ebdceada2|||||||||||||||
+m1.1|stem|79d1184787f4a05b|669fea6d73e11f8f|1f08103c6b9b56ee|-2105861842||t19345.8546296976s|aeae3733d11ea72b|3386137|rds|local|vector|||2||
+m1.2|stem|36670a25e0f9a3fa|08e1d32f4e25190b|1f08103c6b9b56ee|-1148974269||t19345.8546597456s|707878adadf048cf|3386564|rds|local|vector|||1.66||
+m2.1|stem|f5725be438c575d3|f12b32c9e947fb66|2e43e45f5f130872|707598435||t19345.8544662461s|f01da4be2bb4a2b0|3369655|rds|local|vector|||0.32||
+m2.2|stem|9f729a4646caba88|dde45efc6b326832|2e43e45f5f130872|1038860256||t19345.8544802217s|0045ca7637c685e6|3282244|rds|local|vector|||0.28||
+m2.3|stem|5b3deba0cf6ff7c8|345707efe6d77b3b|2e43e45f5f130872|1993224616||t19345.8544937566s|90b4381ae3096da2|3283034|rds|local|vector|||0.25||
+makeChangePointsTable|function|f74e56e28d4020b4|||||||||||||||
 makeItemTable|function|dd6f8b9ae2e246cd|||||||||||||||
 makeLavaanTable|function|bfa1bf9fa1d8b7a2|||||||||||||||
-manuscript|stem|c6ca54df1c5e0ef7|a152d5d0349556f4|ef2721f138628369|615889701|manuscript.docx*manuscript.Rmd*manuscript_files|t19282.8793379544s|d0c09ddd66de76d2|1225063|file|local|vector|||21.46|Removed 115 rows containing missing values geom_point.|
-owid|stem|a2cfc2a580c4e388|1d309cffe878350a|d76fe70b67fffe2b|-1640574697||t19278.9288687099s|40b33943729e0feb|122711|rds|local|vector|||0.37||
-plot1|stem|e3c0dbb3425363e8|c2995ce13ad66e55|0e87fdaaf5ed7158|1351247401||t19278.9291329382s|cbe9801cbb00489c|14748183|rds|local|vector|||0.93|Removed 115 rows containing missing values geom_point.. Removed 115 rows containing missing values geom_point.|
-plot2|stem|e079634eeb82f32c|363011a5e9eb4031|e1b084255ef4d7c4|-777164687||t19278.9292447634s|d7b9175d5a85b457|2823164|rds|local|vector|||5.21||
-plot3|stem|c40913445cf5205e|40e69d85b338ec6f|267a928f8f7f3c75|-1544581898||t19278.9292962632s|95aced789bb11371|273886|rds|local|vector|||4.32|Transformation introduced infinite values in continuous yaxis. Removed 255 rows containing missing values geom_path.|
-plot4|stem|e0253806eec99258|d11a6742eeeec69f|9350065b3eb86031|-1257623765||t19278.928861943s|02e03bc9a8a67811|150681|rds|local|vector|||1.08||
-plot5|stem|bcd0daeed9d72804|ee73c5113d068222|3987a46441902191|390394783||t19278.9306859166s|c62ff732e8b2fe3c|376532|rds|local|vector|||1.72||
-plot6|stem|0703bcfc7b1efffa|a5532de924f52bc7|364bda844bebbcc0|-1737001466||t19278.9315373338s|be74ec4150f73506|230849|rds|local|vector|||1.5||
-plot7|stem|efc38c41c98aa85c|ce13d52342383526|968df1fd14e013fb|1790188160||t19278.9308004336s|c2a9b6f46a31c17d|2263615|rds|local|vector|||9.66||
+manuscript|stem|38d34fe6a6e9b651|47e067516b725736|ae2c19d9938df9d8|615889701|manuscript.pdf*manuscript.Rmd*manuscript_files|t19345.8557149031s|6656f12402a9cbf1|1377369|file|local|vector|||20.3|Removed 115 rows containing missing values geom_point.|
+owid|stem|a2cfc2a580c4e388|1d309cffe878350a|d76fe70b67fffe2b|-1640574697||t19345.8531569425s|40b33943729e0feb|122711|rds|local|vector|||0.19||
+pars2.1|stem|c56dbc3027d2ffb6|2b44538f53003a72|128975772effc54c|1688801119||t19345.8554073186s|c3c7dad272b3f852|485|rds|local|vector|||1.45||
+pars2.2|stem|4a89656f4d9d3d6d|8963a9754d8898ac|8b3cde5f1177d6b0|-461533434||t19345.8554282454s|43b0e899005c0f52|491|rds|local|vector|||1.78||
+pars2.3|stem|6804fc09b99c95a6|083daac433ceb4a1|7cf05f419069a71f|-219206679||t19345.855446335s|8585b45427938c14|481|rds|local|vector|||1.53||
+plot1|stem|e3c0dbb3425363e8|c2995ce13ad66e55|0e87fdaaf5ed7158|1351247401||t19345.8545534548s|cbe9801cbb00489c|14748183|rds|local|vector|||0.95|Removed 115 rows containing missing values geom_point.. Removed 115 rows containing missing values geom_point.|
+plot2|stem|e079634eeb82f32c|363011a5e9eb4031|e1b084255ef4d7c4|-777164687||t19345.8545952831s|d7b9175d5a85b457|2823164|rds|local|vector|||2.78||
+plot3|stem|fc2c9069c562587d|40e69d85b338ec6f|79052748edb3616e|-1544581898||t19345.8547129725s|c58b831e4480414e|273964|rds|local|vector|||4.42|Transformation introduced infinite values in continuous yaxis. Removed 255 rows containing missing values geom_path.|
+plot4|stem|e0253806eec99258|d11a6742eeeec69f|9350065b3eb86031|-1257623765||t19345.8530505534s|02e03bc9a8a67811|150681|rds|local|vector|||1.13||
+plot5|stem|2b125704625f93c6|ee73c5113d068222|3987a46441902191|390394783||t19345.8554788593s|da155554205099d9|376425|rds|local|vector|||1.09||
+plot6|stem|30a12d611ad0bea9|a5532de924f52bc7|364bda844bebbcc0|-1737001466||t19345.85546477s|7d068b93f7957c59|230866|rds|local|vector|||1.49||
+plot7|stem|4f06b4a540674fa7|ce13d52342383526|07219f073dcbaba7|1790188160||t19345.8553902871s|369840f259952282|125661|rds|local|vector|||9.34||
 plotAttrition|function|97fa2411d2683935|||||||||||||||
 plotCDCSens|function|d4fbdd294b773a5e|||||||||||||||
 plotCorBehNorm|function|74b707bdddae7be4|||||||||||||||
 plotDAG|function|4b026f594c7a76a5|||||||||||||||
-plotRICLPM|function|46ea29972031f55a|||||||||||||||
-plotTimeline|function|9512250ff6bcad66|||||||||||||||
+plotRICLPM|function|f6306e250385b214|||||||||||||||
+plotTimeline|function|5ee67942945c9dfe|||||||||||||||
 plotUSMap|function|6c4776fc338434b3|||||||||||||||
-riclpm|stem|4c0e070f2e25ed23|7aec5f4308e95265|6f2848167a54adbb|579662188||t19278.9306342753s|94c12a40d6cdd489|2168030|rds|local|vector|||114.19|lavaan WARNING 4 cases were deleted due to missing values in     exogenous variables, while fixed.x  TRUE.|
-sessionInfo|stem|794be3614d98cc38|74c06756c0452f1d|696eeb75af4c39be|-1689045739||t19278.9288640909s|a1c456b03adbfbf8|44|rds|local|vector|||0.13||
+riclpm|stem|28fead03c8d22541|7aec5f4308e95265|6f2848167a54adbb|579662188||t19345.8544521918s|aa93dea1156c11b1|2168044|rds|local|vector|||111.92|lavaan WARNING 4 cases were deleted due to missing values in     exogenous variables, while fixed.x  TRUE.|
+sessionInfo|stem|794be3614d98cc38|74c06756c0452f1d|696eeb75af4c39be|-1689045739||t19345.8530365347s|a1c456b03adbfbf8|44|rds|local|vector|||0.1||
 testConstructValidity|function|edd134afe4696051|||||||||||||||
