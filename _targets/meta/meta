@@ -27,7 +27,7 @@ m2.3|stem|5b3deba0cf6ff7c8|345707efe6d77b3b|2e43e45f5f130872|1993224616||t19345.
 makeChangePointsTable|function|f74e56e28d4020b4|||||||||||||||
 makeItemTable|function|dd6f8b9ae2e246cd|||||||||||||||
 makeLavaanTable|function|bfa1bf9fa1d8b7a2|||||||||||||||
-manuscript|stem|38d34fe6a6e9b651|47e067516b725736|ae2c19d9938df9d8|615889701|manuscript.pdf*manuscript.Rmd*manuscript_files|t19345.8557149031s|6656f12402a9cbf1|1377369|file|local|vector|||20.3|Removed 115 rows containing missing values geom_point.|
+manuscript|stem|38d34fe6a6e9b651|47e067516b725736|ae2c19d9938df9d8|615889701|manuscript.pdf*manuscript.Rmd*manuscript_files|t19345.8968257538s|2174948412ff7c61|507659|file|local|vector|||20.3|Removed 115 rows containing missing values geom_point.|
 owid|stem|a2cfc2a580c4e388|1d309cffe878350a|d76fe70b67fffe2b|-1640574697||t19345.8531569425s|40b33943729e0feb|122711|rds|local|vector|||0.19||
 pars2.1|stem|c56dbc3027d2ffb6|2b44538f53003a72|128975772effc54c|1688801119||t19345.8554073186s|c3c7dad272b3f852|485|rds|local|vector|||1.45||
 pars2.2|stem|4a89656f4d9d3d6d|8963a9754d8898ac|8b3cde5f1177d6b0|-461533434||t19345.8554282454s|43b0e899005c0f52|491|rds|local|vector|||1.78||
