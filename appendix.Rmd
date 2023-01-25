@@ -22,6 +22,22 @@ Results showed that participants did differentiate the perceived norm items as e
 
 ## Supplementary Figures
 
+(ref:plotUSMapCaption) _Map of the United States with participant zip code locations._
+
+```{r plotUSMap, echo=F, fig.width=5, fig.height=3, fig.cap="(ref:plotUSMapCaption)"}
+plot1
+```
+
+\newpage
+
+(ref:plotAttritionCaption) _Attrition across the course of the study._
+
+```{r plotAttrition, echo=F, fig.width=5.5, fig.height=3, fig.cap="(ref:plotAttritionCaption)"}
+plot2
+```
+
+\newpage
+
 (ref:plotDAGCaption) _Directed acyclic graph reflecting causal assumptions._ In this model, a general unobserved sensitivity to social norms (NormSens) causes perceptions of descriptive social norms (DesNorm) and perceptions of injunctive social norms (InjNorm), and perceptions of descriptive and injunctive norms directly cause mask wearing (Mask). Perceptions of descriptive and injunctive norms also indirectly cause mask wearing through non-social beliefs, specifically factual beliefs (Fact) and personal normative beliefs (PersNorm). Finally, political orientation (PolOri) is an exogenous variable that is a common cause of all other variables. Using the backdoor criterion (Pearl, 1995), this causal model implies that it is necessary to control for perceptions of injunctive norms, factual beliefs, personal normative beliefs, and political orientation to estimate the direct causal effect of perceived descriptive norms on mask wearing. Similarly, it is necessary to control for perceptions of descriptive norms, factual beliefs, personal normative beliefs, and political orientation to estimate the direct causal effect of perceived injunctive norms on mask wearing.
 
 ```{r plotDAG, echo=F, fig.width=5.6, fig.height=4.5, fig.cap="(ref:plotDAGCaption)"}
@@ -46,23 +62,21 @@ plot6
 
 \newpage
 
-(ref:plotAttritionCaption) _Attrition across the course of the study._
-
-```{r plotAttrition, echo=F, fig.width=5.5, fig.height=3, fig.cap="(ref:plotAttritionCaption)"}
-plot2
-```
-
-\newpage
-
-(ref:plotUSMapCaption) _Map of the United States with participant zip code locations._
-
-```{r plotUSMap, echo=F, fig.width=5, fig.height=3, fig.cap="(ref:plotUSMapCaption)"}
-plot1
-```
-
-\newpage
-
 ## Supplementary Tables
+
+(ref:itemTableCaption) List of norm interpretation questions asked at Time 7. _These questions were preceded by the following text:_ "There may or may not be a difference between what people around you are doing and what they should be doing. You can learn about what people are doing and what they should be doing in different ways. For each of the following information sources, we want to know if you can learn from it what people are doing, what people should be doing, or both". _Participants answered all questions on a 7-point Likert scale, from (1) Not At All to (7) Very Strongly._
+
+```{r itemTable, echo=F, warning=F, message=F}
+apa_table(
+  itemTable,
+  booktabs = TRUE,
+  longtable = TRUE,
+  align = c("m{2.5cm}", "m{2.5cm}", "m{9cm}"),
+  caption = "(ref:itemTableCaption)"
+)
+```
+
+\newpage
 
 (ref:modelSummaryTable1Caption) Unstandardized fixed effect parameters from multilevel models: perceptions of social norm strength predicting self-reported mask wearing. _Standard errors are included in brackets._
 
@@ -104,20 +118,6 @@ apa_table(
   font_size = "footnotesize",
   align = c("l", rep("c", 5)),
   caption = "(ref:lavaanTableCaption)"
-)
-```
-
-\newpage
-
-(ref:itemTableCaption) List of norm interpretation questions asked at Time 7. _These questions were preceded by the following text:_ "There may or may not be a difference between what people around you are doing and what they should be doing. You can learn about what people are doing and what they should be doing in different ways. For each of the following information sources, we want to know if you can learn from it what people are doing, what people should be doing, or both". _Participants answered all questions on a 7-point Likert scale, from (1) Not At All to (7) Very Strongly._
-
-```{r itemTable, echo=F, warning=F, message=F}
-apa_table(
-  itemTable,
-  booktabs = TRUE,
-  longtable = TRUE,
-  align = c("m{2.5cm}", "m{2.5cm}", "m{9cm}"),
-  caption = "(ref:itemTableCaption)"
 )
 ```
 
