@@ -51,6 +51,7 @@ list(
   tar_target(plot5, plotCorBehNorm(m1.1, m1.2)),
   tar_target(plot6, plotCDCSens(m2.1, m2.2, m2.3)),
   tar_target(plot7, plotRICLPM(riclpm)),
+  tar_target(plot8, plotAttritionBreakdown(d)),
   # tables
   tar_target(itemTable, makeItemTable()),
   tar_target(changePointsTable, makeChangePointsTable(m2.1, m2.2, m2.3,

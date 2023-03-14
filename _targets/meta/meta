@@ -27,7 +27,7 @@ m2.3|stem|5b3deba0cf6ff7c8|345707efe6d77b3b|2e43e45f5f130872|1993224616||t19345.
 makeChangePointsTable|function|f74e56e28d4020b4|||||||||||||||
 makeItemTable|function|dd6f8b9ae2e246cd|||||||||||||||
 makeLavaanTable|function|bfa1bf9fa1d8b7a2|||||||||||||||
-manuscript|stem|3667e423b3b086e2|47e067516b725736|ae2c19d9938df9d8|615889701|manuscript.pdf*manuscript.Rmd*manuscript_files|t19382.1930244973s|2f3432089a2802a0|1328064|file|local|vector|||21.74|Removed 115 rows containing missing values geom_point.|
+manuscript|stem|7b2d5c3c24616dfa|0c248c81ca86634c|cf8b5ce4ef52cb00|615889701|manuscript.pdf*manuscript.Rmd*manuscript_files|t19430.9348234909s|eb00f0fdbb307913|499310|file|local|vector|||30.47|Removed 115 rows containing missing values geom_point.|
 owid|stem|a2cfc2a580c4e388|1d309cffe878350a|d76fe70b67fffe2b|-1640574697||t19345.8531569425s|40b33943729e0feb|122711|rds|local|vector|||0.19||
 pars2.1|stem|c56dbc3027d2ffb6|2b44538f53003a72|128975772effc54c|1688801119||t19345.8554073186s|c3c7dad272b3f852|485|rds|local|vector|||1.45||
 pars2.2|stem|4a89656f4d9d3d6d|8963a9754d8898ac|8b3cde5f1177d6b0|-461533434||t19345.8554282454s|43b0e899005c0f52|491|rds|local|vector|||1.78||
@@ -39,7 +39,9 @@ plot4|stem|e0253806eec99258|d11a6742eeeec69f|9350065b3eb86031|-1257623765||t1934
 plot5|stem|2b125704625f93c6|ee73c5113d068222|3987a46441902191|390394783||t19345.8554788593s|da155554205099d9|376425|rds|local|vector|||1.09||
 plot6|stem|30a12d611ad0bea9|a5532de924f52bc7|364bda844bebbcc0|-1737001466||t19345.85546477s|7d068b93f7957c59|230866|rds|local|vector|||1.49||
 plot7|stem|4f06b4a540674fa7|ce13d52342383526|07219f073dcbaba7|1790188160||t19345.8553902871s|369840f259952282|125661|rds|local|vector|||9.34||
+plot8|stem|4598daf7d5ed6f6d|fbbbdfe1058d20ea|55626a432297e5bf|2078457053||t19428.9898545681s|c781303a1aec3e40|191130|rds|local|vector|||4.4|Removed 12 rows containing missing values geom_bar.|
 plotAttrition|function|97fa2411d2683935|||||||||||||||
+plotAttritionBreakdown|function|581b8e9a4fbd3906|||||||||||||||
 plotCDCSens|function|d4fbdd294b773a5e|||||||||||||||
 plotCorBehNorm|function|74b707bdddae7be4|||||||||||||||
 plotDAG|function|4b026f594c7a76a5|||||||||||||||

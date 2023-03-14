@@ -3,7 +3,7 @@
 \PassOptionsToPackage{hyphens}{url}
 %
 \documentclass[
-  man, donotrepeattitle,mask,floatsintext]{apa6}
+  man, donotrepeattitle,floatsintext]{apa6}
 \usepackage{amsmath,amssymb}
 \usepackage{lmodern}
 \usepackage{iftex}
@@ -155,7 +155,7 @@
     {}{\InnerPatchFailed}%
   }
 {}{\PatchFailed}
-\keywords{social norms; descriptive norms; injunctive norms; longitudinal; COVID-19; mask wearing; cooperation\newline\indent Word count: 4521 words}
+\keywords{social norms; descriptive norms; injunctive norms; longitudinal; COVID-19; mask wearing; cooperation\newline\indent Word count: 4381 words}
 \usepackage{lineno}
 
 \linenumbers
@@ -189,6 +189,7 @@
 \urlstyle{same} % disable monospaced font for URLs
 \hypersetup{
   pdftitle={Descriptive, not injunctive, social norms caused increases in mask wearing during the COVID-19 pandemic},
+  pdfauthor={Samantha L. Heiman*,1, Scott Claessens*,2, Jessica D. Ayers3, Diego Guevara Beltrán4, Andrew Van Horn5,6, Edward R. Hirt1, Athena Aktipis†,4, \& Peter M. Todd†,1,7},
   pdflang={en-EN},
   pdfkeywords={social norms; descriptive norms; injunctive norms; longitudinal; COVID-19; mask wearing; cooperation},
   hidelinks,
@@ -234,87 +235,26 @@ Human sociality is governed by two types of social norms: injunctive norms, whic
 \begin{document}
 \maketitle
 
-\hypertarget{statement-of-relevance}{%
-\section{\texorpdfstring{\normalfont Statement of Relevance}{Statement of Relevance}}\label{statement-of-relevance}}
+Social norms are a key aspect of human sociality\textsuperscript{1--3}. Broadly, social norms are defined as commonly known behavioral guidelines enforced by groups of people\textsuperscript{4}. By coordinating the behavior of many individuals, social norms enable human groups to cooperate in the face of group-wide challenges and threats, such as resource scarcity, natural disasters, and infectious diseases\textsuperscript{5}. Social norms are thus hypothesized to have played a key role in the evolution of large-scale cooperation in humans\textsuperscript{6}.
 
-Social norms have been identified as important drivers of human cooperation, but the emergence of social norms within populations and their subsequent effects on cooperative behavior are not well understood. Here, we use mask wearing during the COVID-19 pandemic as a real-world setting in which to study the emergence of social norms. Over two years in the United States, we find that social norms and mask wearing are tightly coupled and change quickly in response to public health recommendations. Moreover, longitudinal modeling suggests that mask wearing is causally preceded by perceptions of descriptive norms (i.e.~what people \emph{are} doing) but not injunctive norms (i.e.~what people \emph{ought} to be doing). These findings show that visible community adherence is an important driver of mask wearing, suggesting potential avenues for behavior change in future global pandemics.
+Previous research has distinguished between two types of social norms: injunctive norms and descriptive norms\textsuperscript{1,2,7}. Injunctive norms indicate what others tend to approve or disapprove of and often involve social sanctions if violated. By contrast, descriptive norms simply describe what most people are doing in a given situation, but carry no prescriptive information \emph{per se}. According to the focus theory of normative conduct\textsuperscript{2}, these two kinds of social norms often align, but they can also be in conflict with one another and differentially affect behavior depending on which norm is more salient. For example, there may be an injunctive norm that cleaning up litter at a picnic site is the right thing to do: one \emph{ought} to behave this way. However, if an individual observes that most people are leaving their litter behind at the site, they may instead follow the descriptive norm and litter themselves.
 
-\newpage
+Despite decades of research on injunctive and descriptive norms\textsuperscript{2,8,9}, open questions remain regarding the emergence and causal influence of social norms\textsuperscript{4,10}. First, how do injunctive and descriptive norms emerge over time within a population? Second, how do evolving injunctive and descriptive norms causally influence behavior over time?
 
-\begin{center}Descriptive, not injunctive, social norms caused increases in mask wearing during the COVID-19 pandemic\end{center}
+Research has investigated how social norms emerge in a population over time. In the long term, cultural evolutionary models show that injunctive social norms can be vertically transmitted across generations by imitation or teaching, or horizontally diffused from neighboring populations\textsuperscript{6}. However, less is known about how social norms arise endogenously within populations in the short term, including how descriptive norms arise and interact with injunctive norms to shape behavior. Recent work in behavioral economics suggests that social norms of public good provisioning develop in tandem with cooperative behavior through repeated interactions\textsuperscript{11}. But it remains unclear whether these findings generalize beyond the laboratory to real human populations.
 
-Social norms are a key aspect of human sociality (Bicchieri \& Xiao, 2009; Cialdini et al., 1991; Fehr \& Schurtenberger, 2018). Broadly, social norms are defined as commonly known behavioral guidelines enforced by groups of people (Legros \& Cislaghi, 2020). By coordinating the behavior of many individuals, social norms enable human groups to cooperate in the face of group-wide challenges and threats, such as resource scarcity, natural disasters, and infectious diseases (Roos et al., 2015). Social norms are thus hypothesized to have played a key role in the evolution of large-scale cooperation in humans (Henrich, 2015).
+With regards to normative influences on behavior, studies have demonstrated positive effects of descriptive norms on a variety of cooperative behaviors, including recycling\textsuperscript{12}, paying taxes\textsuperscript{13}, and sustainably reusing towels in hotels\textsuperscript{14}. However, these studies have two key aspects that limit their ability to assess the causal impact of norms, both of which we address in our current work. First, studies have not accounted for other potential non-social explanations for behavior, such as perceptions of the effectiveness of the behavior and personal beliefs that one should behave in a certain way. These non-social beliefs, labeled ``factual beliefs'' and ``personal normative beliefs''\textsuperscript{15}, often correlate with descriptive and injunctive norms, but they are fundamentally different because they can cause behavior separately from social expectations about what others do or think should be done. For example, willingness to recycle might be driven by perceptions that recycling has a positive impact on the environment and/or personal beliefs that recycling is the right thing to do, even if social norms actively discourage recycling (e.g., recycling is not a common or socially approved behavior). It is thus important to control for non-social beliefs in studies of social norms. Second, studies have tended to follow cross-sectional experimental designs in which social norm perceptions are manipulated by the researchers. However, social norms are not static: they change dynamically over time through processes of deliberation and interaction\textsuperscript{16}. An alternative but underutilized method of assessing causality between social norms and cooperative behavior, while retaining ecological validity, is to follow these variables over time amidst a real, unfolding social dilemma.
 
-Previous research has distinguished between two types of social norms: injunctive norms and descriptive norms (Bicchieri \& Xiao, 2009; Cialdini et al., 1991; Deutsch \& Gerard, 1955). Injunctive norms indicate what others tend to approve or disapprove of and often involve social sanctions if violated. By contrast, descriptive norms simply describe what most people are doing in a given situation, but carry no prescriptive information \emph{per se}. According to the focus theory of normative conduct (Cialdini et al., 1991), these two kinds of social norms often align, but they can also be in conflict with one another and differentially affect behavior depending on which norm is more salient. For example, there may be an injunctive norm that cleaning up litter at a picnic site is the right thing to do: one \emph{ought} to behave this way. However, if an individual observes that most people are leaving their litter behind at the site, they may instead follow the descriptive norm and litter themselves.
+To understand how social norms emerge over time and shape cooperative behavior in a non-experimental setting, we focus on mask wearing in the United States during the COVID-19 pandemic. In April 2020, one month after the World Health Organization declared COVID-19 a global pandemic, mask wearing was officially recommended by the Centers for Disease Control and Prevention (CDC) to minimize the spread of the disease\textsuperscript{17}. Mask wearing has individual benefits, but the CDC also emphasized the collective benefits in reducing disease spread\textsuperscript{18}. Indeed, mask wearing posed a social dilemma to many individuals, in that it imposed personal costs (e.g., difficulty breathing, disrupted social interaction) for the benefit of the community (e.g., ``flattening the curve'' to protect at-risk individuals). Thus, the development of mask wearing during the COVID-19 pandemic enables us to study the emergence of social norms and their causal effects on cooperative behavior over a short timescale within a single population.
 
-Despite decades of research on injunctive and descriptive norms (Cialdini et al., 1991; Cialdini \& Jacobson, 2021; Schultz et al., 2007), open questions remain regarding the emergence and causal influence of social norms (Legros \& Cislaghi, 2020; van Kleef et al., 2019). First, how do injunctive and descriptive norms emerge over time within a population? Second, how do evolving injunctive and descriptive norms causally influence behavior over time?
-
-Research has investigated how social norms emerge in a population over time. In the long term, cultural evolutionary models show that injunctive social norms can be vertically transmitted across generations by imitation or teaching, or horizontally diffused from neighboring populations (Henrich, 2015). However, less is known about how social norms arise endogenously within populations in the short term. Recent work in behavioral economics suggests that social norms of public good provisioning develop in tandem with cooperative behavior through repeated interactions (Titlestad et al., 2019). But it remains unclear whether these findings generalize beyond the laboratory to real human populations.
-
-With regards to normative influences on behavior, studies have demonstrated positive effects of descriptive norms on a variety of cooperative behaviors, including recycling (Nigbur et al., 2010), paying taxes (Larkin et al., 2018), and sustainably reusing towels in hotels (Goldstein et al., 2008). However, these studies have two main limitations. First, studies have not accounted for other potential non-social explanations for behavior, such as perceptions of the effectiveness of the behavior and personal beliefs that one should behave in a certain way. These non-social beliefs, labeled ``factual beliefs'' and ``personal normative beliefs'' (Bicchieri et al., 2014), often correlate with descriptive and injunctive norms, but they are fundamentally different because they can cause behavior separately from social expectations about what others do or think should be done. For example, willingness to recycle might be driven by perceptions that recycling has a positive impact on the environment and/or personal beliefs that recycling is the right thing to do, even if social norms actively discourage recycling (e.g., recycling is not a common behavior). It is thus important to control for non-social beliefs in studies of social norms. Second, studies have tended to follow cross-sectional experimental designs. However, social norms are not static: they change dynamically over time through processes of deliberation and interaction (Smith et al., 2015). An alternative but underutilized method of assessing causality between social norms and cooperative behavior, while retaining ecological validity, is to follow these variables over time amidst a real, unfolding social dilemma.
-
-To understand how social norms emerge over time and shape cooperative behavior in a non-experimental setting, we focus on mask wearing in the United States during the COVID-19 pandemic. In April 2020, one month after the World Health Organization declared COVID-19 a global pandemic, mask wearing was officially recommended by the Centers for Disease Control and Prevention (CDC) to minimize the spread of the disease (Centers for Disease Control and Prevention, 2022). Mask wearing has individual benefits, but the CDC also emphasized the collective benefits in reducing disease spread (Centers for Disease Control and Prevention, 2020). Indeed, mask wearing posed a social dilemma to many individuals, in that it imposed personal costs (e.g., difficulty breathing, disrupted social interaction) for the benefit of the community (e.g., ``flattening the curve'' to protect at-risk individuals). Thus, the development of mask wearing during the COVID-19 pandemic enables us to study the emergence of social norms and their causal effects on cooperative behavior over a short timescale within a single population.
-
-Recent research has found positive relationships between social norms and protective COVID-19 behaviors. In the United States, one study found that perceptions of injunctive norms positively predicted intentions to stay at home to minimize exposure (Macy et al., 2021), and another study found that experimentally-induced descriptive norms increased mask wearing intentions (Bokemper et al., 2021). In Germany, a two-wave study found that perceptions of descriptive norms positively predicted future protective behaviors, such as physical distancing (Rudert \& Janke, 2021). These studies are telling, but since they are cross-sectional or only minimally longitudinal, they do not have the temporal granularity to capture fluctuating changes in norm strength and adherence across the pandemic. Furthermore, several of the studies do not control for political ideology, which is important to account for since COVID-19 was highly politicized in the United States (Baxter-King et al., 2022).
+Recent research has found positive relationships between social norms and protective COVID-19 behaviors. In the United States, one study found that perceptions of injunctive norms positively predicted intentions to stay at home to minimize exposure\textsuperscript{19}, and another study found that experimentally-induced descriptive norms increased mask wearing intentions\textsuperscript{20}. In Germany, a two-wave study found that perceptions of descriptive norms positively predicted future protective behaviors, such as physical distancing\textsuperscript{21}. These studies are telling, but since they are cross-sectional or only minimally longitudinal, they do not have the temporal granularity to capture fluctuating changes in norm strength and adherence across the pandemic. Furthermore, several of the studies do not control for political ideology, which is important to account for since COVID-19 was highly politicized in the United States\textsuperscript{22}.
 
 Here, we use two years of data from a representative sample of adults in the United States (18 time points; \emph{n} = 916) to track the development of descriptive and injunctive mask wearing norms and mask wearing behavior over the course of the COVID-19 pandemic. Participants reported their frequency of mask wearing during in-person interactions, as well as their perceptions of descriptive and injunctive mask wearing norms. We also asked participants about their non-social mask wearing beliefs and political ideology, and controlled for these factors. We used these longitudinal data to answer two main research questions in a specific real-world context. First, how do descriptive and injunctive mask wearing norms emerge over time? Second, how do descriptive and injunctive mask wearing norms causally influence mask wearing?
-
-\hypertarget{materials-and-methods}{%
-\section{Materials and Methods}\label{materials-and-methods}}
-
-\hypertarget{ethical-approval}{%
-\subsection{Ethical approval}\label{ethical-approval}}
-
-This project was granted exemption from the Institutional Review Board of Arizona State University (STUDY00011678). All participants in this study provided informed consent.
-
-\hypertarget{participants-and-sampling}{%
-\subsection{Participants and sampling}\label{participants-and-sampling}}
-
-Using the platform Prolific (\url{https://www.prolific.co/}), we distributed surveys to a representative sample of adults from the United States (\emph{n} = 915, \emph{M}\textsubscript{age} = 46 years, 75\% White, 52\% Women; see Supplementary Figure \ref{fig:plotUSMap} for geographic distribution). From September 2020 to October 2022, we asked participants to complete regular surveys of COVID-19 related attitudes and behaviors. This resulted in 18 unique time points of data collection during the pandemic. The first 12 time points were distributed monthly, while the remaining six time points were distributed every two months. Of the initial 915 participants, 634 returned to complete the survey at Time 2, while 347 participants continued through to Time 18 (see Supplementary Figure \ref{fig:plotAttrition} for attrition rates across all time points).
-
-\hypertarget{measures}{%
-\subsection{Measures}\label{measures}}
-
-\hypertarget{self-reported-mask-wearing}{%
-\subsubsection{Self-reported mask wearing}\label{self-reported-mask-wearing}}
-
-At every time point, participants were asked about the number of in-person interactions they had in the last week. Following this question, participants self-reported their mask wearing by answering: ``\emph{During these in-person interactions, if you were closer than 6 feet (2 meters) from the person(s) did you wear a face mask?}'' Participants responded on a 5-point Likert scale, from Never (1) to Always (5).
-
-\hypertarget{perceived-descriptive-and-injunctive-social-norms}{%
-\subsubsection{Perceived descriptive and injunctive social norms}\label{perceived-descriptive-and-injunctive-social-norms}}
-
-In 11 of the 18 time points (Time 2, 3, 5, 9, 11, 13, 14, 15, 16, 17, and 18), we asked questions about perceived descriptive and injunctive mask wearing norms.
-
-Descriptive social norms were operationalized as the proportion of individuals in participants' local areas wearing masks in routine and recreational settings. We measured perceived descriptive social norms as the mean of the following two items: ``\emph{What proportion of people in your area wear a mask while doing routine activities indoors (e.g., running errands, shopping, going to work)?}'' and ``\emph{What proportion of people in your area wear a mask while doing recreational/social activities indoors (e.g., going to the gym, eating at a restaurant, attending a party)?}'' These perceived descriptive social norm items were measured on 7-point Likert scales, from None (1) to All (7).
-
-Injunctive social norms were operationalized as respected individuals wearing masks and community encouragement of mask wearing rules to emphasize the perceived social approval of the behavior from group leaders and the community at large. We measured perceived injunctive social norms as the mean of the following two items: ``\emph{In general, how often do you see people that you respect and trust wearing a mask (e.g., on tv, news, etc.)?}'' and ``\emph{How much are mask-wearing rules encouraged in your area (e.g., by local or state government officials, businesses, etc.)?}'' These perceived injunctive social norm items were measured on 7-point Likert scales, from Never/Rarely (1) to Very Often (7) for the first item, and from Strongly Discouraged (1) to Strongly Encouraged (7) for the second item.
-
-To check the construct validity of these measures, at time point 7 we asked participants about their interpretations of the four social norm items above. We asked participants whether each of the four items informed them about what people \emph{are} doing or what people \emph{should} be doing (i.e., giving descriptive or injunctive information). Participants were able to correctly distinguish between the two sets of items, suggesting that they are valid measures of perceived descriptive and injunctive social norms (see Supplementary Results and Supplementary Table \ref{tab:itemTable}).
-
-\hypertarget{additional-control-variables}{%
-\subsubsection{Additional control variables}\label{additional-control-variables}}
-
-To identify direct causal effects in our longitudinal analysis, we constructed a directed acyclic causal graph outlining the expected causal relationships between our variables (see Supplementary Figure \ref{fig:plotDAG}). In this causal model, we included two kinds of non-social beliefs highlighted by previous research (Bicchieri et al., 2014): factual beliefs (i.e., beliefs about the effectiveness or consequences of mask wearing) and personal normative beliefs (i.e., personal beliefs about whether mask wearing is the right thing to do). These variables were included as potential mediators of the effects of descriptive and injunctive social norms on mask wearing. In addition, we also included political orientation as a common cause of all other variables. This is justified by evidence showing that mask wearing was heavily politicized in the United States during the pandemic (Baxter-King et al., 2022). Given this causal graph, it is necessary to control for factual beliefs, personal normative beliefs, and political orientation in order to estimate the direct causal effects of descriptive and injunctive norms on mask wearing behavior over time.
-
-Non-social beliefs were measured in 12 of the 18 time points (Time 2, 4, 5, 7, 9, 11, 13, 14, 15, 16, 17, and 18). Factual beliefs were measured as the mean of the following two items: ``\emph{I wear a face mask when going out in public to keep myself from getting sick}'' and ``\emph{I wear a face mask when going out in public to prevent others from getting sick in case I may be infected but don't know it yet}''. Personal normative beliefs were measured with a single item: ``\emph{Wearing a face mask when going out in public is the right thing to do}''. These non-social belief items were measured on 7-point Likert scales, from Strongly Disagree (1) to Strongly Agree (7).
-
-Political orientation was measured in the first time point only. We measured political orientation as the mean of the following two items: ``\emph{How would you describe your political orientation with regard to social issues?}'' and ``\emph{How would you describe your political orientation with regard to economic issues?}''. These items were measured on 7-point Likert scales, from Very Liberal (1) to Very Conservative (7).
-
-\hypertarget{statistical-analysis}{%
-\subsection{Statistical analysis}\label{statistical-analysis}}
-
-To analyze average trends in self-reported mask wearing and perceived social norms, we fitted several multilevel regression models. First, to determine whether mask wearing and social norms were coupled over time, we regressed mask wearing on perceived descriptive and injunctive norms separately, including random intercepts and slopes for participants and time points. Second, to analyze whether changes over time were related to recommendations from the CDC, we regressed mask wearing and perceived social norms onto a continuous time predictor. These models included random intercepts and slopes for participants, as well as change points aligning with changes in CDC mask wearing recommendations. We estimated these multilevel regression models using the \emph{lme4} R package (Bates et al., 2015) and dealt with missing data via listwise deletion.
-
-To quantify the within-person relationships between our variables over time, we fitted a random-intercept cross-lagged panel model to our longitudinal data (Hamaker et al., 2015). This structural equation model distinguishes between stable between-person trait levels and within-person fluctuations from trait levels. Positive cross-lagged effects from this model indicate that being above average on one variable at time \emph{t-1} predicts being above average in another variable at time \emph{t}. These models are considered the gold standard for identifying Granger causality in longitudinal datasets (Granger, 1969; Hamaker et al., 2015).
-
-We estimated the random-intercept cross-lagged panel model using the \emph{lavaan} R package (Rosseel, 2012). In line with our directed acyclic graph (see Supplementary Figure \ref{fig:plotDAG}), we included three main variables (self-reported mask wearing, perceived descriptive norms, and perceived injunctive norms) and two time-variant control variables (factual beliefs and personal normative beliefs) in the model. For each of these variables, the model estimated a stable between-person trait level (random intercept) and time-specific within-person fluctuations from this trait level. We modeled autoregressive and cross-lagged effects between all five variables, and included political orientation as a time-invariant covariate. We restricted the analysis to the ten time points with available data for all five variables. Full information maximum likelihood estimation was used to deal with missing data.
-
-All analyses were conducted in R v4.1.1 (R Core Team, 2022). Visualizations were generated using the \emph{cowplot} (Wilke, 2020) and \emph{ggplot2} (Wickham, 2016) packages. The manuscript was reproducibly generated using the \emph{targets} (Landau, 2021) and \emph{papaja} (Aust \& Barth, 2022) packages. All code and data are publicly available on GitHub (Heiman et al., 2023).
 
 \hypertarget{results}{%
 \section{Results}\label{results}}
 
-To understand how mask wearing social norms emerged and fluctuated over the course of the COVID-19 pandemic, we first visualized the average descriptive trends of self-reported norm perceptions across the entire study duration. Figure \ref{fig:plotTimeline} plots self-reported mask wearing and perceptions of descriptive and injunctive mask wearing norms alongside relevant pandemic-related events in the United States, such as CDC public health recommendations and COVID-19 case numbers. These events were obtained from the CDC Museum's COVID-19 Timeline (Centers for Disease Control and Prevention, 2022).
+To understand how mask wearing social norms emerged and fluctuated over the course of the COVID-19 pandemic, we first visualized the average descriptive trends of self-reported norm perceptions across the entire study duration. Figure \ref{fig:plotTimeline} plots self-reported mask wearing and perceptions of descriptive and injunctive mask wearing norms alongside relevant pandemic-related events in the United States, such as CDC public health recommendations and COVID-19 case numbers. These events were obtained from the CDC Museum's COVID-19 Timeline\textsuperscript{17}.
 
 
 
@@ -342,7 +282,7 @@ Regarding within-person dynamics over time, Figure \ref{fig:plotRICLPM} displays
 \caption{\label{fig:plotRICLPM}\emph{Results of ten-wave unconstrained random-intercept cross-lagged panel model.} Circles represent data collection time points. Arrows represent within-person autoregressive effects (on one horizontal level) and cross-lagged effects (across levels) for mask wearing and perceived descriptive and injunctive norms, partitioning out stable between-person individual differences and controlling for factual beliefs, personal normative beliefs, and political orientation. Arrow thickness is scaled according to standardized effect size. Bolded arrows indicate significantly positive parameters, \emph{p} \textless{} 0.05. Gray arrows indicate non-significant parameters. There are no significant direct paths from injunctive norms to future mask wearing, showing that people's beliefs about what they should be doing did not have any direct influences on future mask wearing. On the other hand, there are significant paths from descriptive norms to future mask wearing, meaning that people's beliefs about what others are doing influenced their future mask wearing.}
 \end{figure}
 
-In late 2020 and throughout 2021, we see several cross-lagged effects from perceived descriptive norms to future mask wearing. On four occasions, within-person increases in perceived descriptive norms predicted future within-person increases in mask wearing. According to recent effect size guidelines for cross-lagged panel models (Orth et al., 2022), the standardized beta coefficients for these cross-lagged effects were large (first wave, \(\beta\) = 0.17, 95\% CI {[}0.06 0.28{]}, \emph{p} = .002; second wave, \(\beta\) = 0.21, 95\% CI {[}0.08 0.34{]}, \emph{p} = .001; fourth wave, \(\beta\) = 0.15, 95\% CI {[}0.01 0.30{]}, \emph{p} = .041; fifth wave, \(\beta\) = 0.16, 95\% CI {[}0.02 0.29{]}, \emph{p} = .023). In 2022, these cross-lagged effects from descriptive norms to mask wearing diminished. We also find some evidence for a reciprocal effect, whereby within-person increases in mask wearing predicted future within-person increases in perceived descriptive norms. Moreover, several cross-lagged effects emerged between perceived descriptive and injunctive norms, demonstrating reciprocal within-person causal effects between these variables.
+In late 2020 and throughout 2021, we see several cross-lagged effects from perceived descriptive norms to future mask wearing. On four occasions, within-person increases in perceived descriptive norms predicted future within-person increases in mask wearing. According to recent effect size guidelines for cross-lagged panel models\textsuperscript{23}, the standardized beta coefficients for these cross-lagged effects were large (first wave, \(\beta\) = 0.17, 95\% CI {[}0.06 0.28{]}, \emph{p} = .002; second wave, \(\beta\) = 0.21, 95\% CI {[}0.08 0.34{]}, \emph{p} = .001; fourth wave, \(\beta\) = 0.15, 95\% CI {[}0.01 0.30{]}, \emph{p} = .041; fifth wave, \(\beta\) = 0.16, 95\% CI {[}0.02 0.29{]}, \emph{p} = .023). In 2022, these cross-lagged effects from descriptive norms to mask wearing diminished. We also find some evidence for a reciprocal effect, whereby within-person increases in mask wearing predicted future within-person increases in perceived descriptive norms. Moreover, several cross-lagged effects emerged between perceived descriptive and injunctive norms, demonstrating reciprocal within-person causal effects between these variables.
 
 However, the model also reveals that, after controlling for perceived descriptive norms, non-social beliefs, and political orientation, within-person changes in perceived injunctive norms did \emph{not} predict future within-person changes in mask wearing across our study duration. All cross-lagged effects from perceived injunctive norms to mask wearing are non-significant. Any causal effect that perceived injunctive norms might have had on future mask wearing appears to be fully mediated by perceived descriptive norms. This means that believing that others think that mask wearing is the right thing to do influences one's perception of what others are actually doing, which then influences future behavior. For example, between August 2021 and December 2021, perceived injunctive norms predicted future perceived descriptive norms, which themselves predicted future mask wearing. But aside from these indirect effects, perceived injunctive norms did not have a direct causal effect on mask wearing over time within individuals.
 
@@ -351,27 +291,80 @@ However, the model also reveals that, after controlling for perceived descriptiv
 
 Using longitudinal data from the United States across two years of the COVID-19 pandemic, we aimed to understand how descriptive and injunctive mask wearing norms emerge and influence behavior in response to a naturally unfolding social dilemma. The trends of norm perceptions and self-reported mask wearing over time suggest that norms and behavior were tightly coupled and both changed dynamically in response to recommendations from public health authorities. Moreover, the results of our cross-lagged panel model indicate that descriptive norms caused future increases in mask wearing in the first year and a half of the pandemic. By contrast, injunctive norms were not directly causally related to future mask wearing over the entire two years of data collection.
 
-Our finding that social norms and mask wearing are tightly coupled over time provides real-world support for experimental evidence that social norms and cooperative behavior develop synergistically within groups via processes of social interaction (Titlestad et al., 2019). The fact that these changes closely tracked the release of guidelines by the CDC supports the idea that institutions are part of the process by which culture and one's own behaviors are mutually constructed (Markus \& Kitayama, 2010). Indeed, empirical work in cultural evolution suggests that formal institutions are critical for the emergence and rapid adoption of novel social norms (Amato et al., 2018). While new norms can and do emerge spontaneously in populations, the process is slow compared to institution-driven norm change, which, as our trends have shown, can unfold over measurement intervals as short as four to six weeks.
+Our finding that social norms and mask wearing are tightly coupled over time provides real-world support for experimental evidence that social norms and cooperative behavior develop synergistically within groups via processes of social interaction\textsuperscript{11}. The fact that these changes closely tracked the release of guidelines by the CDC supports the idea that institutions are part of the process by which culture and one's own behaviors are mutually constructed\textsuperscript{24}. Indeed, empirical work in cultural evolution suggests that formal institutions are critical for the emergence and rapid adoption of novel social norms\textsuperscript{25}. While new norms can and do emerge spontaneously in populations, the process is slow compared to institution-driven norm change, which, as our trends have shown, can unfold over measurement intervals as short as four to six weeks.
 
-We found that descriptive norms, not injunctive norms, predicted future within-person increases in mask wearing, independent of the effects of non-social beliefs and political orientation. This finding is in line with previous evidence showing that perceptions of descriptive norms were positively related to other protective COVID-19 behaviors (Bokemper et al., 2021; Rudert \& Janke, 2021). There are several explanations for why descriptive norms have had these positive effects on protective COVID-19 behaviors like mask wearing. First, people may have followed descriptive norms to quickly coordinate their behavior with others during the pandemic. Descriptive norms are particularly useful for coordinating behavior during fast changing, threatening situations with a high degree of uncertainty, such as the COVID-19 pandemic (Gelfand \& Harrington, 2015). Second, people might have engaged in conditional cooperation, adapting their cooperation levels to the degree of cooperation in the population (Chaudhuri, 2011). Descriptive mask wearing norms provide evidence that others are cooperating, increasing the likelihood that individuals will themselves contribute to the public good by wearing masks. Third, the increased frequency of mask wearing in the population might have created a bandwagon effect (Schmitt-Beck, 2015), encouraging conformist copying. Under this view, people wear masks not to coordinate or cooperate, but simply to fit in with the crowd. Future research will be required to determine the motivations underlying adherence to descriptive norms during uncertain times.
+We found that descriptive norms, not injunctive norms, predicted future within-person increases in mask wearing, independent of the effects of non-social beliefs and political orientation. This finding is in line with previous evidence showing that perceptions of descriptive norms were positively related to other protective COVID-19 behaviors\textsuperscript{20,21}. There are several explanations for why descriptive norms have had these positive effects on protective COVID-19 behaviors like mask wearing. First, people may have followed descriptive norms to quickly coordinate their behavior with others during the pandemic. Descriptive norms are particularly useful for coordinating behavior during fast changing, threatening situations with a high degree of uncertainty, such as the COVID-19 pandemic\textsuperscript{26}. Second, people might have engaged in conditional cooperation, adapting their cooperation levels to the degree of cooperation in the population\textsuperscript{27}. Descriptive mask wearing norms provide evidence that others are cooperating, increasing the likelihood that individuals will themselves contribute to the public good by wearing masks. Third, the increased frequency of mask wearing in the population might have created a bandwagon effect\textsuperscript{28}, encouraging conformist copying. Under this view, people wear masks not to coordinate or cooperate, but simply to fit in with the crowd. Future research will be required to determine the motivations underlying adherence to descriptive norms during uncertain times.
 
-We found that perceived injunctive norms did not directly predict future within-person increases in mask wearing, suggesting that injunctive norms and mask wearing are not directly causally related. One possible explanation for this result is that, due to the increased opportunities to observe mask wearing in public, descriptive norms of mask wearing were more salient than injunctive norms during the pandemic. According to focus theory (Cialdini et al., 1991), this difference in salience would produce behavior in line with descriptive norms and potentially suppress the effects of injunctive norms. By contrast, for more private behaviors like remaining indoors, it would have been less possible to observe other people's behaviors, increasing the relative salience of injunctive norms. To test this idea, future research should expand our longitudinal approach to protective behaviors beyond mask wearing, including both public behaviors (e.g., physical distancing) and private behaviors (e.g., hand washing and home isolation).
+We found that perceived injunctive norms did not directly predict future within-person increases in mask wearing, suggesting that injunctive norms and mask wearing are not directly causally related. One possible explanation for this result is that, due to the increased opportunities to observe mask wearing in public, descriptive norms of mask wearing were more salient than injunctive norms during the pandemic. According to focus theory\textsuperscript{2}, this difference in salience would produce behavior in line with descriptive norms and potentially suppress the effects of injunctive norms. By contrast, for more private behaviors like remaining indoors, it would have been less possible to observe other people's behaviors, increasing the relative salience of injunctive norms. To test this idea, future research should expand our longitudinal approach to protective behaviors beyond mask wearing, including both public behaviors (e.g., physical distancing) and private behaviors (e.g., hand washing and home isolation).
 
-We are limited in generalizing these findings due to the constraints of our sample and the variables considered. While our sample began as representative of the United States, there was significant attrition over the course of the study (Supplementary Figure \ref{fig:plotAttrition}). This attrition did not leave us with enough data to test the robustness of our results within different identity groups, such as different genders, ethnicities, or political ideologies. Our results also might not generalize to all social norms, behaviors, and social dilemmas. Norms governing sustainability in response to climate change, for example, might take longer to emerge, since the threat of climate change is more remote than the COVID-19 pandemic. For more distant social dilemmas that do not cause immediate day-to-day uncertainty, descriptive social norms may not necessarily drive cooperative behavior.
+We are limited in generalizing these findings due to the constraints of our sample and the variables considered. While the attrition in our study did not substantially affect the representativeness of our sample (Supplementary Figure \ref{fig:plotAttritionBreakdown}),
+the reduction in our sample size did not leave us with enough data to test the robustness of our results within different identity groups, such as different genders, ethnicities, or political ideologies. Our results also might not generalize to all social norms, behaviors, and social dilemmas. Norms governing sustainability in response to climate change, for example, might take longer to emerge, since the threat of climate change is more remote than the COVID-19 pandemic. For more distant social dilemmas that do not cause immediate day-to-day uncertainty, descriptive social norms may not necessarily drive cooperative behavior.
 
-For the case of mask wearing in the United States during the COVID-19 pandemic, we have shown that social norms developed rapidly in the population and tracked ongoing changes in both recommendations from authorities and current levels of cooperative behavior. Moreover, we found that descriptive norms, rather than injunctive norms, were the main driver for future mask wearing. Our work thus underscores the importance of consistent, visible community adherence for encouraging protective behaviors in response to global pandemics like COVID-19.
+For the case of mask wearing in the United States during the COVID-19 pandemic, we have shown that social norms developed rapidly in the population and tracked ongoing changes in both recommendations from authorities and current levels of cooperative behavior. Moreover, we found that descriptive norms, rather than injunctive norms, were the main driver for future mask wearing. Importantly, this key finding slices two ways. Not only does it imply that high local levels of mask wearing encouraged future personal mask use, but it also implies that \emph{low} local levels of mask wearing \emph{discouraged} future personal mask use. This echoes recent reports of people in the United States not wanting to be ``singled out'' by being the only one wearing a mask in their community\textsuperscript{29}. Our work thus underscores the importance of consistent, visible community adherence for encouraging protective behaviors in response to global pandemics like COVID-19.
+
+\hypertarget{materials-and-methods}{%
+\section{Materials and Methods}\label{materials-and-methods}}
+
+\hypertarget{ethical-approval}{%
+\subsection{Ethical approval}\label{ethical-approval}}
+
+This project was granted exemption from the Institutional Review Board of Arizona State University (STUDY00011678). All participants in this study provided informed consent.
+
+\hypertarget{participants-and-sampling}{%
+\subsection{Participants and sampling}\label{participants-and-sampling}}
+
+Using the platform Prolific (\url{https://www.prolific.co/}), we distributed surveys to a representative sample of adults from the United States (\emph{n} = 915, \emph{M}\textsubscript{age} = 46 years, 75\% White, 52\% Women; see Supplementary Figure \ref{fig:plotUSMap} for geographic distribution). From September 2020 to October 2022, we asked participants to complete regular surveys of COVID-19 related attitudes and behaviors. This resulted in 18 unique time points of data collection during the pandemic. The first 12 time points were distributed monthly, while the remaining six time points were distributed every two months. Of the initial 915 participants, 634 returned to complete the survey at Time 2, while 347 participants continued through to Time 18 (see Supplementary Figure \ref{fig:plotAttrition} for attrition rates across all time points). However, this attrition did not substantially affect the demographic makeup of the sample through time (Supplementary Figure \ref{fig:plotAttritionBreakdown}).
+
+\hypertarget{measures}{%
+\subsection{Measures}\label{measures}}
+
+\hypertarget{self-reported-mask-wearing}{%
+\subsubsection{Self-reported mask wearing}\label{self-reported-mask-wearing}}
+
+At every time point, participants were asked about the number of in-person interactions they had in the last week. Following this question, participants self-reported their mask wearing by answering: ``\emph{During these in-person interactions, if you were closer than 6 feet (2 meters) from the person(s) did you wear a face mask?}'' Participants responded on a 5-point Likert scale, from Never (1) to Always (5).
+
+\hypertarget{perceived-descriptive-and-injunctive-social-norms}{%
+\subsubsection{Perceived descriptive and injunctive social norms}\label{perceived-descriptive-and-injunctive-social-norms}}
+
+In 11 of the 18 time points (Time 2, 3, 5, 9, 11, 13, 14, 15, 16, 17, and 18), we asked questions about perceived descriptive and injunctive mask wearing norms.
+
+Descriptive social norms were operationalized as the proportion of individuals in participants' local areas wearing masks in routine and recreational settings. We measured perceived descriptive social norms as the mean of the following two items: ``\emph{What proportion of people in your area wear a mask while doing routine activities indoors (e.g., running errands, shopping, going to work)?}'' and ``\emph{What proportion of people in your area wear a mask while doing recreational/social activities indoors (e.g., going to the gym, eating at a restaurant, attending a party)?}'' These perceived descriptive social norm items were measured on 7-point Likert scales, from None (1) to All (7).
+
+Injunctive social norms were operationalized as respected individuals wearing masks and community encouragement of mask wearing rules to emphasize the perceived social approval of the behavior from group leaders and the community at large. We measured perceived injunctive social norms as the mean of the following two items: ``\emph{In general, how often do you see people that you respect and trust wearing a mask (e.g., on tv, news, etc.)?}'' and ``\emph{How much are mask-wearing rules encouraged in your area (e.g., by local or state government officials, businesses, etc.)?}'' These perceived injunctive social norm items were measured on 7-point Likert scales, from Never/Rarely (1) to Very Often (7) for the first item, and from Strongly Discouraged (1) to Strongly Encouraged (7) for the second item.
+
+To check the construct validity of these measures, at time point 7 we asked participants about their interpretations of the four social norm items above. We asked participants whether each of the four items informed them about what people \emph{are} doing or what people \emph{should} be doing (i.e., giving descriptive or injunctive information). Participants were able to correctly distinguish between the two sets of items, suggesting that they are valid measures of perceived descriptive and injunctive social norms (see Supplementary Results and Supplementary Table \ref{tab:itemTable}).
+
+\hypertarget{additional-control-variables}{%
+\subsubsection{Additional control variables}\label{additional-control-variables}}
+
+To identify direct causal effects in our longitudinal analysis, we constructed a directed acyclic causal graph outlining the expected causal relationships between our variables (see Supplementary Figure \ref{fig:plotDAG}). In this causal model, we included two kinds of non-social beliefs highlighted by previous research\textsuperscript{15}: factual beliefs (i.e., beliefs about the effectiveness or consequences of mask wearing) and personal normative beliefs (i.e., personal beliefs about whether mask wearing is the right thing to do). These variables were included as potential mediators of the effects of descriptive and injunctive social norms on mask wearing. In addition, we also included political orientation as a common cause of all other variables. This is justified by evidence showing that mask wearing was heavily politicized in the United States during the pandemic\textsuperscript{22}. Given this causal graph, it is necessary to control for factual beliefs, personal normative beliefs, and political orientation in order to estimate the direct causal effects of descriptive and injunctive norms on mask wearing behavior over time.
+
+Non-social beliefs were measured in 12 of the 18 time points (Time 2, 4, 5, 7, 9, 11, 13, 14, 15, 16, 17, and 18). Factual beliefs were measured as the mean of the following two items: ``\emph{I wear a face mask when going out in public to keep myself from getting sick}'' and ``\emph{I wear a face mask when going out in public to prevent others from getting sick in case I may be infected but don't know it yet}''. Personal normative beliefs were measured with a single item: ``\emph{Wearing a face mask when going out in public is the right thing to do}''. These non-social belief items were measured on 7-point Likert scales, from Strongly Disagree (1) to Strongly Agree (7).
+
+Political orientation was measured in the first time point only. We measured political orientation as the mean of the following two items: ``\emph{How would you describe your political orientation with regard to social issues?}'' and ``\emph{How would you describe your political orientation with regard to economic issues?}''. These items were measured on 7-point Likert scales, from Very Liberal (1) to Very Conservative (7).
+
+\hypertarget{statistical-analysis}{%
+\subsection{Statistical analysis}\label{statistical-analysis}}
+
+To analyze average trends in self-reported mask wearing and perceived social norms, we fitted several multilevel regression models. First, to determine whether mask wearing and social norms were coupled over time, we regressed mask wearing on perceived descriptive and injunctive norms separately, including random intercepts and slopes for participants and time points. Second, to analyze whether changes over time were related to recommendations from the CDC, we regressed mask wearing and perceived social norms onto a continuous time predictor. These models included random intercepts and slopes for participants, as well as change points aligning with changes in CDC mask wearing recommendations. We estimated these multilevel regression models using the \emph{lme4} R package\textsuperscript{30} and dealt with missing data via listwise deletion.
+
+To quantify the within-person relationships between our variables over time, we fitted a random-intercept cross-lagged panel model to our longitudinal data\textsuperscript{31}. This structural equation model distinguishes between stable between-person trait levels and within-person fluctuations from trait levels. Positive cross-lagged effects from this model indicate that being above average on one variable at time \emph{t-1} predicts being above average in another variable at time \emph{t}. These models are considered the gold standard for identifying Granger causality in longitudinal datasets\textsuperscript{31,32}.
+
+We estimated the random-intercept cross-lagged panel model using the \emph{lavaan} R package\textsuperscript{33}. In line with our directed acyclic graph (see Supplementary Figure \ref{fig:plotDAG}), we included three main variables (self-reported mask wearing, perceived descriptive norms, and perceived injunctive norms) and two time-variant control variables (factual beliefs and personal normative beliefs) in the model. For each of these variables, the model estimated a stable between-person trait level (random intercept) and time-specific within-person fluctuations from this trait level. We modeled autoregressive and cross-lagged effects between all five variables, and included political orientation as a time-invariant covariate. We restricted the analysis to the ten time points with available data for all five variables. Full information maximum likelihood estimation was used to deal with missing data.
+
+All analyses were conducted in R v4.1.1\textsuperscript{34}. Visualizations were generated using the \emph{cowplot}\textsuperscript{35} and \emph{ggplot2}\textsuperscript{36} packages. The manuscript was reproducibly generated using the \emph{targets}\textsuperscript{37} and \emph{papaja}\textsuperscript{38} packages. All code and data are publicly available on GitHub\textsuperscript{39}.
 
 \newpage
 
 \hypertarget{acknowledgements}{%
 \section{Acknowledgements}\label{acknowledgements}}
 
-{[}REDACTED{]}
+This study was funded by the Interdisciplinary Cooperation Initiative, ASU President's Office, the Cooperation Science Network, the Institute for Mental Health Research, the University of New Mexico, the Indiana University College of Arts \& Sciences, the Rutgers University Center for Human Evolutionary Studies, the Charles Koch Foundation, and the John Templeton Foundation. We would also like to thank the Language, Culture, and Cognition lab at the University of Auckland for providing feedback on a previous version of this manuscript.
 
 \hypertarget{author-contributions}{%
 \section{Author Contributions}\label{author-contributions}}
 
-{[}REDACTED{]}
+SLH, JDA, DGB, AV, ERH, AA, and PMT conceptualized the study. SLH, SC, JDA, DGB, and AV oversaw the data curation, investigation, and methodology of the study. SLH and SC wrote the first draft of the paper. SC conducted the formal analysis and created all visualizations. ERH, AA, and PMT provided funding and supervision for the study. All authors reviewed and edited the final draft of the paper.
 
 \hypertarget{conflicts-of-interest}{%
 \section{Conflicts of Interest}\label{conflicts-of-interest}}
@@ -391,120 +384,162 @@ All data and code to reproduce the statistical analyses in this manuscript are p
 \begingroup
 
 \hypertarget{refs}{}
-\begin{CSLReferences}{1}{0}
-\leavevmode\vadjust pre{\hypertarget{ref-Amato2018}{}}%
-Amato, R., Lacasa, L., Díaz-Guilera, A., \& Baronchelli, A. (2018). The dynamics of norm change in the cultural evolution of language. \emph{Proceedings of the National Academy of Sciences}, \emph{115}(33), 8260--8265. \url{https://doi.org/10.1073/pnas.1721059115}
-
-\leavevmode\vadjust pre{\hypertarget{ref-Aust2022}{}}%
-Aust, F., \& Barth, M. (2022). \emph{{papaja}: {Prepare} reproducible {APA} journal articles with {R Markdown}}. \url{https://github.com/crsh/papaja}
-
-\leavevmode\vadjust pre{\hypertarget{ref-Bates2015}{}}%
-Bates, D., Mächler, M., Bolker, B., \& Walker, S. (2015). Fitting linear mixed-effects models using lme4. \emph{Journal of Statistical Software}, \emph{67}(1), 1--48. \url{https://doi.org/10.18637/jss.v067.i01}
-
-\leavevmode\vadjust pre{\hypertarget{ref-BaxterKing2022}{}}%
-Baxter-King, R., Brown, J. R., Enos, R. D., Naeim, A., \& Vavreck, L. (2022). How local partisan context conditions prosocial behaviors: Mask wearing during {COVID-19}. \emph{Proceedings of the National Academy of Sciences}, \emph{119}(21), e2116311119. \url{https://doi.org/10.1073/pnas.2116311119}
-
-\leavevmode\vadjust pre{\hypertarget{ref-Bicchieri2014}{}}%
-Bicchieri, C., Lindemans, J. W., \& Jiang, T. (2014). A structured approach to a diagnostic of collective practices. \emph{Frontiers in Psychology}, \emph{5}, 1418. \url{https://doi.org/10.3389/fpsyg.2014.01418}
-
+\begin{CSLReferences}{0}{0}
 \leavevmode\vadjust pre{\hypertarget{ref-Bicchieri2009}{}}%
-Bicchieri, C., \& Xiao, E. (2009). Do the right thing: But only if others do so. \emph{Journal of Behavioral Decision Making}, \emph{22}(2), 191--208. \url{https://doi.org/10.1002/bdm.621}
-
-\leavevmode\vadjust pre{\hypertarget{ref-Bokemper2021}{}}%
-Bokemper, S. E., Cucciniello, M., Rotesi, T., Pin, P., Malik, A. A., Willebrand, K., Paintsil, E. E., Omer, S. B., Huber, G. A., \& Melegaro, A. (2021). Experimental evidence that changing beliefs about mask efficacy and social norms increase mask wearing for {COVID-19} risk reduction: Results from the {United States} and {Italy}. \emph{PLOS ONE}, \emph{16}(10), e0258282. \url{https://doi.org/10.1371/journal.pone.0258282}
-
-\leavevmode\vadjust pre{\hypertarget{ref-CDC2020}{}}%
-Centers for Disease Control and Prevention. (2020). \emph{{CDC calls on Americans to wear masks to prevent COVID-19 spread}}. \url{https://www.cdc.gov/media/releases/2020/p0714-americans-to-wear-masks.html}
-
-\leavevmode\vadjust pre{\hypertarget{ref-CDC2022}{}}%
-Centers for Disease Control and Prevention. (2022). \emph{{CDC Museum COVID-19 Timeline}}. \url{https://www.cdc.gov/museum/timeline/covid19.html}
-
-\leavevmode\vadjust pre{\hypertarget{ref-Chaudhuri2011}{}}%
-Chaudhuri, A. (2011). Sustaining cooperation in laboratory public goods experiments: A selective survey of the literature. \emph{Experimental Economics}, \emph{14}(1), 47--83. \url{https://doi.org/10.1007/s10683-010-9257-1}
-
-\leavevmode\vadjust pre{\hypertarget{ref-Cialdini2021}{}}%
-Cialdini, R. B., \& Jacobson, R. P. (2021). Influences of social norms on climate change-related behaviors. \emph{Current Opinion in Behavioral Sciences}, \emph{42}, 1--8. \url{https://doi.org/10.1016/j.cobeha.2021.01.005}
+\CSLLeftMargin{1. }%
+\CSLRightInline{Bicchieri, C. \& Xiao, E. \href{https://doi.org/10.1002/bdm.621}{Do the right thing: But only if others do so}. \emph{Journal of Behavioral Decision Making} \textbf{22}, 191--208 (2009).}
 
 \leavevmode\vadjust pre{\hypertarget{ref-Cialdini1991}{}}%
-Cialdini, R. B., Kallgren, C. A., \& Reno, R. R. (1991). \emph{A focus theory of normative conduct: A theoretical refinement and reevaluation of the role of norms in human behavior} (M. P. Zanna, Ed.; Vol. 24, pp. 201--234). Academic Press. \url{https://doi.org/10.1016/S0065-2601(08)60330-5}
-
-\leavevmode\vadjust pre{\hypertarget{ref-Deutsch1955}{}}%
-Deutsch, M., \& Gerard, H. B. (1955). A study of normative and informational social influences upon individual judgment. \emph{The Journal of Abnormal and Social Psychology}, \emph{51}(3), 629--636. \url{https://doi.org/10.1037/h0046408}
+\CSLLeftMargin{2. }%
+\CSLRightInline{Cialdini, R. B., Kallgren, C. A. \& Reno, R. R. \href{https://doi.org/10.1016/S0065-2601(08)60330-5}{A focus theory of normative conduct: A theoretical refinement and reevaluation of the role of norms in human behavior}. in (ed. Zanna, M. P.) vol. 24 201--234 (Academic Press, 1991).}
 
 \leavevmode\vadjust pre{\hypertarget{ref-Fehr2018a}{}}%
-Fehr, E., \& Schurtenberger, I. (2018). Normative foundations of human cooperation. \emph{Nature Human Behaviour}, \emph{2}(7), 458--468. \url{https://doi.org/10.1038/s41562-018-0385-5}
-
-\leavevmode\vadjust pre{\hypertarget{ref-Gelfand2015}{}}%
-Gelfand, M. J., \& Harrington, J. R. (2015). The motivational force of descriptive norms: For whom and when are descriptive norms most predictive of behavior? \emph{Journal of Cross-Cultural Psychology}, \emph{46}(10), 1273--1278. \url{https://doi.org/10.1177/0022022115600796}
-
-\leavevmode\vadjust pre{\hypertarget{ref-Goldstein2008}{}}%
-Goldstein, N. J., Cialdini, R. B., \& Griskevicius, V. (2008). A room with a viewpoint: Using social norms to motivate environmental conservation in hotels. \emph{Journal of Consumer Research}, \emph{35}(3), 472--482. \url{https://doi.org/10.1086/586910}
-
-\leavevmode\vadjust pre{\hypertarget{ref-Granger1969}{}}%
-Granger, C. W. J. (1969). Investigating causal relations by econometric models and cross-spectral methods. \emph{Econometrica}, \emph{37}(3), 424--438. \url{https://doi.org/10.2307/1912791}
-
-\leavevmode\vadjust pre{\hypertarget{ref-Hamaker2015}{}}%
-Hamaker, E. L., Kuiper, R. M., \& Grasman, R. P. P. P. (2015). A critique of the cross-lagged panel model. \emph{Psychological Methods}, \emph{20}(1), 102--116. \url{https://doi.org/10.1037/a0038889}
-
-\leavevmode\vadjust pre{\hypertarget{ref-Heiman2023}{}}%
-Heiman, S. L., Claessens, S., Ayers, J. D., Beltrán, D. G., Van Horn, A., Hirt, E. R., Aktipis, A., \& Todd, P. M. (2023). \emph{Descriptive, not injunctive, social norms caused increases in mask wearing during the COVID-19 pandemic}. GitHub repository. \url{https://github.com/ScottClaessens/covidMaskWearing}
-
-\leavevmode\vadjust pre{\hypertarget{ref-Henrich2015}{}}%
-Henrich, J. (2015). \emph{The secret of our success: How culture is driving human evolution, domesticating our species, and making us smarter}. Princeton University Press. \url{https://doi.org/10.2307/j.ctvc77f0d}
-
-\leavevmode\vadjust pre{\hypertarget{ref-Landau2021}{}}%
-Landau, W. M. (2021). The targets {R} package: A dynamic {M}ake-like function-oriented pipeline toolkit for reproducibility and high-performance computing. \emph{Journal of Open Source Software}, \emph{6}(57), 2959. \url{https://doi.org/10.21105/joss.02959}
-
-\leavevmode\vadjust pre{\hypertarget{ref-Larkin2018}{}}%
-Larkin, C., Sanders, M., Andresen, I., \& Algate, F. (2018). \emph{Testing local descriptive norms and salience of enforcement action: A field experiment to increase tax collection} (SSRN Scholarly Paper No. 3167575). \url{https://doi.org/10.2139/ssrn.3167575}
+\CSLLeftMargin{3. }%
+\CSLRightInline{Fehr, E. \& Schurtenberger, I. \href{https://doi.org/10.1038/s41562-018-0385-5}{Normative foundations of human cooperation}. \emph{Nature Human Behaviour} \textbf{2}, 458--468 (2018).}
 
 \leavevmode\vadjust pre{\hypertarget{ref-Legros2020}{}}%
-Legros, S., \& Cislaghi, B. (2020). Mapping the social-norms literature: An overview of reviews. \emph{Perspectives on Psychological Science}, \emph{15}(1), 62--80. \url{https://doi.org/10.1177/1745691619866455}
-
-\leavevmode\vadjust pre{\hypertarget{ref-Macy2021}{}}%
-Macy, J. T., Owens, C., Mullis, K., \& Middlestadt, S. E. (2021). The role of self-efficacy and injunctive norms in helping older adults decide to stay home during the {COVID-19} pandemic. \emph{Frontiers in Public Health}, \emph{9}, 660813. \url{https://doi.org/10.3389/fpubh.2021.660813}
-
-\leavevmode\vadjust pre{\hypertarget{ref-Markus2010}{}}%
-Markus, H. R., \& Kitayama, S. (2010). Cultures and selves: A cycle of mutual constitution. \emph{Perspectives on Psychological Science}, \emph{5}(4), 420--430. \url{https://doi.org/10.1177/1745691610375557}
-
-\leavevmode\vadjust pre{\hypertarget{ref-Nigbur2010}{}}%
-Nigbur, D., Lyons, E., \& Uzzell, D. (2010). Attitudes, norms, identity and environmental behaviour: Using an expanded theory of planned behaviour to predict participation in a kerbside recycling programme. \emph{British Journal of Social Psychology}, \emph{49}(2), 259--284. \url{https://doi.org/10.1348/014466609X449395}
-
-\leavevmode\vadjust pre{\hypertarget{ref-Orth2022}{}}%
-Orth, U., Meier, L. L., Bühler, J. L., Dapp, L. C., Krauss, S., Messerli, D., \& Robins, R. W. (2022). Effect size guidelines for cross-lagged effects. \emph{Psychological Methods}. \url{https://doi.org/10.1037/met0000499}
-
-\leavevmode\vadjust pre{\hypertarget{ref-RCoreTeam}{}}%
-R Core Team. (2022). \emph{R: A language and environment for statistical computing}. R Foundation for Statistical Computing. \url{https://www.R-project.org/}
+\CSLLeftMargin{4. }%
+\CSLRightInline{Legros, S. \& Cislaghi, B. \href{https://doi.org/10.1177/1745691619866455}{Mapping the social-norms literature: An overview of reviews}. \emph{Perspectives on Psychological Science} \textbf{15}, 62--80 (2020).}
 
 \leavevmode\vadjust pre{\hypertarget{ref-Roos2015}{}}%
-Roos, P., Gelfand, M., Nau, D., \& Lun, J. (2015). Societal threat and cultural variation in the strength of social norms: An evolutionary basis. \emph{Organizational Behavior and Human Decision Processes}, \emph{129}, 14--23. \url{https://doi.org/10.1016/j.obhdp.2015.01.003}
+\CSLLeftMargin{5. }%
+\CSLRightInline{Roos, P., Gelfand, M., Nau, D. \& Lun, J. \href{https://doi.org/10.1016/j.obhdp.2015.01.003}{Societal threat and cultural variation in the strength of social norms: An evolutionary basis}. \emph{Organizational Behavior and Human Decision Processes} \textbf{129}, 14--23 (2015).}
 
-\leavevmode\vadjust pre{\hypertarget{ref-Rosseel2012}{}}%
-Rosseel, Y. (2012). {lavaan}: An {R} package for structural equation modeling. \emph{Journal of Statistical Software}, \emph{48}(2), 1--36. \url{https://doi.org/10.18637/jss.v048.i02}
+\leavevmode\vadjust pre{\hypertarget{ref-Henrich2015}{}}%
+\CSLLeftMargin{6. }%
+\CSLRightInline{Henrich, J. \emph{The secret of our success: How culture is driving human evolution, domesticating our species, and making us smarter}. (Princeton University Press, 2015). doi:\href{https://doi.org/10.2307/j.ctvc77f0d}{10.2307/j.ctvc77f0d}.}
 
-\leavevmode\vadjust pre{\hypertarget{ref-Rudert2021}{}}%
-Rudert, S. C., \& Janke, S. (2021). Following the crowd in times of crisis: Descriptive norms predict physical distancing, stockpiling, and prosocial behavior during the {COVID-19} pandemic. \emph{Group Processes \& Intergroup Relations}, \emph{25}, 1819--1835. \url{https://doi.org/10.1177/13684302211023562}
+\leavevmode\vadjust pre{\hypertarget{ref-Deutsch1955}{}}%
+\CSLLeftMargin{7. }%
+\CSLRightInline{Deutsch, M. \& Gerard, H. B. \href{https://doi.org/10.1037/h0046408}{A study of normative and informational social influences upon individual judgment}. \emph{The Journal of Abnormal and Social Psychology} \textbf{51}, 629--636 (1955).}
 
-\leavevmode\vadjust pre{\hypertarget{ref-SchmittBeck2015}{}}%
-Schmitt-Beck, R. (2015). Bandwagon effect. In \emph{The international encyclopedia of political communication} (pp. 1--5). John Wiley \& Sons, Ltd. \url{https://doi.org/10.1002/9781118541555.wbiepc015}
+\leavevmode\vadjust pre{\hypertarget{ref-Cialdini2021}{}}%
+\CSLLeftMargin{8. }%
+\CSLRightInline{Cialdini, R. B. \& Jacobson, R. P. \href{https://doi.org/10.1016/j.cobeha.2021.01.005}{Influences of social norms on climate change-related behaviors}. \emph{Current Opinion in Behavioral Sciences} \textbf{42}, 1--8 (2021).}
 
 \leavevmode\vadjust pre{\hypertarget{ref-Schultz2007}{}}%
-Schultz, P. W., Nolan, J. M., Cialdini, R. B., Goldstein, N. J., \& Griskevicius, V. (2007). The constructive, destructive, and reconstructive power of social norms. \emph{Psychological Science}, \emph{18}(5), 429--434. \url{https://doi.org/10.1111/j.1467-9280.2007.01917.x}
-
-\leavevmode\vadjust pre{\hypertarget{ref-Smith2015}{}}%
-Smith, L. G. E., Thomas, E. F., \& McGarty, C. (2015). "We must be the change we want to see in the world": Integrating norms and identities through social interaction. \emph{Political Psychology}, \emph{36}(5), 543--557. \url{https://doi.org/10.1111/pops.12180}
-
-\leavevmode\vadjust pre{\hypertarget{ref-Titlestad2019}{}}%
-Titlestad, K., Snijders, T. A. B., Durrheim, K., Quayle, M., \& Postmes, T. (2019). The dynamic emergence of cooperative norms in a social dilemma. \emph{Journal of Experimental Social Psychology}, \emph{84}, 103799. \url{https://doi.org/10.1016/j.jesp.2019.03.010}
+\CSLLeftMargin{9. }%
+\CSLRightInline{Schultz, P. W., Nolan, J. M., Cialdini, R. B., Goldstein, N. J. \& Griskevicius, V. \href{https://doi.org/10.1111/j.1467-9280.2007.01917.x}{The constructive, destructive, and reconstructive power of social norms}. \emph{Psychological Science} \textbf{18}, 429--434 (2007).}
 
 \leavevmode\vadjust pre{\hypertarget{ref-VanKleef2019}{}}%
-van Kleef, G. A., Gelfand, M. J., \& Jetten, J. (2019). The dynamic nature of social norms: New perspectives on norm development, impact, violation, and enforcement. \emph{Journal of Experimental Social Psychology}, \emph{84}, 103814. \url{https://doi.org/10.1016/j.jesp.2019.05.002}
+\CSLLeftMargin{10. }%
+\CSLRightInline{van Kleef, G. A., Gelfand, M. J. \& Jetten, J. \href{https://doi.org/10.1016/j.jesp.2019.05.002}{The dynamic nature of social norms: New perspectives on norm development, impact, violation, and enforcement}. \emph{Journal of Experimental Social Psychology} \textbf{84}, 103814 (2019).}
 
-\leavevmode\vadjust pre{\hypertarget{ref-Wickham2016}{}}%
-Wickham, H. (2016). \emph{{ggplot2}: Elegant graphics for data analysis}. Springer-Verlag New York. \url{https://ggplot2.tidyverse.org}
+\leavevmode\vadjust pre{\hypertarget{ref-Titlestad2019}{}}%
+\CSLLeftMargin{11. }%
+\CSLRightInline{Titlestad, K., Snijders, T. A. B., Durrheim, K., Quayle, M. \& Postmes, T. \href{https://doi.org/10.1016/j.jesp.2019.03.010}{The dynamic emergence of cooperative norms in a social dilemma}. \emph{Journal of Experimental Social Psychology} \textbf{84}, 103799 (2019).}
+
+\leavevmode\vadjust pre{\hypertarget{ref-Nigbur2010}{}}%
+\CSLLeftMargin{12. }%
+\CSLRightInline{Nigbur, D., Lyons, E. \& Uzzell, D. \href{https://doi.org/10.1348/014466609X449395}{Attitudes, norms, identity and environmental behaviour: Using an expanded theory of planned behaviour to predict participation in a kerbside recycling programme}. \emph{British Journal of Social Psychology} \textbf{49}, 259--284 (2010).}
+
+\leavevmode\vadjust pre{\hypertarget{ref-Larkin2018}{}}%
+\CSLLeftMargin{13. }%
+\CSLRightInline{Larkin, C., Sanders, M., Andresen, I. \& Algate, F. \emph{Testing local descriptive norms and salience of enforcement action: A field experiment to increase tax collection}. (2018) doi:\href{https://doi.org/10.2139/ssrn.3167575}{10.2139/ssrn.3167575}.}
+
+\leavevmode\vadjust pre{\hypertarget{ref-Goldstein2008}{}}%
+\CSLLeftMargin{14. }%
+\CSLRightInline{Goldstein, N. J., Cialdini, R. B. \& Griskevicius, V. \href{https://doi.org/10.1086/586910}{A room with a viewpoint: Using social norms to motivate environmental conservation in hotels}. \emph{Journal of Consumer Research} \textbf{35}, 472--482 (2008).}
+
+\leavevmode\vadjust pre{\hypertarget{ref-Bicchieri2014}{}}%
+\CSLLeftMargin{15. }%
+\CSLRightInline{Bicchieri, C., Lindemans, J. W. \& Jiang, T. \href{https://doi.org/10.3389/fpsyg.2014.01418}{A structured approach to a diagnostic of collective practices}. \emph{Frontiers in Psychology} \textbf{5}, 1418 (2014).}
+
+\leavevmode\vadjust pre{\hypertarget{ref-Smith2015}{}}%
+\CSLLeftMargin{16. }%
+\CSLRightInline{Smith, L. G. E., Thomas, E. F. \& McGarty, C. \href{https://doi.org/10.1111/pops.12180}{"We must be the change we want to see in the world": Integrating norms and identities through social interaction}. \emph{Political Psychology} \textbf{36}, 543--557 (2015).}
+
+\leavevmode\vadjust pre{\hypertarget{ref-CDC2022}{}}%
+\CSLLeftMargin{17. }%
+\CSLRightInline{Centers for Disease Control and Prevention. \href{https://www.cdc.gov/museum/timeline/covid19.html}{{CDC Museum COVID-19 Timeline}}. (2022).}
+
+\leavevmode\vadjust pre{\hypertarget{ref-CDC2020}{}}%
+\CSLLeftMargin{18. }%
+\CSLRightInline{Centers for Disease Control and Prevention. \href{https://www.cdc.gov/media/releases/2020/p0714-americans-to-wear-masks.html}{{CDC calls on Americans to wear masks to prevent COVID-19 spread}}. (2020).}
+
+\leavevmode\vadjust pre{\hypertarget{ref-Macy2021}{}}%
+\CSLLeftMargin{19. }%
+\CSLRightInline{Macy, J. T., Owens, C., Mullis, K. \& Middlestadt, S. E. \href{https://doi.org/10.3389/fpubh.2021.660813}{The role of self-efficacy and injunctive norms in helping older adults decide to stay home during the {COVID-19} pandemic}. \emph{Frontiers in Public Health} \textbf{9}, 660813 (2021).}
+
+\leavevmode\vadjust pre{\hypertarget{ref-Bokemper2021}{}}%
+\CSLLeftMargin{20. }%
+\CSLRightInline{Bokemper, S. E. \emph{et al.} \href{https://doi.org/10.1371/journal.pone.0258282}{Experimental evidence that changing beliefs about mask efficacy and social norms increase mask wearing for {COVID-19} risk reduction: Results from the {United States} and {Italy}}. \emph{PLOS ONE} \textbf{16}, e0258282 (2021).}
+
+\leavevmode\vadjust pre{\hypertarget{ref-Rudert2021}{}}%
+\CSLLeftMargin{21. }%
+\CSLRightInline{Rudert, S. C. \& Janke, S. \href{https://doi.org/10.1177/13684302211023562}{Following the crowd in times of crisis: Descriptive norms predict physical distancing, stockpiling, and prosocial behavior during the {COVID-19} pandemic}. \emph{Group Processes \& Intergroup Relations} \textbf{25}, 1819--1835 (2021).}
+
+\leavevmode\vadjust pre{\hypertarget{ref-BaxterKing2022}{}}%
+\CSLLeftMargin{22. }%
+\CSLRightInline{Baxter-King, R., Brown, J. R., Enos, R. D., Naeim, A. \& Vavreck, L. \href{https://doi.org/10.1073/pnas.2116311119}{How local partisan context conditions prosocial behaviors: Mask wearing during {COVID-19}}. \emph{Proceedings of the National Academy of Sciences} \textbf{119}, e2116311119 (2022).}
+
+\leavevmode\vadjust pre{\hypertarget{ref-Orth2022}{}}%
+\CSLLeftMargin{23. }%
+\CSLRightInline{Orth, U. \emph{et al.} Effect size guidelines for cross-lagged effects. \emph{Psychological Methods} (2022) doi:\href{https://doi.org/10.1037/met0000499}{10.1037/met0000499}.}
+
+\leavevmode\vadjust pre{\hypertarget{ref-Markus2010}{}}%
+\CSLLeftMargin{24. }%
+\CSLRightInline{Markus, H. R. \& Kitayama, S. \href{https://doi.org/10.1177/1745691610375557}{Cultures and selves: A cycle of mutual constitution}. \emph{Perspectives on Psychological Science} \textbf{5}, 420--430 (2010).}
+
+\leavevmode\vadjust pre{\hypertarget{ref-Amato2018}{}}%
+\CSLLeftMargin{25. }%
+\CSLRightInline{Amato, R., Lacasa, L., Díaz-Guilera, A. \& Baronchelli, A. \href{https://doi.org/10.1073/pnas.1721059115}{The dynamics of norm change in the cultural evolution of language}. \emph{Proceedings of the National Academy of Sciences} \textbf{115}, 8260--8265 (2018).}
+
+\leavevmode\vadjust pre{\hypertarget{ref-Gelfand2015}{}}%
+\CSLLeftMargin{26. }%
+\CSLRightInline{Gelfand, M. J. \& Harrington, J. R. \href{https://doi.org/10.1177/0022022115600796}{The motivational force of descriptive norms: For whom and when are descriptive norms most predictive of behavior?} \emph{Journal of Cross-Cultural Psychology} \textbf{46}, 1273--1278 (2015).}
+
+\leavevmode\vadjust pre{\hypertarget{ref-Chaudhuri2011}{}}%
+\CSLLeftMargin{27. }%
+\CSLRightInline{Chaudhuri, A. \href{https://doi.org/10.1007/s10683-010-9257-1}{Sustaining cooperation in laboratory public goods experiments: A selective survey of the literature}. \emph{Experimental Economics} \textbf{14}, 47--83 (2011).}
+
+\leavevmode\vadjust pre{\hypertarget{ref-SchmittBeck2015}{}}%
+\CSLLeftMargin{28. }%
+\CSLRightInline{Schmitt-Beck, R. Bandwagon effect. in \emph{The international encyclopedia of political communication} 1--5 (John Wiley \& Sons, Ltd, 2015). doi:\href{https://doi.org/10.1002/9781118541555.wbiepc015}{10.1002/9781118541555.wbiepc015}.}
+
+\leavevmode\vadjust pre{\hypertarget{ref-Natanson2022}{}}%
+\CSLLeftMargin{29. }%
+\CSLRightInline{Natanson, H. \href{https://www.washingtonpost.com/education/2022/02/25/peer-pressure-mask-optional-schools/}{Peer pressure is ending mask usage in schools}. \emph{The Washingston Post} (2022).}
+
+\leavevmode\vadjust pre{\hypertarget{ref-Bates2015}{}}%
+\CSLLeftMargin{30. }%
+\CSLRightInline{Bates, D., Mächler, M., Bolker, B. \& Walker, S. \href{https://doi.org/10.18637/jss.v067.i01}{Fitting linear mixed-effects models using lme4}. \emph{Journal of Statistical Software} \textbf{67}, 1--48 (2015).}
+
+\leavevmode\vadjust pre{\hypertarget{ref-Hamaker2015}{}}%
+\CSLLeftMargin{31. }%
+\CSLRightInline{Hamaker, E. L., Kuiper, R. M. \& Grasman, R. P. P. P. \href{https://doi.org/10.1037/a0038889}{A critique of the cross-lagged panel model}. \emph{Psychological Methods} \textbf{20}, 102--116 (2015).}
+
+\leavevmode\vadjust pre{\hypertarget{ref-Granger1969}{}}%
+\CSLLeftMargin{32. }%
+\CSLRightInline{Granger, C. W. J. \href{https://doi.org/10.2307/1912791}{Investigating causal relations by econometric models and cross-spectral methods}. \emph{Econometrica} \textbf{37}, 424--438 (1969).}
+
+\leavevmode\vadjust pre{\hypertarget{ref-Rosseel2012}{}}%
+\CSLLeftMargin{33. }%
+\CSLRightInline{Rosseel, Y. \href{https://doi.org/10.18637/jss.v048.i02}{{lavaan}: An {R} package for structural equation modeling}. \emph{Journal of Statistical Software} \textbf{48}, 1--36 (2012).}
+
+\leavevmode\vadjust pre{\hypertarget{ref-RCoreTeam}{}}%
+\CSLLeftMargin{34. }%
+\CSLRightInline{R Core Team. \emph{\href{https://www.R-project.org/}{R: A language and environment for statistical computing}}. (R Foundation for Statistical Computing, 2022).}
 
 \leavevmode\vadjust pre{\hypertarget{ref-Wilke2020}{}}%
-Wilke, C. O. (2020). \emph{{cowplot}: Streamlined plot theme and plot annotations for 'ggplot2'}. \url{https://CRAN.R-project.org/package=cowplot}
+\CSLLeftMargin{35. }%
+\CSLRightInline{Wilke, C. O. \emph{\href{https://CRAN.R-project.org/package=cowplot}{{cowplot}: Streamlined plot theme and plot annotations for 'ggplot2'}}. (2020).}
+
+\leavevmode\vadjust pre{\hypertarget{ref-Wickham2016}{}}%
+\CSLLeftMargin{36. }%
+\CSLRightInline{Wickham, H. \emph{\href{https://ggplot2.tidyverse.org}{{ggplot2}: Elegant graphics for data analysis}}. (Springer-Verlag New York, 2016).}
+
+\leavevmode\vadjust pre{\hypertarget{ref-Landau2021}{}}%
+\CSLLeftMargin{37. }%
+\CSLRightInline{Landau, W. M. \href{https://doi.org/10.21105/joss.02959}{The targets {R} package: A dynamic {M}ake-like function-oriented pipeline toolkit for reproducibility and high-performance computing}. \emph{Journal of Open Source Software} \textbf{6}, 2959 (2021).}
+
+\leavevmode\vadjust pre{\hypertarget{ref-Aust2022}{}}%
+\CSLLeftMargin{38. }%
+\CSLRightInline{Aust, F. \& Barth, M. \emph{\href{https://github.com/crsh/papaja}{{papaja}: {Prepare} reproducible {APA} journal articles with {R Markdown}}}. (2022).}
+
+\leavevmode\vadjust pre{\hypertarget{ref-Heiman2023}{}}%
+\CSLLeftMargin{39. }%
+\CSLRightInline{Heiman, S. L. \emph{et al.} \href{https://github.com/ScottClaessens/covidMaskWearing}{Descriptive, not injunctive, social norms caused increases in mask wearing during the COVID-19 pandemic}. (2023).}
 
 \end{CSLReferences}
 
@@ -555,6 +590,16 @@ Results showed that participants did differentiate the perceived norm items as e
 \centering
 \includegraphics{manuscript_files/figure-latex/plotAttrition-1.pdf}
 \caption{\label{fig:plotAttrition}\emph{Attrition across the course of the study.}}
+\end{figure}
+
+\newpage
+
+
+
+\begin{figure}
+\centering
+\includegraphics{manuscript_files/figure-latex/plotAttritionBreakdown-1.pdf}
+\caption{\label{fig:plotAttritionBreakdown}\emph{Demographics of the sample across the course of the study.}}
 \end{figure}
 
 \newpage

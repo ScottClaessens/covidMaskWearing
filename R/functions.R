@@ -496,7 +496,7 @@ plotAttrition <- function(d) {
     transmute(time = as.numeric(time), value) %>%
     # convert time to date
     mutate(time = ymd(dates[time])) %>%
-    # calculate mean and standard errors
+    # calculate attrition
     group_by(time) %>%
     summarise(count = sum(!is.na(value)), .groups = "drop") %>%
     # plot
@@ -509,6 +509,89 @@ plotAttrition <- function(d) {
   # save
   ggsave(out, filename = "figures/attrition.pdf", width = 5.5, height = 3)
   ggsave(out, filename = "figures/attrition.png", width = 5.5, height = 3)
+  return(out)
+}
+
+# plot sample breakdown over time
+plotAttritionBreakdown <- function(d) {
+  # vector of dates for plot
+  dates <- c("2020-09-27", "2020-10-27", "2020-11-28",
+             "2020-12-28", "2021-01-27", "2021-02-26",
+             "2021-03-28", "2021-04-27", "2021-05-27",
+             "2021-06-26", "2021-07-26", "2021-08-26",
+             "2021-10-25", "2021-12-16", "2022-02-25",
+             "2022-04-26", "2022-06-25", "2022-08-29")
+  # data with demographic breakdown over time
+  dDem <-
+    d %>%
+    # pivot into long format
+    rename(StartDate.5 = StartDate_A, 
+           StartDate.7 = StartDate...1230,
+           StartDate.16 = StartDate...2919) %>%
+    pivot_longer((starts_with("StartDate"))) %>%
+    separate(name, c("var", "time")) %>%
+    # keep only relevant vars
+    transmute(sex = Sex.1, age = Age.1, ethnicity = Ethnicity.1,
+              time = as.numeric(time), value) %>%
+    # convert time to date, and empty demographic vars if no response from participant
+    mutate(
+      time = ymd(dates[time]),
+      sex = ifelse(is.na(value), NA, sex),
+      age = ifelse(is.na(value), NA, age),
+      ethnicity = ifelse(is.na(value), NA, ethnicity),
+      ) %>%
+    # calculate attrition
+    group_by(time) %>%
+    summarise(
+      # sex
+      propMale = mean(sex == 1, na.rm = TRUE),
+      # age
+      meanAge = mean(age, na.rm = TRUE),
+      # ethnicity
+      `propWhite or Caucasian` = mean(ethnicity == "White or Caucasian", na.rm = TRUE),
+      `propAsian or Pacific Islander` = mean(ethnicity == "Asian or Pacific Islander", na.rm = TRUE),
+      `propBlack or African American` = mean(ethnicity == "Black or African American", na.rm = TRUE),
+      `propHispanic or Latino/a` = mean(ethnicity == "Hispanic or Latino/a", na.rm = TRUE),
+      `propNative American` = mean(ethnicity == "Native American", na.rm = TRUE),
+      `propOther` = mean(ethnicity == "Other", na.rm = TRUE),
+      .groups = "drop"
+      )
+  # plot sex
+  pA <-
+    ggplot(dDem, aes(x = time, y = propMale)) +
+    geom_point() +
+    geom_line() +
+    scale_x_date(name = NULL, date_labels = "%b\n%Y", date_breaks = "3 month", limits = c(ymd("2020-09-20"), ymd("2022-09-05"))) +
+    scale_y_continuous(name = "Proportion of sample male", limits = c(0, 1)) +
+    theme_classic()
+  # plot age
+  pB <-
+    ggplot(dDem, aes(x = time, y = meanAge)) +
+    geom_point() +
+    geom_line() +
+    scale_x_date(name = NULL, date_labels = "%b\n%Y", date_breaks = "3 month", limits = c(ymd("2020-09-20"), ymd("2022-09-05"))) +
+    scale_y_continuous(name = "Mean age of sample", limits = c(18, 81), breaks = seq(20, 80, by = 10)) +
+    theme_classic()
+  # plot ethnicity
+  pC <-
+    dDem %>%
+    dplyr::select(-propMale) %>%
+    pivot_longer(starts_with("prop"), names_to = "Ethnicity", values_to = "prop") %>%
+    mutate(
+      Ethnicity = str_remove(Ethnicity, "prop"),
+      Ethnicity = factor(Ethnicity, levels = unique(d$Ethnicity.1)[c(1:4,6,5)])
+      ) %>%
+    ggplot(aes(x = time, y = prop, fill = Ethnicity)) +
+    geom_bar(position = "stack", stat = "identity", width = 20) +
+    scale_x_date(name = NULL, date_labels = "%b\n%Y", date_breaks = "3 month", limits = c(ymd("2020-09-20"), ymd("2022-09-05"))) +
+    scale_y_continuous(name = "Proportion of sample", limits = c(0, 1)) +
+    theme_classic()
+  # combine
+  top <- plot_grid(pA, pB, nrow = 1)
+  bot <- plot_grid(NULL, pC, nrow = 1, rel_widths = c(0.25, 1))
+  out <- plot_grid(top, bot, nrow = 2)
+  ggsave(out, file = "figures/attritionBreakdown.pdf", height = 6, width = 7)
+  ggsave(out, file = "figures/attritionBreakdown.png", height = 6, width = 7)
   return(out)
 }
 
