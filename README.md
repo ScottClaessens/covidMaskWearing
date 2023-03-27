@@ -23,7 +23,7 @@ install.packages(c("arm", "broom.mixed", "cowplot", "dagitty", "ggarchery",
 
 ### Executing code
 
-1. Set the working directory to this code repository `setwd("myPath/covidMaskWearing")` on your local machine.
+1. Set the working directory to this code repository `setwd("myPath/covidMaskWearing")` on your local machine
 2. Load the `targets` package with `library(targets)`
 3. To run all analyses, run `tar_make()`
 4. To load individual targets into your environment, run `tar_load(riclpm)` etc.
