@@ -219,9 +219,9 @@ SLH, JDA, DGB, AV, ERH, AA, and PMT conceptualized the study. SLH, SC, JDA, DGB,
 
 There are no conflicts of interest to declare.
 
-# Open Practices Statement
+# Data Availability Statement
 
-All data and code to reproduce the statistical analyses in this manuscript are publicly available on GitHub: https://github.com/ScottClaessens/covidMaskWearing This study was not preregistered.
+All data and code to reproduce the statistical analyses in this manuscript are publicly available on GitHub: https://github.com/ScottClaessens/covidMaskWearing
 
 \newpage
 
