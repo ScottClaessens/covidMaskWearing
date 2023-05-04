@@ -1,9 +1,11 @@
 # custom functions
 
-loadData <- function(fileData) {
+loadData <- function(fileData, fileStates) {
+  # load states data
+  states <- read_csv(file = fileStates, show_col_types = FALSE)
   # load data
   out <-
-    read_csv(file = fileData) %>%
+    read_csv(file = fileData, show_col_types = FALSE) %>%
     # fix some mask motives items (7 coded as 8 in qualtrics)
     mutate_at(vars(contains("MaskMotives")), function(x) ifelse(x == 8, 7, x)) %>%
     mutate_at(vars(contains("MaskMotivates")), function(x) ifelse(x == 8, 7, x)) %>%
@@ -64,7 +66,11 @@ loadData <- function(fileData) {
     )
   # add data on zip codes
   zip <- zipcodeR::reverse_zipcode(unique(out$Zip.1)) %>% mutate(zipcode = as.numeric(zipcode))
-  out <- left_join(out, zip, by = c("Zip.1" = "zipcode"))
+  out <- 
+    out %>%
+    left_join(zip, by = c("Zip.1" = "zipcode")) %>%
+    # state-level election results
+    left_join(states, by = c("state" = "StateAbbr"))
   return(out)
 }
 

@@ -14,8 +14,9 @@ list(
   # files
   tar_target(fileData, "data/usCohortCleanData_t1-t18.csv", format = "file"),
   tar_target(fileOwid, "data/owid-covid-data.csv", format = "file"),
+  tar_target(fileStates, "data/states.csv", format = "file"),
   # load data
-  tar_target(d, loadData(fileData)),
+  tar_target(d, loadData(fileData, fileStates)),
   # load US covid counts from our world in data
   tar_target(owid, loadOwid(fileOwid)),
   # t-tests: construct validity
@@ -40,7 +41,16 @@ list(
   tar_target(pars2.2, getChangePointPars(m2.2, outcome = "Descriptive norms")),
   tar_target(pars2.3, getChangePointPars(m2.3, outcome = "Injunctive norms")),
   # random-intercept cross-lagged panel models
-  tar_target(riclpm, fitRICLPM(d)),
+  # unconstrained models
+  tar_target(riclpm, fitRICLPM(d)), # full model (direct causal effects)
+  #tar_target(riclpm, fitRICLPM(d)), # reduced model without factual and personal beliefs (total causal effects)
+  #tar_target(riclpm, fitRICLPM(d)), # reduced model without covariates
+  #tar_target(riclpm, fitRICLPM(d)), # multigroup: republican / democrat split
+  # constrained models
+  #tar_target(riclpm, fitRICLPM(d)), # full model (direct causal effects)
+  #tar_target(riclpm, fitRICLPM(d)), # reduced model without factual and personal beliefs (total causal effects)
+  #tar_target(riclpm, fitRICLPM(d)), # reduced model without covariates
+  #tar_target(riclpm, fitRICLPM(d)), # multigroup: republican / democrat split
   # fit measures
   tar_target(fitMeasures, fitMeasures(riclpm)),
   # plots
