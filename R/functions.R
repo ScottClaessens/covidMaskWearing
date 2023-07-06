@@ -81,14 +81,94 @@ loadOwid <- function(fileOwid) {
     mutate(date = dmy(date))
 }
 
-# t-test: construct validity
-testConstructValidity <- function(d, type) {
-  # how much information do the descriptive items give about X type of norms?
-  y1 <- (d[,paste0(type, "Learning1.7")] + d[,paste0(type, "Learning2.7")]) / 2
-  # how much information do the injunctive items give about X type of norms?
-  y2 <- (d[,paste0(type, "Learning3.7")] + d[,paste0(type, "Learning4.7")]) / 2
-  # paired t-test
-  t.test(y1[,1], y2[,1], paired = TRUE)
+# construct validity
+fitConstructValidityModel <- function(d) {
+  # vector of items
+  items <- c(
+    "1.7" = "MaskEncouraged",
+    "2.7" = "MaskRespect",
+    "3.7" = "NeighborMask2",
+    "4.7" = "NeighborMask1"
+  )
+  # modify data
+  out <-
+    d %>%
+    mutate(id = 1:nrow(d)) %>%
+    dplyr::select(id, starts_with("DescriptiveLearning") | starts_with("InjunctiveLearning")) %>%
+    pivot_longer(cols = !id) %>%
+    mutate(
+      value = value,
+      Type = ifelse(str_starts(name, "Descriptive"), "Descriptive", "Injunctive"),
+      Item = as.character(items[str_sub(name, -3, -1)])
+    ) %>%
+    drop_na() %>%
+    # fit model
+    lmer(value ~ Type*Item + (1 | id), data = .) %>%
+    emmeans(., ~ Item | Type) %>%
+    pairs()
+  return(out)
+}
+
+# interaction frequency
+fitIntFreqModel <- function(d, pred = "") {
+  # modify data
+  out <-
+    d %>%
+    mutate(
+      # unique participant ids
+      id = 1:nrow(d),
+      # characters to numeric for analysis
+      Contacts24hrs.17 = as.numeric(Contacts24hrs.17),
+      Contacts24hrs.18 = as.numeric(Contacts24hrs.18),
+      Contacts7days.17 = as.numeric(Contacts7days.17),
+      Contacts7days.18 = as.numeric(Contacts7days.18)
+      ) %>%
+    dplyr::select(id, starts_with("Contacts24hrs") | starts_with("Contacts7days") | starts_with("ContactsMask")) %>%
+    pivot_longer(
+      cols = !id,
+      names_to = c(".value", "time"),
+      names_sep = "\\."
+    ) %>% 
+    drop_na() %>%
+    mutate(
+      logContacts24hrs = log(Contacts24hrs + 1),
+      logContacts7days = log(Contacts7days + 1)
+      ) %>%
+    # fit model
+    lmer(as.formula(paste0("ContactsMask ~ log", pred, " + (1 | id) + (1 | time)")), data = .)
+  return(out)
+}
+
+# plot interaction frequency models
+plotIntFreqModels <- function(intFreq24hrs, intFreq7days) {
+  # model predictions - 24 hrs
+  pA <-
+    ggpredict(intFreq24hrs, terms = "logContacts24hrs") %>%
+    ggplot(aes(x, predicted)) +
+    geom_jitter(data = intFreq24hrs@frame, aes(x = logContacts24hrs, y = ContactsMask),
+                width = 0.5, height = 0.4, alpha = 0.05, size = 0.5) +
+    geom_ribbon(aes(ymin = conf.low, ymax = conf.high), alpha = 0.2) +
+    geom_line() +
+    scale_y_continuous(name = "Mask wearing", breaks = 1:5, limits = c(0.5, 5.5)) +
+    scale_x_continuous(name = "ln(Number of in-person interactions\nin last 24 hours + 1)") +
+    theme_classic()
+  # model predictions - 7 days
+  pB <-
+    ggpredict(intFreq7days, terms = "logContacts7days") %>%
+    ggplot(aes(x, predicted)) +
+    geom_jitter(data = intFreq7days@frame, aes(x = logContacts7days, y = ContactsMask),
+                width = 0.5, height = 0.4, alpha = 0.05, size = 0.5) +
+    geom_ribbon(aes(ymin = conf.low, ymax = conf.high), alpha = 0.2) +
+    geom_line() +
+    scale_y_continuous(name = "", breaks = 1:5, limits = c(0.5, 5.5)) +
+    scale_x_continuous(name = "ln(Number of in-person interactions\nin last 7 days + 1)") +
+    theme_classic()
+  # put together
+  out <- plot_grid(pA, pB, nrow = 1, labels = c("a", "b"))
+  # save
+  ggsave(out, filename = "figures/pdf/intFreq.pdf", width = 8, height = 4)
+  ggsave(out, filename = "figures/png/intFreq.png", width = 8, height = 4)
+  return(out)
 }
 
 # correlations between behaviour and norms
@@ -136,8 +216,26 @@ fitCDCSens <- function(d, outcome) {
   return(out)
 }
 
-fitRICLPM <- function(d) {
-  # model code for unconstrained riclpm
+# full model
+fitRICLPM1 <- function(d, constrained = FALSE) {
+  # prepare covariates for modelling
+  d <-
+    d %>%
+    # fill in missing age observation
+    mutate(Age.1 = ifelse(is.na(Age.1), 57, Age.1)) %>%
+    # prepare covariates
+    mutate(
+      Sex.1 = ifelse(Sex.1 == 3, NA, Sex.1 - 1),
+      AgeStd.1 = as.numeric(scale(Age.1)),
+      EthnicityBlack.1 = ifelse(Ethnicity.1 == "Black or African American", 1, 0),
+      EthnicityAsian.1 = ifelse(Ethnicity.1 == "Asian or Pacific Islander", 1, 0),
+      EthnicityHispanic.1 = ifelse(Ethnicity.1 == "Hispanic or Latino/a", 1, 0),
+      EthnicityOther.1 = ifelse(Ethnicity.1 %in% c("Native American", "Other"), 1, 0),
+      PoliticalOrientationStd.1 = as.numeric(scale(PoliticalOrientation.1)),
+      # SES is mean average of education, income, and subjective SES
+      SESStd.1 = as.numeric(scale((Education.1 + Income.1 + SSES.1) / 3))
+    )
+  # model code for riclpm
   # https://jeroendmulder.github.io/RI-CLPM/lavaan.html
   model <- '# Create between components (random intercepts)
             ri1 =~ 1*ContactsMask.2 + 1*ContactsMask.5 + 1*ContactsMask.9 + 1*ContactsMask.11 + 1*ContactsMask.13 + 1*ContactsMask.14 + 1*ContactsMask.15 + 1*ContactsMask.16 + 1*ContactsMask.17 + 1*ContactsMask.18
@@ -202,63 +300,63 @@ fitRICLPM <- function(d) {
             w5_17 =~ 1*PersNorms.17
             w5_18 =~ 1*PersNorms.18
             
-            # Regression of observed variables on time-invariant control 
-            ContactsMask.2 + ContactsMask.5 + ContactsMask.9 + ContactsMask.11 + ContactsMask.13 + ContactsMask.14 + ContactsMask.15 + ContactsMask.16 + ContactsMask.17 + ContactsMask.18 ~ PoliticalOrientation.1
-            InjNorms.2 + InjNorms.5 + InjNorms.9 + InjNorms.11 + InjNorms.13 + InjNorms.14 + InjNorms.15 + InjNorms.16 + InjNorms.17 + InjNorms.18 ~ PoliticalOrientation.1
-            DesNorms.2 + DesNorms.5 + DesNorms.9 + DesNorms.11 + DesNorms.13 + DesNorms.14 + DesNorms.15 + DesNorms.16 + DesNorms.17 + DesNorms.18 ~ PoliticalOrientation.1
-            FactBeliefs.2 + FactBeliefs.5 + FactBeliefs.9 + FactBeliefs.11 + FactBeliefs.13 + FactBeliefs.14 + FactBeliefs.15 + FactBeliefs.16 + FactBeliefs.17 + FactBeliefs.18 ~ PoliticalOrientation.1
-            PersNorms.2 + PersNorms.5 + PersNorms.9 + PersNorms.11 + PersNorms.13 + PersNorms.14 + PersNorms.15 + PersNorms.16 + PersNorms.17 + PersNorms.18 ~ PoliticalOrientation.1
+            # Regression of observed variables on time-invariant controls
+            ContactsMask.2 + ContactsMask.5 + ContactsMask.9 + ContactsMask.11 + ContactsMask.13 + ContactsMask.14 + ContactsMask.15 + ContactsMask.16 + ContactsMask.17 + ContactsMask.18 ~ Sex.1 + AgeStd.1 + EthnicityBlack.1 + EthnicityAsian.1 + EthnicityHispanic.1 + EthnicityOther.1 + PoliticalOrientation.1 + SESStd.1
+            InjNorms.2 + InjNorms.5 + InjNorms.9 + InjNorms.11 + InjNorms.13 + InjNorms.14 + InjNorms.15 + InjNorms.16 + InjNorms.17 + InjNorms.18 ~ Sex.1 + AgeStd.1 + EthnicityBlack.1 + EthnicityAsian.1 + EthnicityHispanic.1 + EthnicityOther.1 + PoliticalOrientation.1 + SESStd.1
+            DesNorms.2 + DesNorms.5 + DesNorms.9 + DesNorms.11 + DesNorms.13 + DesNorms.14 + DesNorms.15 + DesNorms.16 + DesNorms.17 + DesNorms.18 ~ Sex.1 + AgeStd.1 + EthnicityBlack.1 + EthnicityAsian.1 + EthnicityHispanic.1 + EthnicityOther.1 + PoliticalOrientation.1 + SESStd.1
+            FactBeliefs.2 + FactBeliefs.5 + FactBeliefs.9 + FactBeliefs.11 + FactBeliefs.13 + FactBeliefs.14 + FactBeliefs.15 + FactBeliefs.16 + FactBeliefs.17 + FactBeliefs.18 ~ Sex.1 + AgeStd.1 + EthnicityBlack.1 + EthnicityAsian.1 + EthnicityHispanic.1 + EthnicityOther.1 + PoliticalOrientation.1 + SESStd.1
+            PersNorms.2 + PersNorms.5 + PersNorms.9 + PersNorms.11 + PersNorms.13 + PersNorms.14 + PersNorms.15 + PersNorms.16 + PersNorms.17 + PersNorms.18 ~ Sex.1 + AgeStd.1 + EthnicityBlack.1 + EthnicityAsian.1 + EthnicityHispanic.1 + EthnicityOther.1 + PoliticalOrientation.1 + SESStd.1
             
             # Estimate the lagged effects between the within-person centered variables (with time-variant control)
-            w1_05 ~ w1_02 + w2_02 + w3_02 + w4_02 + w5_02
-            w1_09 ~ w1_05 + w2_05 + w3_05 + w4_05 + w5_05
-            w1_11 ~ w1_09 + w2_09 + w3_09 + w4_09 + w5_09
-            w1_13 ~ w1_11 + w2_11 + w3_11 + w4_11 + w5_11
-            w1_14 ~ w1_13 + w2_13 + w3_13 + w4_13 + w5_13
-            w1_15 ~ w1_14 + w2_14 + w3_14 + w4_14 + w5_14
-            w1_16 ~ w1_15 + w2_15 + w3_15 + w4_15 + w5_15
-            w1_17 ~ w1_16 + w2_16 + w3_16 + w4_16 + w5_16
-            w1_18 ~ w1_17 + w2_17 + w3_17 + w4_17 + w5_17
+            w1_05 ~ b11*w1_02 + b12*w2_02 + b13*w3_02 + b14*w4_02 + b15*w5_02
+            w1_09 ~ b11*w1_05 + b12*w2_05 + b13*w3_05 + b14*w4_05 + b15*w5_05
+            w1_11 ~ b11*w1_09 + b12*w2_09 + b13*w3_09 + b14*w4_09 + b15*w5_09
+            w1_13 ~ b11*w1_11 + b12*w2_11 + b13*w3_11 + b14*w4_11 + b15*w5_11
+            w1_14 ~ b11*w1_13 + b12*w2_13 + b13*w3_13 + b14*w4_13 + b15*w5_13
+            w1_15 ~ b11*w1_14 + b12*w2_14 + b13*w3_14 + b14*w4_14 + b15*w5_14
+            w1_16 ~ b11*w1_15 + b12*w2_15 + b13*w3_15 + b14*w4_15 + b15*w5_15
+            w1_17 ~ b11*w1_16 + b12*w2_16 + b13*w3_16 + b14*w4_16 + b15*w5_16
+            w1_18 ~ b11*w1_17 + b12*w2_17 + b13*w3_17 + b14*w4_17 + b15*w5_17
             
-            w2_05 ~ w1_02 + w2_02 + w3_02 + w4_02 + w5_02
-            w2_09 ~ w1_05 + w2_05 + w3_05 + w4_05 + w5_05
-            w2_11 ~ w1_09 + w2_09 + w3_09 + w4_09 + w5_09
-            w2_13 ~ w1_11 + w2_11 + w3_11 + w4_11 + w5_11
-            w2_14 ~ w1_13 + w2_13 + w3_13 + w4_13 + w5_13
-            w2_15 ~ w1_14 + w2_14 + w3_14 + w4_14 + w5_14
-            w2_16 ~ w1_15 + w2_15 + w3_15 + w4_15 + w5_15
-            w2_17 ~ w1_16 + w2_16 + w3_16 + w4_16 + w5_16
-            w2_18 ~ w1_17 + w2_17 + w3_17 + w4_17 + w5_17
+            w2_05 ~ b21*w1_02 + b22*w2_02 + b23*w3_02 + b24*w4_02 + b25*w5_02
+            w2_09 ~ b21*w1_05 + b22*w2_05 + b23*w3_05 + b24*w4_05 + b25*w5_05
+            w2_11 ~ b21*w1_09 + b22*w2_09 + b23*w3_09 + b24*w4_09 + b25*w5_09
+            w2_13 ~ b21*w1_11 + b22*w2_11 + b23*w3_11 + b24*w4_11 + b25*w5_11
+            w2_14 ~ b21*w1_13 + b22*w2_13 + b23*w3_13 + b24*w4_13 + b25*w5_13
+            w2_15 ~ b21*w1_14 + b22*w2_14 + b23*w3_14 + b24*w4_14 + b25*w5_14
+            w2_16 ~ b21*w1_15 + b22*w2_15 + b23*w3_15 + b24*w4_15 + b25*w5_15
+            w2_17 ~ b21*w1_16 + b22*w2_16 + b23*w3_16 + b24*w4_16 + b25*w5_16
+            w2_18 ~ b21*w1_17 + b22*w2_17 + b23*w3_17 + b24*w4_17 + b25*w5_17
             
-            w3_05 ~ w1_02 + w2_02 + w3_02 + w4_02 + w5_02
-            w3_09 ~ w1_05 + w2_05 + w3_05 + w4_05 + w5_05
-            w3_11 ~ w1_09 + w2_09 + w3_09 + w4_09 + w5_09
-            w3_13 ~ w1_11 + w2_11 + w3_11 + w4_11 + w5_11
-            w3_14 ~ w1_13 + w2_13 + w3_13 + w4_13 + w5_13
-            w3_15 ~ w1_14 + w2_14 + w3_14 + w4_14 + w5_14
-            w3_16 ~ w1_15 + w2_15 + w3_15 + w4_15 + w5_15
-            w3_17 ~ w1_16 + w2_16 + w3_16 + w4_16 + w5_16
-            w3_18 ~ w1_17 + w2_17 + w3_17 + w4_17 + w5_17
+            w3_05 ~ b31*w1_02 + b32*w2_02 + b33*w3_02 + b34*w4_02 + b35*w5_02
+            w3_09 ~ b31*w1_05 + b32*w2_05 + b33*w3_05 + b34*w4_05 + b35*w5_05
+            w3_11 ~ b31*w1_09 + b32*w2_09 + b33*w3_09 + b34*w4_09 + b35*w5_09
+            w3_13 ~ b31*w1_11 + b32*w2_11 + b33*w3_11 + b34*w4_11 + b35*w5_11
+            w3_14 ~ b31*w1_13 + b32*w2_13 + b33*w3_13 + b34*w4_13 + b35*w5_13
+            w3_15 ~ b31*w1_14 + b32*w2_14 + b33*w3_14 + b34*w4_14 + b35*w5_14
+            w3_16 ~ b31*w1_15 + b32*w2_15 + b33*w3_15 + b34*w4_15 + b35*w5_15
+            w3_17 ~ b31*w1_16 + b32*w2_16 + b33*w3_16 + b34*w4_16 + b35*w5_16
+            w3_18 ~ b31*w1_17 + b32*w2_17 + b33*w3_17 + b34*w4_17 + b35*w5_17
             
-            w4_05 ~ w1_02 + w2_02 + w3_02 + w4_02 + w5_02
-            w4_09 ~ w1_05 + w2_05 + w3_05 + w4_05 + w5_05
-            w4_11 ~ w1_09 + w2_09 + w3_09 + w4_09 + w5_09
-            w4_13 ~ w1_11 + w2_11 + w3_11 + w4_11 + w5_11
-            w4_14 ~ w1_13 + w2_13 + w3_13 + w4_13 + w5_13
-            w4_15 ~ w1_14 + w2_14 + w3_14 + w4_14 + w5_14
-            w4_16 ~ w1_15 + w2_15 + w3_15 + w4_15 + w5_15
-            w4_17 ~ w1_16 + w2_16 + w3_16 + w4_16 + w5_16
-            w4_18 ~ w1_17 + w2_17 + w3_17 + w4_17 + w5_17
+            w4_05 ~ b41*w1_02 + b42*w2_02 + b43*w3_02 + b44*w4_02 + b45*w5_02
+            w4_09 ~ b41*w1_05 + b42*w2_05 + b43*w3_05 + b44*w4_05 + b45*w5_05
+            w4_11 ~ b41*w1_09 + b42*w2_09 + b43*w3_09 + b44*w4_09 + b45*w5_09
+            w4_13 ~ b41*w1_11 + b42*w2_11 + b43*w3_11 + b44*w4_11 + b45*w5_11
+            w4_14 ~ b41*w1_13 + b42*w2_13 + b43*w3_13 + b44*w4_13 + b45*w5_13
+            w4_15 ~ b41*w1_14 + b42*w2_14 + b43*w3_14 + b44*w4_14 + b45*w5_14
+            w4_16 ~ b41*w1_15 + b42*w2_15 + b43*w3_15 + b44*w4_15 + b45*w5_15
+            w4_17 ~ b41*w1_16 + b42*w2_16 + b43*w3_16 + b44*w4_16 + b45*w5_16
+            w4_18 ~ b41*w1_17 + b42*w2_17 + b43*w3_17 + b44*w4_17 + b45*w5_17
             
-            w5_05 ~ w1_02 + w2_02 + w3_02 + w4_02 + w5_02
-            w5_09 ~ w1_05 + w2_05 + w3_05 + w4_05 + w5_05
-            w5_11 ~ w1_09 + w2_09 + w3_09 + w4_09 + w5_09
-            w5_13 ~ w1_11 + w2_11 + w3_11 + w4_11 + w5_11
-            w5_14 ~ w1_13 + w2_13 + w3_13 + w4_13 + w5_13
-            w5_15 ~ w1_14 + w2_14 + w3_14 + w4_14 + w5_14
-            w5_16 ~ w1_15 + w2_15 + w3_15 + w4_15 + w5_15
-            w5_17 ~ w1_16 + w2_16 + w3_16 + w4_16 + w5_16
-            w5_18 ~ w1_17 + w2_17 + w3_17 + w4_17 + w5_17
+            w5_05 ~ b51*w1_02 + b52*w2_02 + b53*w3_02 + b54*w4_02 + b55*w5_02
+            w5_09 ~ b51*w1_05 + b52*w2_05 + b53*w3_05 + b54*w4_05 + b55*w5_05
+            w5_11 ~ b51*w1_09 + b52*w2_09 + b53*w3_09 + b54*w4_09 + b55*w5_09
+            w5_13 ~ b51*w1_11 + b52*w2_11 + b53*w3_11 + b54*w4_11 + b55*w5_11
+            w5_14 ~ b51*w1_13 + b52*w2_13 + b53*w3_13 + b54*w4_13 + b55*w5_13
+            w5_15 ~ b51*w1_14 + b52*w2_14 + b53*w3_14 + b54*w4_14 + b55*w5_14
+            w5_16 ~ b51*w1_15 + b52*w2_15 + b53*w3_15 + b54*w4_15 + b55*w5_15
+            w5_17 ~ b51*w1_16 + b52*w2_16 + b53*w3_16 + b54*w4_16 + b55*w5_16
+            w5_18 ~ b51*w1_17 + b52*w2_17 + b53*w3_17 + b54*w4_17 + b55*w5_17
             
             # Estimate the covariance between the within-person centered variables at the first wave
             w1_02 ~~ w2_02
@@ -273,105 +371,105 @@ fitRICLPM <- function(d) {
             w4_02 ~~ w5_02
             
             # Estimate the covariances between the residuals of the within-person centered variables
-            w1_05 ~~ w2_05
-            w1_09 ~~ w2_09
-            w1_11 ~~ w2_11
-            w1_13 ~~ w2_13
-            w1_14 ~~ w2_14
-            w1_15 ~~ w2_15
-            w1_16 ~~ w2_16
-            w1_17 ~~ w2_17
-            w1_18 ~~ w2_18
+            w1_05 ~~ cov12*w2_05
+            w1_09 ~~ cov12*w2_09
+            w1_11 ~~ cov12*w2_11
+            w1_13 ~~ cov12*w2_13
+            w1_14 ~~ cov12*w2_14
+            w1_15 ~~ cov12*w2_15
+            w1_16 ~~ cov12*w2_16
+            w1_17 ~~ cov12*w2_17
+            w1_18 ~~ cov12*w2_18
             
-            w1_05 ~~ w3_05
-            w1_09 ~~ w3_09
-            w1_11 ~~ w3_11
-            w1_13 ~~ w3_13
-            w1_14 ~~ w3_14
-            w1_15 ~~ w3_15
-            w1_16 ~~ w3_16
-            w1_17 ~~ w3_17
-            w1_18 ~~ w3_18
+            w1_05 ~~ cov13*w3_05
+            w1_09 ~~ cov13*w3_09
+            w1_11 ~~ cov13*w3_11
+            w1_13 ~~ cov13*w3_13
+            w1_14 ~~ cov13*w3_14
+            w1_15 ~~ cov13*w3_15
+            w1_16 ~~ cov13*w3_16
+            w1_17 ~~ cov13*w3_17
+            w1_18 ~~ cov13*w3_18
             
-            w1_05 ~~ w4_05
-            w1_09 ~~ w4_09
-            w1_11 ~~ w4_11
-            w1_13 ~~ w4_13
-            w1_14 ~~ w4_14
-            w1_15 ~~ w4_15
-            w1_16 ~~ w4_16
-            w1_17 ~~ w4_17
-            w1_18 ~~ w4_18
+            w1_05 ~~ cov14*w4_05
+            w1_09 ~~ cov14*w4_09
+            w1_11 ~~ cov14*w4_11
+            w1_13 ~~ cov14*w4_13
+            w1_14 ~~ cov14*w4_14
+            w1_15 ~~ cov14*w4_15
+            w1_16 ~~ cov14*w4_16
+            w1_17 ~~ cov14*w4_17
+            w1_18 ~~ cov14*w4_18
             
-            w1_05 ~~ w5_05
-            w1_09 ~~ w5_09
-            w1_11 ~~ w5_11
-            w1_13 ~~ w5_13
-            w1_14 ~~ w5_14
-            w1_15 ~~ w5_15
-            w1_16 ~~ w5_16
-            w1_17 ~~ w5_17
-            w1_18 ~~ w5_18
+            w1_05 ~~ cov15*w5_05
+            w1_09 ~~ cov15*w5_09
+            w1_11 ~~ cov15*w5_11
+            w1_13 ~~ cov15*w5_13
+            w1_14 ~~ cov15*w5_14
+            w1_15 ~~ cov15*w5_15
+            w1_16 ~~ cov15*w5_16
+            w1_17 ~~ cov15*w5_17
+            w1_18 ~~ cov15*w5_18
             
-            w2_05 ~~ w3_05
-            w2_09 ~~ w3_09
-            w2_11 ~~ w3_11
-            w2_13 ~~ w3_13
-            w2_14 ~~ w3_14
-            w2_15 ~~ w3_15
-            w2_16 ~~ w3_16
-            w2_17 ~~ w3_17
-            w2_18 ~~ w3_18
+            w2_05 ~~ cov23*w3_05
+            w2_09 ~~ cov23*w3_09
+            w2_11 ~~ cov23*w3_11
+            w2_13 ~~ cov23*w3_13
+            w2_14 ~~ cov23*w3_14
+            w2_15 ~~ cov23*w3_15
+            w2_16 ~~ cov23*w3_16
+            w2_17 ~~ cov23*w3_17
+            w2_18 ~~ cov23*w3_18
             
-            w2_05 ~~ w4_05
-            w2_09 ~~ w4_09
-            w2_11 ~~ w4_11
-            w2_13 ~~ w4_13
-            w2_14 ~~ w4_14
-            w2_15 ~~ w4_15
-            w2_16 ~~ w4_16
-            w2_17 ~~ w4_17
-            w2_18 ~~ w4_18
+            w2_05 ~~ cov24*w4_05
+            w2_09 ~~ cov24*w4_09
+            w2_11 ~~ cov24*w4_11
+            w2_13 ~~ cov24*w4_13
+            w2_14 ~~ cov24*w4_14
+            w2_15 ~~ cov24*w4_15
+            w2_16 ~~ cov24*w4_16
+            w2_17 ~~ cov24*w4_17
+            w2_18 ~~ cov24*w4_18
             
-            w2_05 ~~ w5_05
-            w2_09 ~~ w5_09
-            w2_11 ~~ w5_11
-            w2_13 ~~ w5_13
-            w2_14 ~~ w5_14
-            w2_15 ~~ w5_15
-            w2_16 ~~ w5_16
-            w2_17 ~~ w5_17
-            w2_18 ~~ w5_18
+            w2_05 ~~ cov25*w5_05
+            w2_09 ~~ cov25*w5_09
+            w2_11 ~~ cov25*w5_11
+            w2_13 ~~ cov25*w5_13
+            w2_14 ~~ cov25*w5_14
+            w2_15 ~~ cov25*w5_15
+            w2_16 ~~ cov25*w5_16
+            w2_17 ~~ cov25*w5_17
+            w2_18 ~~ cov25*w5_18
             
-            w3_05 ~~ w4_05
-            w3_09 ~~ w4_09
-            w3_11 ~~ w4_11
-            w3_13 ~~ w4_13
-            w3_14 ~~ w4_14
-            w3_15 ~~ w4_15
-            w3_16 ~~ w4_16
-            w3_17 ~~ w4_17
-            w3_18 ~~ w4_18
+            w3_05 ~~ cov34*w4_05
+            w3_09 ~~ cov34*w4_09
+            w3_11 ~~ cov34*w4_11
+            w3_13 ~~ cov34*w4_13
+            w3_14 ~~ cov34*w4_14
+            w3_15 ~~ cov34*w4_15
+            w3_16 ~~ cov34*w4_16
+            w3_17 ~~ cov34*w4_17
+            w3_18 ~~ cov34*w4_18
             
-            w3_05 ~~ w5_05
-            w3_09 ~~ w5_09
-            w3_11 ~~ w5_11
-            w3_13 ~~ w5_13
-            w3_14 ~~ w5_14
-            w3_15 ~~ w5_15
-            w3_16 ~~ w5_16
-            w3_17 ~~ w5_17
-            w3_18 ~~ w5_18
+            w3_05 ~~ cov35*w5_05
+            w3_09 ~~ cov35*w5_09
+            w3_11 ~~ cov35*w5_11
+            w3_13 ~~ cov35*w5_13
+            w3_14 ~~ cov35*w5_14
+            w3_15 ~~ cov35*w5_15
+            w3_16 ~~ cov35*w5_16
+            w3_17 ~~ cov35*w5_17
+            w3_18 ~~ cov35*w5_18
             
-            w4_05 ~~ w5_05
-            w4_09 ~~ w5_09
-            w4_11 ~~ w5_11
-            w4_13 ~~ w5_13
-            w4_14 ~~ w5_14
-            w4_15 ~~ w5_15
-            w4_16 ~~ w5_16
-            w4_17 ~~ w5_17
-            w4_18 ~~ w5_18
+            w4_05 ~~ cov45*w5_05
+            w4_09 ~~ cov45*w5_09
+            w4_11 ~~ cov45*w5_11
+            w4_13 ~~ cov45*w5_13
+            w4_14 ~~ cov45*w5_14
+            w4_15 ~~ cov45*w5_15
+            w4_16 ~~ cov45*w5_16
+            w4_17 ~~ cov45*w5_17
+            w4_18 ~~ cov45*w5_18
             
             # Estimate the variance and covariance of the random intercepts
             ri1 ~~ ri1
@@ -393,59 +491,59 @@ fitRICLPM <- function(d) {
             
             # Estimate the (residual) variance of the within-person centered variables
             w1_02 ~~ w1_02
-            w1_05 ~~ w1_05
-            w1_09 ~~ w1_09
-            w1_11 ~~ w1_11
-            w1_13 ~~ w1_13
-            w1_14 ~~ w1_14
-            w1_15 ~~ w1_15
-            w1_16 ~~ w1_16
-            w1_17 ~~ w1_17
-            w1_18 ~~ w1_18
+            w1_05 ~~ var1*w1_05
+            w1_09 ~~ var1*w1_09
+            w1_11 ~~ var1*w1_11
+            w1_13 ~~ var1*w1_13
+            w1_14 ~~ var1*w1_14
+            w1_15 ~~ var1*w1_15
+            w1_16 ~~ var1*w1_16
+            w1_17 ~~ var1*w1_17
+            w1_18 ~~ var1*w1_18
             
             w2_02 ~~ w2_02
-            w2_05 ~~ w2_05
-            w2_09 ~~ w2_09
-            w2_11 ~~ w2_11
-            w2_13 ~~ w2_13
-            w2_14 ~~ w2_14
-            w2_15 ~~ w2_15
-            w2_16 ~~ w2_16
-            w2_17 ~~ w2_17
-            w2_18 ~~ w2_18
+            w2_05 ~~ var2*w2_05
+            w2_09 ~~ var2*w2_09
+            w2_11 ~~ var2*w2_11
+            w2_13 ~~ var2*w2_13
+            w2_14 ~~ var2*w2_14
+            w2_15 ~~ var2*w2_15
+            w2_16 ~~ var2*w2_16
+            w2_17 ~~ var2*w2_17
+            w2_18 ~~ var2*w2_18
             
             w3_02 ~~ w3_02
-            w3_05 ~~ w3_05
-            w3_09 ~~ w3_09
-            w3_11 ~~ w3_11
-            w3_13 ~~ w3_13
-            w3_14 ~~ w3_14
-            w3_15 ~~ w3_15
-            w3_16 ~~ w3_16
-            w3_17 ~~ w3_17
-            w3_18 ~~ w3_18
+            w3_05 ~~ var3*w3_05
+            w3_09 ~~ var3*w3_09
+            w3_11 ~~ var3*w3_11
+            w3_13 ~~ var3*w3_13
+            w3_14 ~~ var3*w3_14
+            w3_15 ~~ var3*w3_15
+            w3_16 ~~ var3*w3_16
+            w3_17 ~~ var3*w3_17
+            w3_18 ~~ var3*w3_18
             
             w4_02 ~~ w4_02
-            w4_05 ~~ w4_05
-            w4_09 ~~ w4_09
-            w4_11 ~~ w4_11
-            w4_13 ~~ w4_13
-            w4_14 ~~ w4_14
-            w4_15 ~~ w4_15
-            w4_16 ~~ w4_16
-            w4_17 ~~ w4_17
-            w4_18 ~~ w4_18
+            w4_05 ~~ var4*w4_05
+            w4_09 ~~ var4*w4_09
+            w4_11 ~~ var4*w4_11
+            w4_13 ~~ var4*w4_13
+            w4_14 ~~ var4*w4_14
+            w4_15 ~~ var4*w4_15
+            w4_16 ~~ var4*w4_16
+            w4_17 ~~ var4*w4_17
+            w4_18 ~~ var4*w4_18
             
             w5_02 ~~ w5_02
-            w5_05 ~~ w5_05
-            w5_09 ~~ w5_09
-            w5_11 ~~ w5_11
-            w5_13 ~~ w5_13
-            w5_14 ~~ w5_14
-            w5_15 ~~ w5_15
-            w5_16 ~~ w5_16
-            w5_17 ~~ w5_17
-            w5_18 ~~ w5_18
+            w5_05 ~~ var5*w5_05
+            w5_09 ~~ var5*w5_09
+            w5_11 ~~ var5*w5_11
+            w5_13 ~~ var5*w5_13
+            w5_14 ~~ var5*w5_14
+            w5_15 ~~ var5*w5_15
+            w5_16 ~~ var5*w5_16
+            w5_17 ~~ var5*w5_17
+            w5_18 ~~ var5*w5_18
   
             # Estimate the means
             ContactsMask.2 + ContactsMask.5 + ContactsMask.9 + ContactsMask.11 + ContactsMask.13 + ContactsMask.14 + ContactsMask.15 + ContactsMask.16 + ContactsMask.17 + ContactsMask.18 ~ 1
@@ -453,8 +551,739 @@ fitRICLPM <- function(d) {
             DesNorms.2 + DesNorms.5 + DesNorms.9 + DesNorms.11 + DesNorms.13 + DesNorms.14 + DesNorms.15 + DesNorms.16 + DesNorms.17 + DesNorms.18 ~ 1
             FactBeliefs.2 + FactBeliefs.5 + FactBeliefs.9 + FactBeliefs.11 + FactBeliefs.13 + FactBeliefs.14 + FactBeliefs.15 + FactBeliefs.16 + FactBeliefs.17 + FactBeliefs.18 ~ 1
             PersNorms.2 + PersNorms.5 + PersNorms.9 + PersNorms.11 + PersNorms.13 + PersNorms.14 + PersNorms.15 + PersNorms.16 + PersNorms.17 + PersNorms.18 ~ 1'
+  # remove constraints for unconstrained model
+  if (!constrained) {
+    constraints <- c("b11","b12","b13","b14","b15",
+                     "b21","b22","b23","b24","b25",
+                     "b31","b32","b33","b34","b35",
+                     "b41","b42","b43","b44","b45",
+                     "b51","b52","b53","b54","b55",
+                     "cov12","cov13","cov14","cov15","cov23",
+                     "cov24","cov25","cov34","cov35","cov45",
+                     "var1","var2","var3","var4","var5")
+    for (i in constraints) model <- str_replace_all(model, fixed(paste0(i, "*")), "")
+  }
+  # fit model
+  out <- lavaan(model, data = d, missing = "fiml", meanstructure = TRUE, int.ov.free = TRUE)
+  return(out)
+}
+
+# reduced model (without factual and personal beliefs)
+fitRICLPM2 <- function(d, constrained = FALSE) {
+  # prepare covariates for modelling
+  d <-
+    d %>%
+    # fill in missing age observation
+    mutate(Age.1 = ifelse(is.na(Age.1), 57, Age.1)) %>%
+    # prepare covariates
+    mutate(
+      Sex.1 = ifelse(Sex.1 == 3, NA, Sex.1 - 1),
+      AgeStd.1 = as.numeric(scale(Age.1)),
+      EthnicityBlack.1 = ifelse(Ethnicity.1 == "Black or African American", 1, 0),
+      EthnicityAsian.1 = ifelse(Ethnicity.1 == "Asian or Pacific Islander", 1, 0),
+      EthnicityHispanic.1 = ifelse(Ethnicity.1 == "Hispanic or Latino/a", 1, 0),
+      EthnicityOther.1 = ifelse(Ethnicity.1 %in% c("Native American", "Other"), 1, 0),
+      PoliticalOrientationStd.1 = as.numeric(scale(PoliticalOrientation.1)),
+      # SES is mean average of education, income, and subjective SES
+      SESStd.1 = as.numeric(scale((Education.1 + Income.1 + SSES.1) / 3))
+    )
+  # model code for riclpm
+  # https://jeroendmulder.github.io/RI-CLPM/lavaan.html
+  model <- '# Create between components (random intercepts)
+            ri1 =~ 1*ContactsMask.2 + 1*ContactsMask.5 + 1*ContactsMask.9 + 1*ContactsMask.11 + 1*ContactsMask.13 + 1*ContactsMask.14 + 1*ContactsMask.15 + 1*ContactsMask.16 + 1*ContactsMask.17 + 1*ContactsMask.18
+            ri2 =~ 1*InjNorms.2 + 1*InjNorms.5 + 1*InjNorms.9 + 1*InjNorms.11 + 1*InjNorms.13 + 1*InjNorms.14 + 1*InjNorms.15 + 1*InjNorms.16 + 1*InjNorms.17 + 1*InjNorms.18
+            ri3 =~ 1*DesNorms.2 + 1*DesNorms.5 + 1*DesNorms.9 + 1*DesNorms.11 + 1*DesNorms.13 + 1*DesNorms.14 + 1*DesNorms.15 + 1*DesNorms.16 + 1*DesNorms.17 + 1*DesNorms.18
+            
+            # Create within-person centered variables
+            w1_02 =~ 1*ContactsMask.2
+            w1_05 =~ 1*ContactsMask.5
+            w1_09 =~ 1*ContactsMask.9
+            w1_11 =~ 1*ContactsMask.11
+            w1_13 =~ 1*ContactsMask.13
+            w1_14 =~ 1*ContactsMask.14
+            w1_15 =~ 1*ContactsMask.15
+            w1_16 =~ 1*ContactsMask.16
+            w1_17 =~ 1*ContactsMask.17
+            w1_18 =~ 1*ContactsMask.18
+            
+            w2_02 =~ 1*InjNorms.2
+            w2_05 =~ 1*InjNorms.5
+            w2_09 =~ 1*InjNorms.9
+            w2_11 =~ 1*InjNorms.11
+            w2_13 =~ 1*InjNorms.13
+            w2_14 =~ 1*InjNorms.14
+            w2_15 =~ 1*InjNorms.15
+            w2_16 =~ 1*InjNorms.16
+            w2_17 =~ 1*InjNorms.17
+            w2_18 =~ 1*InjNorms.18
+            
+            w3_02 =~ 1*DesNorms.2
+            w3_05 =~ 1*DesNorms.5
+            w3_09 =~ 1*DesNorms.9
+            w3_11 =~ 1*DesNorms.11
+            w3_13 =~ 1*DesNorms.13
+            w3_14 =~ 1*DesNorms.14
+            w3_15 =~ 1*DesNorms.15
+            w3_16 =~ 1*DesNorms.16
+            w3_17 =~ 1*DesNorms.17
+            w3_18 =~ 1*DesNorms.18
+            
+            # Regression of observed variables on time-invariant controls
+            ContactsMask.2 + ContactsMask.5 + ContactsMask.9 + ContactsMask.11 + ContactsMask.13 + ContactsMask.14 + ContactsMask.15 + ContactsMask.16 + ContactsMask.17 + ContactsMask.18 ~ Sex.1 + AgeStd.1 + EthnicityBlack.1 + EthnicityAsian.1 + EthnicityHispanic.1 + EthnicityOther.1 + PoliticalOrientation.1 + SESStd.1
+            InjNorms.2 + InjNorms.5 + InjNorms.9 + InjNorms.11 + InjNorms.13 + InjNorms.14 + InjNorms.15 + InjNorms.16 + InjNorms.17 + InjNorms.18 ~ Sex.1 + AgeStd.1 + EthnicityBlack.1 + EthnicityAsian.1 + EthnicityHispanic.1 + EthnicityOther.1 + PoliticalOrientation.1 + SESStd.1
+            DesNorms.2 + DesNorms.5 + DesNorms.9 + DesNorms.11 + DesNorms.13 + DesNorms.14 + DesNorms.15 + DesNorms.16 + DesNorms.17 + DesNorms.18 ~ Sex.1 + AgeStd.1 + EthnicityBlack.1 + EthnicityAsian.1 + EthnicityHispanic.1 + EthnicityOther.1 + PoliticalOrientation.1 + SESStd.1
+            
+            # Estimate the lagged effects between the within-person centered variables (with time-variant control)
+            w1_05 ~ b11*w1_02 + b12*w2_02 + b13*w3_02
+            w1_09 ~ b11*w1_05 + b12*w2_05 + b13*w3_05
+            w1_11 ~ b11*w1_09 + b12*w2_09 + b13*w3_09
+            w1_13 ~ b11*w1_11 + b12*w2_11 + b13*w3_11
+            w1_14 ~ b11*w1_13 + b12*w2_13 + b13*w3_13
+            w1_15 ~ b11*w1_14 + b12*w2_14 + b13*w3_14
+            w1_16 ~ b11*w1_15 + b12*w2_15 + b13*w3_15
+            w1_17 ~ b11*w1_16 + b12*w2_16 + b13*w3_16
+            w1_18 ~ b11*w1_17 + b12*w2_17 + b13*w3_17
+            
+            w2_05 ~ b21*w1_02 + b22*w2_02 + b23*w3_02
+            w2_09 ~ b21*w1_05 + b22*w2_05 + b23*w3_05
+            w2_11 ~ b21*w1_09 + b22*w2_09 + b23*w3_09
+            w2_13 ~ b21*w1_11 + b22*w2_11 + b23*w3_11
+            w2_14 ~ b21*w1_13 + b22*w2_13 + b23*w3_13
+            w2_15 ~ b21*w1_14 + b22*w2_14 + b23*w3_14
+            w2_16 ~ b21*w1_15 + b22*w2_15 + b23*w3_15
+            w2_17 ~ b21*w1_16 + b22*w2_16 + b23*w3_16
+            w2_18 ~ b21*w1_17 + b22*w2_17 + b23*w3_17
+            
+            w3_05 ~ b31*w1_02 + b32*w2_02 + b33*w3_02
+            w3_09 ~ b31*w1_05 + b32*w2_05 + b33*w3_05
+            w3_11 ~ b31*w1_09 + b32*w2_09 + b33*w3_09
+            w3_13 ~ b31*w1_11 + b32*w2_11 + b33*w3_11
+            w3_14 ~ b31*w1_13 + b32*w2_13 + b33*w3_13
+            w3_15 ~ b31*w1_14 + b32*w2_14 + b33*w3_14
+            w3_16 ~ b31*w1_15 + b32*w2_15 + b33*w3_15
+            w3_17 ~ b31*w1_16 + b32*w2_16 + b33*w3_16
+            w3_18 ~ b31*w1_17 + b32*w2_17 + b33*w3_17
+            
+            # Estimate the covariance between the within-person centered variables at the first wave
+            w1_02 ~~ w2_02
+            w1_02 ~~ w3_02
+            w2_02 ~~ w3_02
+            
+            # Estimate the covariances between the residuals of the within-person centered variables
+            w1_05 ~~ cov12*w2_05
+            w1_09 ~~ cov12*w2_09
+            w1_11 ~~ cov12*w2_11
+            w1_13 ~~ cov12*w2_13
+            w1_14 ~~ cov12*w2_14
+            w1_15 ~~ cov12*w2_15
+            w1_16 ~~ cov12*w2_16
+            w1_17 ~~ cov12*w2_17
+            w1_18 ~~ cov12*w2_18
+            
+            w1_05 ~~ cov13*w3_05
+            w1_09 ~~ cov13*w3_09
+            w1_11 ~~ cov13*w3_11
+            w1_13 ~~ cov13*w3_13
+            w1_14 ~~ cov13*w3_14
+            w1_15 ~~ cov13*w3_15
+            w1_16 ~~ cov13*w3_16
+            w1_17 ~~ cov13*w3_17
+            w1_18 ~~ cov13*w3_18
+            
+            w2_05 ~~ cov23*w3_05
+            w2_09 ~~ cov23*w3_09
+            w2_11 ~~ cov23*w3_11
+            w2_13 ~~ cov23*w3_13
+            w2_14 ~~ cov23*w3_14
+            w2_15 ~~ cov23*w3_15
+            w2_16 ~~ cov23*w3_16
+            w2_17 ~~ cov23*w3_17
+            w2_18 ~~ cov23*w3_18
+            
+            # Estimate the variance and covariance of the random intercepts
+            ri1 ~~ ri1
+            ri2 ~~ ri2
+            ri3 ~~ ri3
+            
+            ri1 ~~ ri2
+            ri1 ~~ ri3
+            ri2 ~~ ri3
+            
+            # Estimate the (residual) variance of the within-person centered variables
+            w1_02 ~~ w1_02
+            w1_05 ~~ var1*w1_05
+            w1_09 ~~ var1*w1_09
+            w1_11 ~~ var1*w1_11
+            w1_13 ~~ var1*w1_13
+            w1_14 ~~ var1*w1_14
+            w1_15 ~~ var1*w1_15
+            w1_16 ~~ var1*w1_16
+            w1_17 ~~ var1*w1_17
+            w1_18 ~~ var1*w1_18
+            
+            w2_02 ~~ w2_02
+            w2_05 ~~ var2*w2_05
+            w2_09 ~~ var2*w2_09
+            w2_11 ~~ var2*w2_11
+            w2_13 ~~ var2*w2_13
+            w2_14 ~~ var2*w2_14
+            w2_15 ~~ var2*w2_15
+            w2_16 ~~ var2*w2_16
+            w2_17 ~~ var2*w2_17
+            w2_18 ~~ var2*w2_18
+            
+            w3_02 ~~ w3_02
+            w3_05 ~~ var3*w3_05
+            w3_09 ~~ var3*w3_09
+            w3_11 ~~ var3*w3_11
+            w3_13 ~~ var3*w3_13
+            w3_14 ~~ var3*w3_14
+            w3_15 ~~ var3*w3_15
+            w3_16 ~~ var3*w3_16
+            w3_17 ~~ var3*w3_17
+            w3_18 ~~ var3*w3_18
+            
+            # Estimate the means
+            ContactsMask.2 + ContactsMask.5 + ContactsMask.9 + ContactsMask.11 + ContactsMask.13 + ContactsMask.14 + ContactsMask.15 + ContactsMask.16 + ContactsMask.17 + ContactsMask.18 ~ 1
+            InjNorms.2 + InjNorms.5 + InjNorms.9 + InjNorms.11 + InjNorms.13 + InjNorms.14 + InjNorms.15 + InjNorms.16 + InjNorms.17 + InjNorms.18 ~ 1
+            DesNorms.2 + DesNorms.5 + DesNorms.9 + DesNorms.11 + DesNorms.13 + DesNorms.14 + DesNorms.15 + DesNorms.16 + DesNorms.17 + DesNorms.18 ~ 1'
+  # remove constraints for unconstrained model
+  if (!constrained) {
+    constraints <- c("b11","b12","b13",
+                     "b21","b22","b23",
+                     "b31","b32","b33",
+                     "b41","b42","b43",
+                     "b51","b52","b53",
+                     "cov12","cov13","cov23",
+                     "var1","var2","var3")
+    for (i in constraints) model <- str_replace_all(model, fixed(paste0(i, "*")), "")
+  }
+  # fit model
+  out <- lavaan(model, data = d, missing = "fiml", meanstructure = TRUE, int.ov.free = TRUE)
+  return(out)
+}
+
+# reduced model (without any covariates)
+fitRICLPM3 <- function(d, constrained = FALSE) {
+  # model code for riclpm
+  # https://jeroendmulder.github.io/RI-CLPM/lavaan.html
+  model <- '# Create between components (random intercepts)
+            ri1 =~ 1*ContactsMask.2 + 1*ContactsMask.5 + 1*ContactsMask.9 + 1*ContactsMask.11 + 1*ContactsMask.13 + 1*ContactsMask.14 + 1*ContactsMask.15 + 1*ContactsMask.16 + 1*ContactsMask.17 + 1*ContactsMask.18
+            ri2 =~ 1*InjNorms.2 + 1*InjNorms.5 + 1*InjNorms.9 + 1*InjNorms.11 + 1*InjNorms.13 + 1*InjNorms.14 + 1*InjNorms.15 + 1*InjNorms.16 + 1*InjNorms.17 + 1*InjNorms.18
+            ri3 =~ 1*DesNorms.2 + 1*DesNorms.5 + 1*DesNorms.9 + 1*DesNorms.11 + 1*DesNorms.13 + 1*DesNorms.14 + 1*DesNorms.15 + 1*DesNorms.16 + 1*DesNorms.17 + 1*DesNorms.18
+            
+            # Create within-person centered variables
+            w1_02 =~ 1*ContactsMask.2
+            w1_05 =~ 1*ContactsMask.5
+            w1_09 =~ 1*ContactsMask.9
+            w1_11 =~ 1*ContactsMask.11
+            w1_13 =~ 1*ContactsMask.13
+            w1_14 =~ 1*ContactsMask.14
+            w1_15 =~ 1*ContactsMask.15
+            w1_16 =~ 1*ContactsMask.16
+            w1_17 =~ 1*ContactsMask.17
+            w1_18 =~ 1*ContactsMask.18
+            
+            w2_02 =~ 1*InjNorms.2
+            w2_05 =~ 1*InjNorms.5
+            w2_09 =~ 1*InjNorms.9
+            w2_11 =~ 1*InjNorms.11
+            w2_13 =~ 1*InjNorms.13
+            w2_14 =~ 1*InjNorms.14
+            w2_15 =~ 1*InjNorms.15
+            w2_16 =~ 1*InjNorms.16
+            w2_17 =~ 1*InjNorms.17
+            w2_18 =~ 1*InjNorms.18
+            
+            w3_02 =~ 1*DesNorms.2
+            w3_05 =~ 1*DesNorms.5
+            w3_09 =~ 1*DesNorms.9
+            w3_11 =~ 1*DesNorms.11
+            w3_13 =~ 1*DesNorms.13
+            w3_14 =~ 1*DesNorms.14
+            w3_15 =~ 1*DesNorms.15
+            w3_16 =~ 1*DesNorms.16
+            w3_17 =~ 1*DesNorms.17
+            w3_18 =~ 1*DesNorms.18
+            
+            # Estimate the lagged effects between the within-person centered variables (with time-variant control)
+            w1_05 ~ b11*w1_02 + b12*w2_02 + b13*w3_02
+            w1_09 ~ b11*w1_05 + b12*w2_05 + b13*w3_05
+            w1_11 ~ b11*w1_09 + b12*w2_09 + b13*w3_09
+            w1_13 ~ b11*w1_11 + b12*w2_11 + b13*w3_11
+            w1_14 ~ b11*w1_13 + b12*w2_13 + b13*w3_13
+            w1_15 ~ b11*w1_14 + b12*w2_14 + b13*w3_14
+            w1_16 ~ b11*w1_15 + b12*w2_15 + b13*w3_15
+            w1_17 ~ b11*w1_16 + b12*w2_16 + b13*w3_16
+            w1_18 ~ b11*w1_17 + b12*w2_17 + b13*w3_17
+            
+            w2_05 ~ b21*w1_02 + b22*w2_02 + b23*w3_02
+            w2_09 ~ b21*w1_05 + b22*w2_05 + b23*w3_05
+            w2_11 ~ b21*w1_09 + b22*w2_09 + b23*w3_09
+            w2_13 ~ b21*w1_11 + b22*w2_11 + b23*w3_11
+            w2_14 ~ b21*w1_13 + b22*w2_13 + b23*w3_13
+            w2_15 ~ b21*w1_14 + b22*w2_14 + b23*w3_14
+            w2_16 ~ b21*w1_15 + b22*w2_15 + b23*w3_15
+            w2_17 ~ b21*w1_16 + b22*w2_16 + b23*w3_16
+            w2_18 ~ b21*w1_17 + b22*w2_17 + b23*w3_17
+            
+            w3_05 ~ b31*w1_02 + b32*w2_02 + b33*w3_02
+            w3_09 ~ b31*w1_05 + b32*w2_05 + b33*w3_05
+            w3_11 ~ b31*w1_09 + b32*w2_09 + b33*w3_09
+            w3_13 ~ b31*w1_11 + b32*w2_11 + b33*w3_11
+            w3_14 ~ b31*w1_13 + b32*w2_13 + b33*w3_13
+            w3_15 ~ b31*w1_14 + b32*w2_14 + b33*w3_14
+            w3_16 ~ b31*w1_15 + b32*w2_15 + b33*w3_15
+            w3_17 ~ b31*w1_16 + b32*w2_16 + b33*w3_16
+            w3_18 ~ b31*w1_17 + b32*w2_17 + b33*w3_17
+            
+            # Estimate the covariance between the within-person centered variables at the first wave
+            w1_02 ~~ w2_02
+            w1_02 ~~ w3_02
+            w2_02 ~~ w3_02
+            
+            # Estimate the covariances between the residuals of the within-person centered variables
+            w1_05 ~~ cov12*w2_05
+            w1_09 ~~ cov12*w2_09
+            w1_11 ~~ cov12*w2_11
+            w1_13 ~~ cov12*w2_13
+            w1_14 ~~ cov12*w2_14
+            w1_15 ~~ cov12*w2_15
+            w1_16 ~~ cov12*w2_16
+            w1_17 ~~ cov12*w2_17
+            w1_18 ~~ cov12*w2_18
+            
+            w1_05 ~~ cov13*w3_05
+            w1_09 ~~ cov13*w3_09
+            w1_11 ~~ cov13*w3_11
+            w1_13 ~~ cov13*w3_13
+            w1_14 ~~ cov13*w3_14
+            w1_15 ~~ cov13*w3_15
+            w1_16 ~~ cov13*w3_16
+            w1_17 ~~ cov13*w3_17
+            w1_18 ~~ cov13*w3_18
+            
+            w2_05 ~~ cov23*w3_05
+            w2_09 ~~ cov23*w3_09
+            w2_11 ~~ cov23*w3_11
+            w2_13 ~~ cov23*w3_13
+            w2_14 ~~ cov23*w3_14
+            w2_15 ~~ cov23*w3_15
+            w2_16 ~~ cov23*w3_16
+            w2_17 ~~ cov23*w3_17
+            w2_18 ~~ cov23*w3_18
+            
+            # Estimate the variance and covariance of the random intercepts
+            ri1 ~~ ri1
+            ri2 ~~ ri2
+            ri3 ~~ ri3
+            
+            ri1 ~~ ri2
+            ri1 ~~ ri3
+            ri2 ~~ ri3
+            
+            # Estimate the (residual) variance of the within-person centered variables
+            w1_02 ~~ w1_02
+            w1_05 ~~ var1*w1_05
+            w1_09 ~~ var1*w1_09
+            w1_11 ~~ var1*w1_11
+            w1_13 ~~ var1*w1_13
+            w1_14 ~~ var1*w1_14
+            w1_15 ~~ var1*w1_15
+            w1_16 ~~ var1*w1_16
+            w1_17 ~~ var1*w1_17
+            w1_18 ~~ var1*w1_18
+            
+            w2_02 ~~ w2_02
+            w2_05 ~~ var2*w2_05
+            w2_09 ~~ var2*w2_09
+            w2_11 ~~ var2*w2_11
+            w2_13 ~~ var2*w2_13
+            w2_14 ~~ var2*w2_14
+            w2_15 ~~ var2*w2_15
+            w2_16 ~~ var2*w2_16
+            w2_17 ~~ var2*w2_17
+            w2_18 ~~ var2*w2_18
+            
+            w3_02 ~~ w3_02
+            w3_05 ~~ var3*w3_05
+            w3_09 ~~ var3*w3_09
+            w3_11 ~~ var3*w3_11
+            w3_13 ~~ var3*w3_13
+            w3_14 ~~ var3*w3_14
+            w3_15 ~~ var3*w3_15
+            w3_16 ~~ var3*w3_16
+            w3_17 ~~ var3*w3_17
+            w3_18 ~~ var3*w3_18
+            
+            # Estimate the means
+            ContactsMask.2 + ContactsMask.5 + ContactsMask.9 + ContactsMask.11 + ContactsMask.13 + ContactsMask.14 + ContactsMask.15 + ContactsMask.16 + ContactsMask.17 + ContactsMask.18 ~ 1
+            InjNorms.2 + InjNorms.5 + InjNorms.9 + InjNorms.11 + InjNorms.13 + InjNorms.14 + InjNorms.15 + InjNorms.16 + InjNorms.17 + InjNorms.18 ~ 1
+            DesNorms.2 + DesNorms.5 + DesNorms.9 + DesNorms.11 + DesNorms.13 + DesNorms.14 + DesNorms.15 + DesNorms.16 + DesNorms.17 + DesNorms.18 ~ 1'
+  # remove constraints for unconstrained model
+  if (!constrained) {
+    constraints <- c("b11","b12","b13",
+                     "b21","b22","b23",
+                     "b31","b32","b33",
+                     "cov12","cov13","cov23",
+                     "var1","var2","var3")
+    for (i in constraints) model <- str_replace_all(model, fixed(paste0(i, "*")), "")
+  }
+  # fit model
+  out <- lavaan(model, data = d, missing = "fiml", meanstructure = TRUE, int.ov.free = TRUE)
+  return(out)
+}
+
+# multigroup model
+fitRICLPM4 <- function(d, constrained = FALSE) {
+  # prepare covariates for modelling
+  d <-
+    d %>%
+    # fill in missing age observation
+    mutate(Age.1 = ifelse(is.na(Age.1), 57, Age.1)) %>%
+    # prepare covariates
+    mutate(
+      Sex.1 = ifelse(Sex.1 == 3, NA, Sex.1 - 1),
+      AgeStd.1 = as.numeric(scale(Age.1)),
+      EthnicityBlack.1 = ifelse(Ethnicity.1 == "Black or African American", 1, 0),
+      EthnicityAsian.1 = ifelse(Ethnicity.1 == "Asian or Pacific Islander", 1, 0),
+      EthnicityHispanic.1 = ifelse(Ethnicity.1 == "Hispanic or Latino/a", 1, 0),
+      EthnicityOther.1 = ifelse(Ethnicity.1 %in% c("Native American", "Other"), 1, 0),
+      PoliticalOrientationStd.1 = as.numeric(scale(PoliticalOrientation.1)),
+      # SES is mean average of education, income, and subjective SES
+      SESStd.1 = as.numeric(scale((Education.1 + Income.1 + SSES.1) / 3))
+    )
+  # model code for riclpm
+  # https://jeroendmulder.github.io/RI-CLPM/lavaan.html
+  model <- '# Create between components (random intercepts)
+            ri1 =~ 1*ContactsMask.2 + 1*ContactsMask.5 + 1*ContactsMask.9 + 1*ContactsMask.11 + 1*ContactsMask.13 + 1*ContactsMask.14 + 1*ContactsMask.15 + 1*ContactsMask.16 + 1*ContactsMask.17 + 1*ContactsMask.18
+            ri2 =~ 1*InjNorms.2 + 1*InjNorms.5 + 1*InjNorms.9 + 1*InjNorms.11 + 1*InjNorms.13 + 1*InjNorms.14 + 1*InjNorms.15 + 1*InjNorms.16 + 1*InjNorms.17 + 1*InjNorms.18
+            ri3 =~ 1*DesNorms.2 + 1*DesNorms.5 + 1*DesNorms.9 + 1*DesNorms.11 + 1*DesNorms.13 + 1*DesNorms.14 + 1*DesNorms.15 + 1*DesNorms.16 + 1*DesNorms.17 + 1*DesNorms.18
+            ri4 =~ 1*FactBeliefs.2 + 1*FactBeliefs.5 + 1*FactBeliefs.9 + 1*FactBeliefs.11 + 1*FactBeliefs.13 + 1*FactBeliefs.14 + 1*FactBeliefs.15 + 1*FactBeliefs.16 + 1*FactBeliefs.17 + 1*FactBeliefs.18
+            ri5 =~ 1*PersNorms.2 + 1*PersNorms.5 + 1*PersNorms.9 + 1*PersNorms.11 + 1*PersNorms.13 + 1*PersNorms.14 + 1*PersNorms.15 + 1*PersNorms.16 + 1*PersNorms.17 + 1*PersNorms.18
+            
+            # Create within-person centered variables
+            w1_02 =~ 1*ContactsMask.2
+            w1_05 =~ 1*ContactsMask.5
+            w1_09 =~ 1*ContactsMask.9
+            w1_11 =~ 1*ContactsMask.11
+            w1_13 =~ 1*ContactsMask.13
+            w1_14 =~ 1*ContactsMask.14
+            w1_15 =~ 1*ContactsMask.15
+            w1_16 =~ 1*ContactsMask.16
+            w1_17 =~ 1*ContactsMask.17
+            w1_18 =~ 1*ContactsMask.18
+            
+            w2_02 =~ 1*InjNorms.2
+            w2_05 =~ 1*InjNorms.5
+            w2_09 =~ 1*InjNorms.9
+            w2_11 =~ 1*InjNorms.11
+            w2_13 =~ 1*InjNorms.13
+            w2_14 =~ 1*InjNorms.14
+            w2_15 =~ 1*InjNorms.15
+            w2_16 =~ 1*InjNorms.16
+            w2_17 =~ 1*InjNorms.17
+            w2_18 =~ 1*InjNorms.18
+            
+            w3_02 =~ 1*DesNorms.2
+            w3_05 =~ 1*DesNorms.5
+            w3_09 =~ 1*DesNorms.9
+            w3_11 =~ 1*DesNorms.11
+            w3_13 =~ 1*DesNorms.13
+            w3_14 =~ 1*DesNorms.14
+            w3_15 =~ 1*DesNorms.15
+            w3_16 =~ 1*DesNorms.16
+            w3_17 =~ 1*DesNorms.17
+            w3_18 =~ 1*DesNorms.18
+            
+            w4_02 =~ 1*FactBeliefs.2
+            w4_05 =~ 1*FactBeliefs.5
+            w4_09 =~ 1*FactBeliefs.9
+            w4_11 =~ 1*FactBeliefs.11
+            w4_13 =~ 1*FactBeliefs.13
+            w4_14 =~ 1*FactBeliefs.14
+            w4_15 =~ 1*FactBeliefs.15
+            w4_16 =~ 1*FactBeliefs.16
+            w4_17 =~ 1*FactBeliefs.17
+            w4_18 =~ 1*FactBeliefs.18
+            
+            w5_02 =~ 1*PersNorms.2
+            w5_05 =~ 1*PersNorms.5
+            w5_09 =~ 1*PersNorms.9
+            w5_11 =~ 1*PersNorms.11
+            w5_13 =~ 1*PersNorms.13
+            w5_14 =~ 1*PersNorms.14
+            w5_15 =~ 1*PersNorms.15
+            w5_16 =~ 1*PersNorms.16
+            w5_17 =~ 1*PersNorms.17
+            w5_18 =~ 1*PersNorms.18
+            
+            # Regression of observed variables on time-invariant controls
+            ContactsMask.2 + ContactsMask.5 + ContactsMask.9 + ContactsMask.11 + ContactsMask.13 + ContactsMask.14 + ContactsMask.15 + ContactsMask.16 + ContactsMask.17 + ContactsMask.18 ~ Sex.1 + AgeStd.1 + EthnicityBlack.1 + EthnicityAsian.1 + EthnicityHispanic.1 + EthnicityOther.1 + PoliticalOrientation.1 + SESStd.1
+            InjNorms.2 + InjNorms.5 + InjNorms.9 + InjNorms.11 + InjNorms.13 + InjNorms.14 + InjNorms.15 + InjNorms.16 + InjNorms.17 + InjNorms.18 ~ Sex.1 + AgeStd.1 + EthnicityBlack.1 + EthnicityAsian.1 + EthnicityHispanic.1 + EthnicityOther.1 + PoliticalOrientation.1 + SESStd.1
+            DesNorms.2 + DesNorms.5 + DesNorms.9 + DesNorms.11 + DesNorms.13 + DesNorms.14 + DesNorms.15 + DesNorms.16 + DesNorms.17 + DesNorms.18 ~ Sex.1 + AgeStd.1 + EthnicityBlack.1 + EthnicityAsian.1 + EthnicityHispanic.1 + EthnicityOther.1 + PoliticalOrientation.1 + SESStd.1
+            FactBeliefs.2 + FactBeliefs.5 + FactBeliefs.9 + FactBeliefs.11 + FactBeliefs.13 + FactBeliefs.14 + FactBeliefs.15 + FactBeliefs.16 + FactBeliefs.17 + FactBeliefs.18 ~ Sex.1 + AgeStd.1 + EthnicityBlack.1 + EthnicityAsian.1 + EthnicityHispanic.1 + EthnicityOther.1 + PoliticalOrientation.1 + SESStd.1
+            PersNorms.2 + PersNorms.5 + PersNorms.9 + PersNorms.11 + PersNorms.13 + PersNorms.14 + PersNorms.15 + PersNorms.16 + PersNorms.17 + PersNorms.18 ~ Sex.1 + AgeStd.1 + EthnicityBlack.1 + EthnicityAsian.1 + EthnicityHispanic.1 + EthnicityOther.1 + PoliticalOrientation.1 + SESStd.1
+            
+            # Estimate the lagged effects between the within-person centered variables (with time-variant control)
+            w1_05 ~ c(b11_1, b11_2)*w1_02 + c(b12_1, b12_2)*w2_02 + c(b13_1, b13_2)*w3_02 + c(b14_1, b14_2)*w4_02 + c(b15_1, b15_2)*w5_02
+            w1_09 ~ c(b11_1, b11_2)*w1_05 + c(b12_1, b12_2)*w2_05 + c(b13_1, b13_2)*w3_05 + c(b14_1, b14_2)*w4_05 + c(b15_1, b15_2)*w5_05
+            w1_11 ~ c(b11_1, b11_2)*w1_09 + c(b12_1, b12_2)*w2_09 + c(b13_1, b13_2)*w3_09 + c(b14_1, b14_2)*w4_09 + c(b15_1, b15_2)*w5_09
+            w1_13 ~ c(b11_1, b11_2)*w1_11 + c(b12_1, b12_2)*w2_11 + c(b13_1, b13_2)*w3_11 + c(b14_1, b14_2)*w4_11 + c(b15_1, b15_2)*w5_11
+            w1_14 ~ c(b11_1, b11_2)*w1_13 + c(b12_1, b12_2)*w2_13 + c(b13_1, b13_2)*w3_13 + c(b14_1, b14_2)*w4_13 + c(b15_1, b15_2)*w5_13
+            w1_15 ~ c(b11_1, b11_2)*w1_14 + c(b12_1, b12_2)*w2_14 + c(b13_1, b13_2)*w3_14 + c(b14_1, b14_2)*w4_14 + c(b15_1, b15_2)*w5_14
+            w1_16 ~ c(b11_1, b11_2)*w1_15 + c(b12_1, b12_2)*w2_15 + c(b13_1, b13_2)*w3_15 + c(b14_1, b14_2)*w4_15 + c(b15_1, b15_2)*w5_15
+            w1_17 ~ c(b11_1, b11_2)*w1_16 + c(b12_1, b12_2)*w2_16 + c(b13_1, b13_2)*w3_16 + c(b14_1, b14_2)*w4_16 + c(b15_1, b15_2)*w5_16
+            w1_18 ~ c(b11_1, b11_2)*w1_17 + c(b12_1, b12_2)*w2_17 + c(b13_1, b13_2)*w3_17 + c(b14_1, b14_2)*w4_17 + c(b15_1, b15_2)*w5_17
+            
+            w2_05 ~ c(b21_1, b21_2)*w1_02 + c(b22_1, b22_2)*w2_02 + c(b23_1, b23_2)*w3_02 + c(b24_1, b24_2)*w4_02 + c(b25_1, b25_2)*w5_02
+            w2_09 ~ c(b21_1, b21_2)*w1_05 + c(b22_1, b22_2)*w2_05 + c(b23_1, b23_2)*w3_05 + c(b24_1, b24_2)*w4_05 + c(b25_1, b25_2)*w5_05
+            w2_11 ~ c(b21_1, b21_2)*w1_09 + c(b22_1, b22_2)*w2_09 + c(b23_1, b23_2)*w3_09 + c(b24_1, b24_2)*w4_09 + c(b25_1, b25_2)*w5_09
+            w2_13 ~ c(b21_1, b21_2)*w1_11 + c(b22_1, b22_2)*w2_11 + c(b23_1, b23_2)*w3_11 + c(b24_1, b24_2)*w4_11 + c(b25_1, b25_2)*w5_11
+            w2_14 ~ c(b21_1, b21_2)*w1_13 + c(b22_1, b22_2)*w2_13 + c(b23_1, b23_2)*w3_13 + c(b24_1, b24_2)*w4_13 + c(b25_1, b25_2)*w5_13
+            w2_15 ~ c(b21_1, b21_2)*w1_14 + c(b22_1, b22_2)*w2_14 + c(b23_1, b23_2)*w3_14 + c(b24_1, b24_2)*w4_14 + c(b25_1, b25_2)*w5_14
+            w2_16 ~ c(b21_1, b21_2)*w1_15 + c(b22_1, b22_2)*w2_15 + c(b23_1, b23_2)*w3_15 + c(b24_1, b24_2)*w4_15 + c(b25_1, b25_2)*w5_15
+            w2_17 ~ c(b21_1, b21_2)*w1_16 + c(b22_1, b22_2)*w2_16 + c(b23_1, b23_2)*w3_16 + c(b24_1, b24_2)*w4_16 + c(b25_1, b25_2)*w5_16
+            w2_18 ~ c(b21_1, b21_2)*w1_17 + c(b22_1, b22_2)*w2_17 + c(b23_1, b23_2)*w3_17 + c(b24_1, b24_2)*w4_17 + c(b25_1, b25_2)*w5_17
+            
+            w3_05 ~ c(b31_1, b31_2)*w1_02 + c(b32_1, b32_2)*w2_02 + c(b33_1, b33_2)*w3_02 + c(b34_1, b34_2)*w4_02 + c(b35_1, b35_2)*w5_02
+            w3_09 ~ c(b31_1, b31_2)*w1_05 + c(b32_1, b32_2)*w2_05 + c(b33_1, b33_2)*w3_05 + c(b34_1, b34_2)*w4_05 + c(b35_1, b35_2)*w5_05
+            w3_11 ~ c(b31_1, b31_2)*w1_09 + c(b32_1, b32_2)*w2_09 + c(b33_1, b33_2)*w3_09 + c(b34_1, b34_2)*w4_09 + c(b35_1, b35_2)*w5_09
+            w3_13 ~ c(b31_1, b31_2)*w1_11 + c(b32_1, b32_2)*w2_11 + c(b33_1, b33_2)*w3_11 + c(b34_1, b34_2)*w4_11 + c(b35_1, b35_2)*w5_11
+            w3_14 ~ c(b31_1, b31_2)*w1_13 + c(b32_1, b32_2)*w2_13 + c(b33_1, b33_2)*w3_13 + c(b34_1, b34_2)*w4_13 + c(b35_1, b35_2)*w5_13
+            w3_15 ~ c(b31_1, b31_2)*w1_14 + c(b32_1, b32_2)*w2_14 + c(b33_1, b33_2)*w3_14 + c(b34_1, b34_2)*w4_14 + c(b35_1, b35_2)*w5_14
+            w3_16 ~ c(b31_1, b31_2)*w1_15 + c(b32_1, b32_2)*w2_15 + c(b33_1, b33_2)*w3_15 + c(b34_1, b34_2)*w4_15 + c(b35_1, b35_2)*w5_15
+            w3_17 ~ c(b31_1, b31_2)*w1_16 + c(b32_1, b32_2)*w2_16 + c(b33_1, b33_2)*w3_16 + c(b34_1, b34_2)*w4_16 + c(b35_1, b35_2)*w5_16
+            w3_18 ~ c(b31_1, b31_2)*w1_17 + c(b32_1, b32_2)*w2_17 + c(b33_1, b33_2)*w3_17 + c(b34_1, b34_2)*w4_17 + c(b35_1, b35_2)*w5_17
+            
+            w4_05 ~ c(b41_1, b41_2)*w1_02 + c(b42_1, b42_2)*w2_02 + c(b43_1, b43_2)*w3_02 + c(b44_1, b44_2)*w4_02 + c(b45_1, b45_2)*w5_02
+            w4_09 ~ c(b41_1, b41_2)*w1_05 + c(b42_1, b42_2)*w2_05 + c(b43_1, b43_2)*w3_05 + c(b44_1, b44_2)*w4_05 + c(b45_1, b45_2)*w5_05
+            w4_11 ~ c(b41_1, b41_2)*w1_09 + c(b42_1, b42_2)*w2_09 + c(b43_1, b43_2)*w3_09 + c(b44_1, b44_2)*w4_09 + c(b45_1, b45_2)*w5_09
+            w4_13 ~ c(b41_1, b41_2)*w1_11 + c(b42_1, b42_2)*w2_11 + c(b43_1, b43_2)*w3_11 + c(b44_1, b44_2)*w4_11 + c(b45_1, b45_2)*w5_11
+            w4_14 ~ c(b41_1, b41_2)*w1_13 + c(b42_1, b42_2)*w2_13 + c(b43_1, b43_2)*w3_13 + c(b44_1, b44_2)*w4_13 + c(b45_1, b45_2)*w5_13
+            w4_15 ~ c(b41_1, b41_2)*w1_14 + c(b42_1, b42_2)*w2_14 + c(b43_1, b43_2)*w3_14 + c(b44_1, b44_2)*w4_14 + c(b45_1, b45_2)*w5_14
+            w4_16 ~ c(b41_1, b41_2)*w1_15 + c(b42_1, b42_2)*w2_15 + c(b43_1, b43_2)*w3_15 + c(b44_1, b44_2)*w4_15 + c(b45_1, b45_2)*w5_15
+            w4_17 ~ c(b41_1, b41_2)*w1_16 + c(b42_1, b42_2)*w2_16 + c(b43_1, b43_2)*w3_16 + c(b44_1, b44_2)*w4_16 + c(b45_1, b45_2)*w5_16
+            w4_18 ~ c(b41_1, b41_2)*w1_17 + c(b42_1, b42_2)*w2_17 + c(b43_1, b43_2)*w3_17 + c(b44_1, b44_2)*w4_17 + c(b45_1, b45_2)*w5_17
+            
+            w5_05 ~ c(b51_1, b51_2)*w1_02 + c(b52_1, b52_2)*w2_02 + c(b53_1, b53_2)*w3_02 + c(b54_1, b54_2)*w4_02 + c(b55_1, b55_2)*w5_02
+            w5_09 ~ c(b51_1, b51_2)*w1_05 + c(b52_1, b52_2)*w2_05 + c(b53_1, b53_2)*w3_05 + c(b54_1, b54_2)*w4_05 + c(b55_1, b55_2)*w5_05
+            w5_11 ~ c(b51_1, b51_2)*w1_09 + c(b52_1, b52_2)*w2_09 + c(b53_1, b53_2)*w3_09 + c(b54_1, b54_2)*w4_09 + c(b55_1, b55_2)*w5_09
+            w5_13 ~ c(b51_1, b51_2)*w1_11 + c(b52_1, b52_2)*w2_11 + c(b53_1, b53_2)*w3_11 + c(b54_1, b54_2)*w4_11 + c(b55_1, b55_2)*w5_11
+            w5_14 ~ c(b51_1, b51_2)*w1_13 + c(b52_1, b52_2)*w2_13 + c(b53_1, b53_2)*w3_13 + c(b54_1, b54_2)*w4_13 + c(b55_1, b55_2)*w5_13
+            w5_15 ~ c(b51_1, b51_2)*w1_14 + c(b52_1, b52_2)*w2_14 + c(b53_1, b53_2)*w3_14 + c(b54_1, b54_2)*w4_14 + c(b55_1, b55_2)*w5_14
+            w5_16 ~ c(b51_1, b51_2)*w1_15 + c(b52_1, b52_2)*w2_15 + c(b53_1, b53_2)*w3_15 + c(b54_1, b54_2)*w4_15 + c(b55_1, b55_2)*w5_15
+            w5_17 ~ c(b51_1, b51_2)*w1_16 + c(b52_1, b52_2)*w2_16 + c(b53_1, b53_2)*w3_16 + c(b54_1, b54_2)*w4_16 + c(b55_1, b55_2)*w5_16
+            w5_18 ~ c(b51_1, b51_2)*w1_17 + c(b52_1, b52_2)*w2_17 + c(b53_1, b53_2)*w3_17 + c(b54_1, b54_2)*w4_17 + c(b55_1, b55_2)*w5_17
+            
+            # Estimate the covariance between the within-person centered variables at the first wave
+            w1_02 ~~ w2_02
+            w1_02 ~~ w3_02
+            w1_02 ~~ w4_02
+            w1_02 ~~ w5_02
+            w2_02 ~~ w3_02
+            w2_02 ~~ w4_02
+            w2_02 ~~ w5_02
+            w3_02 ~~ w4_02
+            w3_02 ~~ w5_02
+            w4_02 ~~ w5_02
+            
+            # Estimate the covariances between the residuals of the within-person centered variables
+            w1_05 ~~ c(cov12_1, cov12_2)*w2_05
+            w1_09 ~~ c(cov12_1, cov12_2)*w2_09
+            w1_11 ~~ c(cov12_1, cov12_2)*w2_11
+            w1_13 ~~ c(cov12_1, cov12_2)*w2_13
+            w1_14 ~~ c(cov12_1, cov12_2)*w2_14
+            w1_15 ~~ c(cov12_1, cov12_2)*w2_15
+            w1_16 ~~ c(cov12_1, cov12_2)*w2_16
+            w1_17 ~~ c(cov12_1, cov12_2)*w2_17
+            w1_18 ~~ c(cov12_1, cov12_2)*w2_18
+            
+            w1_05 ~~ c(cov13_1, cov13_2)*w3_05
+            w1_09 ~~ c(cov13_1, cov13_2)*w3_09
+            w1_11 ~~ c(cov13_1, cov13_2)*w3_11
+            w1_13 ~~ c(cov13_1, cov13_2)*w3_13
+            w1_14 ~~ c(cov13_1, cov13_2)*w3_14
+            w1_15 ~~ c(cov13_1, cov13_2)*w3_15
+            w1_16 ~~ c(cov13_1, cov13_2)*w3_16
+            w1_17 ~~ c(cov13_1, cov13_2)*w3_17
+            w1_18 ~~ c(cov13_1, cov13_2)*w3_18
+            
+            w1_05 ~~ c(cov14_1, cov14_2)*w4_05
+            w1_09 ~~ c(cov14_1, cov14_2)*w4_09
+            w1_11 ~~ c(cov14_1, cov14_2)*w4_11
+            w1_13 ~~ c(cov14_1, cov14_2)*w4_13
+            w1_14 ~~ c(cov14_1, cov14_2)*w4_14
+            w1_15 ~~ c(cov14_1, cov14_2)*w4_15
+            w1_16 ~~ c(cov14_1, cov14_2)*w4_16
+            w1_17 ~~ c(cov14_1, cov14_2)*w4_17
+            w1_18 ~~ c(cov14_1, cov14_2)*w4_18
+            
+            w1_05 ~~ c(cov15_1, cov15_2)*w5_05
+            w1_09 ~~ c(cov15_1, cov15_2)*w5_09
+            w1_11 ~~ c(cov15_1, cov15_2)*w5_11
+            w1_13 ~~ c(cov15_1, cov15_2)*w5_13
+            w1_14 ~~ c(cov15_1, cov15_2)*w5_14
+            w1_15 ~~ c(cov15_1, cov15_2)*w5_15
+            w1_16 ~~ c(cov15_1, cov15_2)*w5_16
+            w1_17 ~~ c(cov15_1, cov15_2)*w5_17
+            w1_18 ~~ c(cov15_1, cov15_2)*w5_18
+            
+            w2_05 ~~ c(cov23_1, cov23_2)*w3_05
+            w2_09 ~~ c(cov23_1, cov23_2)*w3_09
+            w2_11 ~~ c(cov23_1, cov23_2)*w3_11
+            w2_13 ~~ c(cov23_1, cov23_2)*w3_13
+            w2_14 ~~ c(cov23_1, cov23_2)*w3_14
+            w2_15 ~~ c(cov23_1, cov23_2)*w3_15
+            w2_16 ~~ c(cov23_1, cov23_2)*w3_16
+            w2_17 ~~ c(cov23_1, cov23_2)*w3_17
+            w2_18 ~~ c(cov23_1, cov23_2)*w3_18
+            
+            w2_05 ~~ c(cov24_1, cov24_2)*w4_05
+            w2_09 ~~ c(cov24_1, cov24_2)*w4_09
+            w2_11 ~~ c(cov24_1, cov24_2)*w4_11
+            w2_13 ~~ c(cov24_1, cov24_2)*w4_13
+            w2_14 ~~ c(cov24_1, cov24_2)*w4_14
+            w2_15 ~~ c(cov24_1, cov24_2)*w4_15
+            w2_16 ~~ c(cov24_1, cov24_2)*w4_16
+            w2_17 ~~ c(cov24_1, cov24_2)*w4_17
+            w2_18 ~~ c(cov24_1, cov24_2)*w4_18
+            
+            w2_05 ~~ c(cov25_1, cov25_2)*w5_05
+            w2_09 ~~ c(cov25_1, cov25_2)*w5_09
+            w2_11 ~~ c(cov25_1, cov25_2)*w5_11
+            w2_13 ~~ c(cov25_1, cov25_2)*w5_13
+            w2_14 ~~ c(cov25_1, cov25_2)*w5_14
+            w2_15 ~~ c(cov25_1, cov25_2)*w5_15
+            w2_16 ~~ c(cov25_1, cov25_2)*w5_16
+            w2_17 ~~ c(cov25_1, cov25_2)*w5_17
+            w2_18 ~~ c(cov25_1, cov25_2)*w5_18
+            
+            w3_05 ~~ c(cov34_1, cov34_2)*w4_05
+            w3_09 ~~ c(cov34_1, cov34_2)*w4_09
+            w3_11 ~~ c(cov34_1, cov34_2)*w4_11
+            w3_13 ~~ c(cov34_1, cov34_2)*w4_13
+            w3_14 ~~ c(cov34_1, cov34_2)*w4_14
+            w3_15 ~~ c(cov34_1, cov34_2)*w4_15
+            w3_16 ~~ c(cov34_1, cov34_2)*w4_16
+            w3_17 ~~ c(cov34_1, cov34_2)*w4_17
+            w3_18 ~~ c(cov34_1, cov34_2)*w4_18
+            
+            w3_05 ~~ c(cov35_1, cov35_2)*w5_05
+            w3_09 ~~ c(cov35_1, cov35_2)*w5_09
+            w3_11 ~~ c(cov35_1, cov35_2)*w5_11
+            w3_13 ~~ c(cov35_1, cov35_2)*w5_13
+            w3_14 ~~ c(cov35_1, cov35_2)*w5_14
+            w3_15 ~~ c(cov35_1, cov35_2)*w5_15
+            w3_16 ~~ c(cov35_1, cov35_2)*w5_16
+            w3_17 ~~ c(cov35_1, cov35_2)*w5_17
+            w3_18 ~~ c(cov35_1, cov35_2)*w5_18
+            
+            w4_05 ~~ c(cov45_1, cov45_2)*w5_05
+            w4_09 ~~ c(cov45_1, cov45_2)*w5_09
+            w4_11 ~~ c(cov45_1, cov45_2)*w5_11
+            w4_13 ~~ c(cov45_1, cov45_2)*w5_13
+            w4_14 ~~ c(cov45_1, cov45_2)*w5_14
+            w4_15 ~~ c(cov45_1, cov45_2)*w5_15
+            w4_16 ~~ c(cov45_1, cov45_2)*w5_16
+            w4_17 ~~ c(cov45_1, cov45_2)*w5_17
+            w4_18 ~~ c(cov45_1, cov45_2)*w5_18
+            
+            # Estimate the variance and covariance of the random intercepts
+            ri1 ~~ ri1
+            ri2 ~~ ri2
+            ri3 ~~ ri3
+            ri4 ~~ ri4
+            ri5 ~~ ri5
+            
+            ri1 ~~ ri2
+            ri1 ~~ ri3
+            ri1 ~~ ri4
+            ri1 ~~ ri5
+            ri2 ~~ ri3
+            ri2 ~~ ri4
+            ri2 ~~ ri5
+            ri3 ~~ ri4
+            ri3 ~~ ri5
+            ri4 ~~ ri5
+            
+            # Estimate the (residual) variance of the within-person centered variables
+            w1_02 ~~ w1_02
+            w1_05 ~~ c(var1_1, var1_2)*w1_05
+            w1_09 ~~ c(var1_1, var1_2)*w1_09
+            w1_11 ~~ c(var1_1, var1_2)*w1_11
+            w1_13 ~~ c(var1_1, var1_2)*w1_13
+            w1_14 ~~ c(var1_1, var1_2)*w1_14
+            w1_15 ~~ c(var1_1, var1_2)*w1_15
+            w1_16 ~~ c(var1_1, var1_2)*w1_16
+            w1_17 ~~ c(var1_1, var1_2)*w1_17
+            w1_18 ~~ c(var1_1, var1_2)*w1_18
+            
+            w2_02 ~~ w2_02
+            w2_05 ~~ c(var2_1, var2_2)*w2_05
+            w2_09 ~~ c(var2_1, var2_2)*w2_09
+            w2_11 ~~ c(var2_1, var2_2)*w2_11
+            w2_13 ~~ c(var2_1, var2_2)*w2_13
+            w2_14 ~~ c(var2_1, var2_2)*w2_14
+            w2_15 ~~ c(var2_1, var2_2)*w2_15
+            w2_16 ~~ c(var2_1, var2_2)*w2_16
+            w2_17 ~~ c(var2_1, var2_2)*w2_17
+            w2_18 ~~ c(var2_1, var2_2)*w2_18
+            
+            w3_02 ~~ w3_02
+            w3_05 ~~ c(var3_1, var3_2)*w3_05
+            w3_09 ~~ c(var3_1, var3_2)*w3_09
+            w3_11 ~~ c(var3_1, var3_2)*w3_11
+            w3_13 ~~ c(var3_1, var3_2)*w3_13
+            w3_14 ~~ c(var3_1, var3_2)*w3_14
+            w3_15 ~~ c(var3_1, var3_2)*w3_15
+            w3_16 ~~ c(var3_1, var3_2)*w3_16
+            w3_17 ~~ c(var3_1, var3_2)*w3_17
+            w3_18 ~~ c(var3_1, var3_2)*w3_18
+            
+            w4_02 ~~ w4_02
+            w4_05 ~~ c(var4_1, var4_2)*w4_05
+            w4_09 ~~ c(var4_1, var4_2)*w4_09
+            w4_11 ~~ c(var4_1, var4_2)*w4_11
+            w4_13 ~~ c(var4_1, var4_2)*w4_13
+            w4_14 ~~ c(var4_1, var4_2)*w4_14
+            w4_15 ~~ c(var4_1, var4_2)*w4_15
+            w4_16 ~~ c(var4_1, var4_2)*w4_16
+            w4_17 ~~ c(var4_1, var4_2)*w4_17
+            w4_18 ~~ c(var4_1, var4_2)*w4_18
+            
+            w5_02 ~~ w5_02
+            w5_05 ~~ c(var5_1, var5_2)*w5_05
+            w5_09 ~~ c(var5_1, var5_2)*w5_09
+            w5_11 ~~ c(var5_1, var5_2)*w5_11
+            w5_13 ~~ c(var5_1, var5_2)*w5_13
+            w5_14 ~~ c(var5_1, var5_2)*w5_14
+            w5_15 ~~ c(var5_1, var5_2)*w5_15
+            w5_16 ~~ c(var5_1, var5_2)*w5_16
+            w5_17 ~~ c(var5_1, var5_2)*w5_17
+            w5_18 ~~ c(var5_1, var5_2)*w5_18
+  
+            # Estimate the means
+            ContactsMask.2 + ContactsMask.5 + ContactsMask.9 + ContactsMask.11 + ContactsMask.13 + ContactsMask.14 + ContactsMask.15 + ContactsMask.16 + ContactsMask.17 + ContactsMask.18 ~ 1
+            InjNorms.2 + InjNorms.5 + InjNorms.9 + InjNorms.11 + InjNorms.13 + InjNorms.14 + InjNorms.15 + InjNorms.16 + InjNorms.17 + InjNorms.18 ~ 1
+            DesNorms.2 + DesNorms.5 + DesNorms.9 + DesNorms.11 + DesNorms.13 + DesNorms.14 + DesNorms.15 + DesNorms.16 + DesNorms.17 + DesNorms.18 ~ 1
+            FactBeliefs.2 + FactBeliefs.5 + FactBeliefs.9 + FactBeliefs.11 + FactBeliefs.13 + FactBeliefs.14 + FactBeliefs.15 + FactBeliefs.16 + FactBeliefs.17 + FactBeliefs.18 ~ 1
+            PersNorms.2 + PersNorms.5 + PersNorms.9 + PersNorms.11 + PersNorms.13 + PersNorms.14 + PersNorms.15 + PersNorms.16 + PersNorms.17 + PersNorms.18 ~ 1'
+  # remove constraints for unconstrained model
+  if (!constrained) {
+    constraints <- c("c(b11_1, b11_2)","c(b12_1, b12_2)","c(b13_1, b13_2)","c(b14_1, b14_2)","c(b15_1, b15_2)",
+                     "c(b21_1, b21_2)","c(b22_1, b22_2)","c(b23_1, b23_2)","c(b24_1, b24_2)","c(b25_1, b25_2)",
+                     "c(b31_1, b31_2)","c(b32_1, b32_2)","c(b33_1, b33_2)","c(b34_1, b34_2)","c(b35_1, b35_2)",
+                     "c(b41_1, b41_2)","c(b42_1, b42_2)","c(b43_1, b43_2)","c(b44_1, b44_2)","c(b45_1, b45_2)",
+                     "c(b51_1, b51_2)","c(b52_1, b52_2)","c(b53_1, b53_2)","c(b54_1, b54_2)","c(b55_1, b55_2)",
+                     "c(cov12_1, cov12_2)","c(cov13_1, cov13_2)","c(cov14_1, cov14_2)","c(cov15_1, cov15_2)","c(cov23_1, cov23_2)",
+                     "c(cov24_1, cov24_2)","c(cov25_1, cov25_2)","c(cov34_1, cov34_2)","c(cov35_1, cov35_2)","c(cov45_1, cov45_2)",
+                     "c(var1_1, var1_2)","c(var2_1, var2_2)","c(var3_1, var3_2)","c(var4_1, var4_2)","c(var5_1, var5_2)")
+    for (i in constraints) model <- str_replace_all(model, fixed(paste0(i, "*")), "")
+  }
   # fit model
   out <- lavaan(model, data = d, missing = "fiml", 
+                group = "StateElectionResult2020",
                 meanstructure = TRUE, int.ov.free = TRUE)
   return(out)
 }
@@ -475,8 +1304,8 @@ plotUSMap <- function(d) {
     geom_point(data = d, aes(x = lng, y = lat), colour = "red", size = 0.5) +
     theme_void()
   # save plot
-  ggsave(out, filename = "figures/map.pdf", height = 3, width = 5)
-  ggsave(out, filename = "figures/map.png", height = 3, width = 5)
+  ggsave(out, filename = "figures/pdf/map.pdf", height = 3, width = 5)
+  ggsave(out, filename = "figures/png/map.png", height = 3, width = 5)
   return(out)
 }
 
@@ -513,8 +1342,8 @@ plotAttrition <- function(d) {
     scale_y_continuous(name = "Number of participants in study", limits = c(0, 1000)) +
     theme_classic()
   # save
-  ggsave(out, filename = "figures/attrition.pdf", width = 5.5, height = 3)
-  ggsave(out, filename = "figures/attrition.png", width = 5.5, height = 3)
+  ggsave(out, filename = "figures/pdf/attrition.pdf", width = 5.5, height = 3)
+  ggsave(out, filename = "figures/png/attrition.png", width = 5.5, height = 3)
   return(out)
 }
 
@@ -596,8 +1425,8 @@ plotAttritionBreakdown <- function(d) {
   top <- plot_grid(pA, pB, nrow = 1)
   bot <- plot_grid(NULL, pC, nrow = 1, rel_widths = c(0.25, 1))
   out <- plot_grid(top, bot, nrow = 2)
-  ggsave(out, file = "figures/attritionBreakdown.pdf", height = 6, width = 7)
-  ggsave(out, file = "figures/attritionBreakdown.png", height = 6, width = 7)
+  ggsave(out, file = "figures/pdf/attritionBreakdown.pdf", height = 6, width = 7)
+  ggsave(out, file = "figures/png/attritionBreakdown.png", height = 6, width = 7)
   return(out)
 }
 
@@ -719,8 +1548,8 @@ plotTimeline <- function(d, owid) {
   # put together
   out <- plot_grid(pA, pB, pC, nrow = 3, align = "v", labels = c("a","b","c"))
   # save
-  ggsave(out, filename = "figures/timeline.pdf", width = 6, height = 6)
-  ggsave(out, filename = "figures/timeline.png", width = 6, height = 6)
+  ggsave(out, filename = "figures/pdf/timeline.pdf", width = 6, height = 6)
+  ggsave(out, filename = "figures/png/timeline.png", width = 6, height = 6)
   return(out)
 }
 
@@ -728,39 +1557,39 @@ plotTimeline <- function(d, owid) {
 plotDAG <- function() {
   # coordinates for plot
   dag_coords <- tibble(
-    name = c("Mask", "DesNorm", "InjNorm", "Fact", "PersNorm", "NormSens", "PolOri"),
+    name = c("Mask", "DesNorm", "InjNorm", "Fact", "PersNorm", "NormSens", "Demographics"),
     x    = c(0, -1, 1, -0.75, 0.75, 0, 0),
     y    = c(1, 0, 0, 0.75, 0.75, -1, 0)
   )
   # plot
   out <-
-    dagify(Mask ~ DesNorm + InjNorm + Fact + PersNorm + PolOri,
-           DesNorm ~ NormSens + PolOri,
-           InjNorm ~ NormSens + PolOri,
-           Fact ~ DesNorm + InjNorm + PolOri,
-           PersNorm ~ DesNorm + InjNorm + PolOri,
-           NormSens ~ PolOri,
+    dagify(Mask ~ DesNorm + InjNorm + Fact + PersNorm + Demographics,
+           DesNorm ~ NormSens + Demographics,
+           InjNorm ~ NormSens + Demographics,
+           Fact ~ DesNorm + InjNorm + Demographics,
+           PersNorm ~ DesNorm + InjNorm + Demographics,
+           NormSens ~ Demographics,
            latent = c("NormSens"),
            coords = dag_coords
     ) %>%
     ggplot(aes(x = x, y = y, xend = xend, yend = yend)) +
     geom_dag_point(
       data = function(x) filter(x, name != "NormSens"),
-      size = 30, show.legend = FALSE, colour = "black", fill = "white", pch = 21
+      size = 38, show.legend = FALSE, colour = "black", fill = "white", pch = 21
     ) +
     geom_dag_point(
       data = function(x) filter(x, name == "NormSens"),
-      alpha = 0.5, size = 30, show.legend = FALSE, colour = "lightgrey"
+      alpha = 0.5, size = 38, show.legend = FALSE, colour = "lightgrey"
     ) +
     geom_dag_text(colour = "black") +
-    geom_dag_edges(start_cap = circle(11.5, 'mm'), 
-                   end_cap = circle(11.5, 'mm'),
+    geom_dag_edges(start_cap = circle(14.5, 'mm'), 
+                   end_cap = circle(14.5, 'mm'),
                    arrow_directed = grid::arrow(length = grid::unit(8, "pt"), type = "closed")) +
     ylim(c(-1.3, 1.3)) +
     theme_void()
   # save
-  ggsave(out, filename = "figures/dag.pdf", height = 8, width = 8)
-  ggsave(out, filename = "figures/dag.png", height = 8, width = 8)
+  ggsave(out, filename = "figures/pdf/dag.pdf", height = 8, width = 8)
+  ggsave(out, filename = "figures/png/dag.png", height = 8, width = 8)
   return(out)
 }
 
@@ -788,8 +1617,8 @@ plotCorBehNorm <- function(m1.1, m1.2) {
   # combine
   out <- plot_grid(pA, pB, nrow = 1, labels = c("a", "b"))
   # save
-  ggsave(out, filename = "figures/corBehNorm.pdf", width = 6.5, height = 3.8)
-  ggsave(out, filename = "figures/corBehNorm.png", width = 6.5, height = 3.8)
+  ggsave(out, filename = "figures/pdf/corBehNorm.pdf", width = 6.5, height = 3.8)
+  ggsave(out, filename = "figures/png/corBehNorm.png", width = 6.5, height = 3.8)
   return(out)
 }
 
@@ -835,13 +1664,16 @@ plotCDCSens <- function(m2.1, m2.2, m2.3) {
   # combine
   out <- plot_grid(pA, pB, pC, ncol = 1, labels = letters[1:3])
   # save
-  ggsave(out, filename = "figures/CDCSens.pdf", height = 6, width = 4)
-  ggsave(out, filename = "figures/CDCSens.png", height = 6, width = 4)
+  ggsave(out, filename = "figures/pdf/CDCSens.pdf", height = 6, width = 4)
+  ggsave(out, filename = "figures/png/CDCSens.png", height = 6, width = 4)
   return(out)
 }
 
-# plot model results - riclpm autoregressive and cross-lagged effects
-plotRICLPM <- function(model) {
+# plot model results - riclpm autoregressive and cross-lagged effects as path diagram
+plotRICLPMPath <- function(model) {
+  # get parameter estimates
+  pars <- parameterEstimates(model)
+  stds <- standardizedSolution(model)
   # variables
   var1 <- "Mask wearing"
   var2 <- "Injunctive norm"
@@ -864,11 +1696,11 @@ plotRICLPM <- function(model) {
       col = factor(rep(c(col1, col2, col3), each = 10), levels = c(col1, col3, col2)),
       varNum = rep(c(3,1,2), each = 10)
     )
-  # standardised coefficients and significance
+  # standardized coefficients and significance
   sc <- 
-    standardizedSolution(model) %>%
+    stds %>%
     as_tibble() %>%
-    left_join(as_tibble(parameterEstimates(model)), by = c("lhs", "op", "rhs")) %>%
+    left_join(as_tibble(pars), by = c("lhs", "op", "rhs")) %>%
     filter(substr(lhs, 1, 3) %in% c("w1_", "w2_", "w3_") &
              substr(rhs, 1, 3) %in% c("w1_", "w2_", "w3_") &
              op == "~") %>%
@@ -933,18 +1765,98 @@ plotRICLPM <- function(model) {
   # replace legend
   p <- plot_grid(p + theme(legend.position = "none"), legend, nrow = 1, rel_widths = c(1, 0.2))
   # save
-  ggsave(p, file = "figures/riclpm.pdf", width = 7.5, height = 3.5)
-  ggsave(p, file = "figures/riclpm.png", width = 7.5, height = 3.5)
+  ggsave(p, file = paste0("figures/pdf/path_", substitute(model), ".pdf"), width = 7.5, height = 3.5)
+  ggsave(p, file = paste0("figures/png/path_", substitute(model), ".png"), width = 7.5, height = 3.5)
   return(p)
 }
 
+# plot model results - riclpm autoregressive and cross-lagged effects as coefficients
+plotRICLPMCoef <- function(model) {
+  # get parameter estimates
+  pars <- standardizedSolution(model)
+  # vector of dates for plot
+  dates <- c("2020-09-27", "2020-10-27", "2020-11-28",
+             "2020-12-28", "2021-01-27", "2021-02-26",
+             "2021-03-28", "2021-04-27", "2021-05-27",
+             "2021-06-26", "2021-07-26", "2021-08-26",
+             "2021-10-25", "2021-12-16", "2022-02-25",
+             "2022-04-26", "2022-06-25", "2022-08-29")
+  # plot
+  out <-
+    pars %>%
+    as_tibble() %>%
+    filter(substr(lhs, 1, 3) %in% c("w1_") &
+             substr(rhs, 1, 3) %in% c("w2_", "w3_") &
+             op == "~") %>%
+    dplyr::select(lhs, rhs, est.std, ci.lower, ci.upper) %>%
+    mutate(
+      Timepoint = as.Date(dates[as.numeric(substr(rhs, 4, 5))]),
+      Predictor = ifelse(str_starts(rhs, "w2_"), "Injunctive norms", "Descriptive norms")
+      ) %>%
+    ggplot(aes(x = Timepoint, y = est.std, ymin = ci.lower, ymax = ci.upper, colour = Predictor)) +
+    geom_hline(yintercept = 0, linetype = "dashed") +
+    geom_pointrange(size = 0.2, position = position_dodge(width = 20), linewidth = 0.9) +
+    scale_colour_manual(values = c("#0072B2", "#009E73")) +
+    scale_x_date(name = NULL, date_labels = "%b\n%Y", date_breaks = "2 month",
+                 limits = c(ymd("2020-09-20"), ymd("2022-08-05"))) +
+    scale_y_continuous(name = "Standardized\ncross-lagged coefficient") +
+    theme_classic()
+  # save
+  ggsave(out, file = paste0("figures/pdf/coef_", substitute(model), ".pdf"), width = 6.5, height = 3)
+  ggsave(out, file = paste0("figures/png/coef_", substitute(model), ".png"), width = 6.5, height = 3)
+  return(out)
+}
+
+# make supp lavaan table for constrained model
+makeConstrainedTable <- function(riclpm, multigroup = FALSE) {
+  # produce table
+  out <-
+    parameterEstimates(riclpm) %>%
+    as_tibble() %>%
+    filter(
+      lhs %in% paste0("w", 1:3, "_05") & 
+        op == "~" &
+        rhs %in% paste0("w", 1:3, "_02")) %>%
+    mutate_if(is.numeric, function(x) format(round(x, 2), nsmall = 2)) %>%
+    arrange(rhs) %>%
+    mutate(lhs = str_replace(lhs, fixed("w1_05"), "Mask wearing"),
+           lhs = str_replace(lhs, fixed("w2_05"), "Injunctive norms"),
+           lhs = str_replace(lhs, fixed("w3_05"), "Descriptive norms"),
+           rhs = str_replace(rhs, fixed("w1_02"), "Mask wearing"),
+           rhs = str_replace(rhs, fixed("w2_02"), "Injunctive norms"),
+           rhs = str_replace(rhs, fixed("w3_02"), "Descriptive norms"))
+  if (!multigroup) {
+    transmute(
+      out,
+      Parameter = paste0(rhs, " (ref:rightArrow) ", lhs),
+      Estimate = est,
+      SE = se,
+      `2.5%` = ci.lower,
+      `97.5%` = ci.upper,
+      p = pvalue
+    )
+  } else {
+    transmute(
+      out,
+      Group = ifelse(as.numeric(group) == 1, "Democrat", "Republican"),
+      Parameter = paste0(rhs, " (ref:rightArrow) ", lhs),
+      Estimate = est,
+      SE = se,
+      `2.5%` = ci.lower,
+      `97.5%` = ci.upper,
+      p = pvalue
+    ) %>%
+      arrange(Group)
+  }
+}
+
 # make supp item table
-makeItemTable <- function() {
+makeItemTable <- function(d) {
   tibble(
     Interpretation = c("Provides descriptive information", "", "", "",
                        "Provides injunctive information", "", "", ""),
-    `Perceived norm item` = c("Descriptive", "", "Injunctive", "",
-                              "Descriptive", "", "Injunctive", ""),
+    `Item` = c("Descriptive", "", "Injunctive", "",
+               "Descriptive", "", "Injunctive", ""),
     Question = c(paste0("Does noticing the proportion of people in your area that wear ",
                         "a mask while doing recreational/social activities indoors (e.g., ",
                         "going to the gym, eating at a restaurant, attending a party) tell ",
@@ -966,7 +1878,27 @@ makeItemTable <- function() {
                         "government officials, businesses, etc.) tell you what everyone should be doing?"),
                  paste0("Does how often you see people that you respect and trust wearing a mask (e.g., ",
                         "on tv, news, etc.) tell you what everyone should be doing?")
-                 )
+                 ),
+    Mean = c(
+      mean(d$DescriptiveLearning3.7, na.rm = TRUE),
+      mean(d$DescriptiveLearning4.7, na.rm = TRUE),
+      mean(d$DescriptiveLearning1.7, na.rm = TRUE),
+      mean(d$DescriptiveLearning2.7, na.rm = TRUE),
+      mean(d$InjunctiveLearning3.7, na.rm = TRUE),
+      mean(d$InjunctiveLearning4.7, na.rm = TRUE),
+      mean(d$InjunctiveLearning1.7, na.rm = TRUE),
+      mean(d$InjunctiveLearning2.7, na.rm = TRUE)
+    ),
+    SD = c(
+      sd(d$DescriptiveLearning3.7, na.rm = TRUE),
+      sd(d$DescriptiveLearning4.7, na.rm = TRUE),
+      sd(d$DescriptiveLearning1.7, na.rm = TRUE),
+      sd(d$DescriptiveLearning2.7, na.rm = TRUE),
+      sd(d$InjunctiveLearning3.7, na.rm = TRUE),
+      sd(d$InjunctiveLearning4.7, na.rm = TRUE),
+      sd(d$InjunctiveLearning1.7, na.rm = TRUE),
+      sd(d$InjunctiveLearning2.7, na.rm = TRUE)
+    )
   )
 }
 
@@ -1022,28 +1954,44 @@ makeChangePointsTable <- function(m2.1, m2.2, m2.3, pars2.1, pars2.2, pars2.3) {
     rename(` ` = par)
 }
 
-# make supp lavaan table
-makeLavaanTable <- function(riclpm) {
-  standardizedSolution(riclpm) %>%
+# make supp lavaan table for unconstrained model
+makeUnconstrainedTable <- function(riclpm) {
+  parameterEstimates(riclpm) %>%
     as_tibble() %>%
-    filter(op == "~" & rhs != "PoliticalOrientation.1") %>%
-    mutate_if(is.numeric, function(x) format(round(x, 2), nsmall = 2)) %>%
-    mutate(lhs = str_replace(lhs, fixed("w1"), "Mask"),
-           lhs = str_replace(lhs, fixed("w2"), "Inj" ),
-           lhs = str_replace(lhs, fixed("w3"), "Des" ),
-           lhs = str_replace(lhs, fixed("w4"), "Fact"),
-           lhs = str_replace(lhs, fixed("w5"), "Pers"),
-           rhs = str_replace(rhs, fixed("w1"), "Mask"),
-           rhs = str_replace(rhs, fixed("w2"), "Inj" ),
-           rhs = str_replace(rhs, fixed("w3"), "Des" ),
-           rhs = str_replace(rhs, fixed("w4"), "Fact"),
-           rhs = str_replace(rhs, fixed("w5"), "Pers")) %>%
+    filter(op == "~" & !(rhs %in% c("Sex.1","AgeStd.1","EthnicityBlack.1",
+                                    "EthnicityAsian.1","EthnicityHispanic.1",
+                                    "EthnicityOther.1","PoliticalOrientation.1",
+                                    "SESStd.1"))) %>%
     arrange(rhs) %>%
+    mutate_if(is.numeric, function(x) format(round(x, 2), nsmall = 2)) %>%
+    mutate(lhs = str_replace(lhs, fixed("w1"), "MaskWearing"),
+           lhs = str_replace(lhs, fixed("w2"), "InjunctiveNorms"),
+           lhs = str_replace(lhs, fixed("w3"), "DescriptiveNorms"),
+           lhs = str_replace(lhs, fixed("w4"), "FactualBeliefs"),
+           lhs = str_replace(lhs, fixed("w5"), "PersonalBeliefs"),
+           rhs = str_replace(rhs, fixed("w1"), "MaskWearing"),
+           rhs = str_replace(rhs, fixed("w2"), "InjunctiveNorms"),
+           rhs = str_replace(rhs, fixed("w3"), "DescriptiveNorms"),
+           rhs = str_replace(rhs, fixed("w4"), "FactualBeliefs"),
+           rhs = str_replace(rhs, fixed("w5"), "PersonalBeliefs")) %>%
     transmute(
       Parameter = paste0(rhs, " (ref:rightArrow) ", lhs),
-      Estimate = est.std,
+      Estimate = est,
       SE = se,
       `2.5%` = ci.lower,
-      `97.5%` = ci.upper
+      `97.5%` = ci.upper,
+      p = pvalue
+    )
+}
+
+# make construct validity table
+makeConstructValTable <- function(constructVal) {
+  as_tibble(constructVal) %>%
+    transmute(
+      Type = Type,
+      `Pairwise contrast` = contrast,
+      Estimate = estimate,
+      SE = SE,
+      p = p.value
     )
 }

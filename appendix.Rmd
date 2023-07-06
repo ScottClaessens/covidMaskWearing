@@ -1,14 +1,8 @@
----
-output:
-  pdf_document: default
-  html_document: default
----
 \renewcommand{\appendixname}{\textbf{Supplementary Material}}
 \renewcommand{\thefigure}{S\arabic{figure}} \setcounter{figure}{0}
 \renewcommand{\thetable}{S\arabic{table}} \setcounter{table}{0}
-\renewcommand{\theequation}{S\arabic{table}} \setcounter{equation}{0}
+\renewcommand{\theequation}{S\arabic{equation}} \setcounter{equation}{0}
 \pagenumbering{gobble}
-\nolinenumbers
 
 #
 
@@ -18,48 +12,44 @@ output:
 
 To evaluate the construct validity of our measures of perceived descriptive and injunctive norms, at Time 7 we asked participants to rate the extent to which each perceived norm item provided descriptive and injunctive information. For each item, participants were asked whether the item provided information about what people _are_ doing, and whether the item provided information about what people _should_ be doing. Participants responded on a 7-point Likert scale, from (1) Not At All to (7) Very Strongly. For a full list of questions, see Supplementary Table \@ref(tab:itemTable).
 
-Results showed that participants did differentiate the perceived norm items as expected. Participants rated the perceived descriptive norm items as providing more descriptive information than the perceived injunctive norm items, _t_(`r printnum(constructValDes$parameter, digits = 0)`) = `r printnum(constructValDes$statistic)`, _p_ `r printp(constructValDes$p.value)` (mean descriptive items = `r printnum(mean((d$DescriptiveLearning3.7 + d$DescriptiveLearning4.7) / 2, na.rm = T))`; mean injunctive items = `r printnum(mean((d$DescriptiveLearning1.7 + d$DescriptiveLearning2.7) / 2, na.rm = T))`). By contrast, participants rated the perceived injunctive norm items as providing more injunctive information than the perceived descriptive norm items, _t_(`r printnum(constructValInj$parameter, digits = 0)`) = `r printnum(constructValInj$statistic)`, _p_ `r printp(constructValInj$p.value)` (mean descriptive items = `r printnum(mean((d$InjunctiveLearning3.7 + d$InjunctiveLearning4.7) / 2, na.rm = T))`; mean injunctive items = `r printnum(mean((d$InjunctiveLearning1.7 + d$InjunctiveLearning2.7) / 2, na.rm = T))`).
+We fitted a multilevel model to determine whether participants rated the descriptive norm items as providing more descriptive information than the injunctive norm items, and vice versa. Pairwise comparisons from this model revealed that participants did differentiate the perceived norm items as expected (see Supplementary Table \@ref(tab:constructValTable) for pairwise comparisons). Both descriptive norm items were seen as providing more descriptive information than both injunctive norm items. Conversely, both injunctive norm items were seen as providing more injunctive information than both descriptive norm items.
+
+### Between-person results from random-intercept cross-lagged panel model
+
+The random-intercept cross-lagged panel model partitions the data into two components: (1) between-person trait-like individual differences that persist over time, and (2) within-person fluctuations from trait levels at individual time points. In the main text, we focused on the results from the within-person component of the model, specifically the autoregressive and cross-lagged parameters, as we were interested in within-person causal effects. However, the model also estimates the covariances between the random intercepts in the model, which can be interpreted as the correlations between between-person trait levels for each variable (i.e., whether people who are generally high on one variable tend to be generally high on another variable).
+
+```{r echo = FALSE}
+# standardized estimates from constrained model
+sc_con1 <- standardizedSolution(riclpm1_con)
+```
+
+The covariances between the random intercepts in the full time-invariant model revealed positive correlations between stable trait levels of mask wearing and perceived social norms. On average across the whole study, participants who more frequently wore masks during in-person interactions also perceived stronger descriptive mask wearing norms (_r_ = `r printnum(sc_con1[sc_con1$lhs == "ri1" & sc_con1$op == "~~" & sc_con1$rhs == "ri3","est.std"])`, 95% CI [`r printnum(sc_con1[sc_con1$lhs == "ri1" & sc_con1$op == "~~" & sc_con1$rhs == "ri3","ci.lower"])` `r printnum(sc_con1[sc_con1$lhs == "ri1" & sc_con1$op == "~~" & sc_con1$rhs == "ri3","ci.upper"])`]) and stronger injunctive mask wearing norms (_r_ = `r printnum(sc_con1[sc_con1$lhs == "ri1" & sc_con1$op == "~~" & sc_con1$rhs == "ri2","est.std"])`, 95% CI [`r printnum(sc_con1[sc_con1$lhs == "ri1" & sc_con1$op == "~~" & sc_con1$rhs == "ri2","ci.lower"])` `r printnum(sc_con1[sc_con1$lhs == "ri1" & sc_con1$op == "~~" & sc_con1$rhs == "ri2","ci.upper"])`]). Stable trait perceptions of descriptive and injunctive mask wearing norms were also highly positively correlated (_r_ = `r printnum(sc_con1[sc_con1$lhs == "ri2" & sc_con1$op == "~~" & sc_con1$rhs == "ri3","est.std"])`, 95% CI [`r printnum(sc_con1[sc_con1$lhs == "ri2" & sc_con1$op == "~~" & sc_con1$rhs == "ri3","ci.lower"])` `r printnum(sc_con1[sc_con1$lhs == "ri2" & sc_con1$op == "~~" & sc_con1$rhs == "ri3","ci.upper"])`]). This general pattern of correlations at the between-person level was unchanged when removing all covariates and when unconstraining the within-person effects over time.
+
+### Multi-group random-intercept cross-lagged panel model
+
+To test whether the causal effects of descriptive and injunctive norms varied across regions of the United States with different mask wearing policies, we fitted a multi-group random-intercept cross-lagged panel model. The model was fitted separately to two groups: majority-Democrat states and majority-Republican states. Participants were linked to US states via self-reported zip codes. We operationalised state-level partisanship using the state-level results for the 2020 Presidential election. For ease of interpretation, we constrained the within-person autoregressive effects, cross-lagged effects, covariances, and variances to equality over time. This multi-group model fitted the data well according to one fit statistic (RMSEA = `r printnum(fitMeasures4_con['rmsea'], digits = 3)`, 95% CI [`r printnum(fitMeasures4_con['rmsea.ci.lower'], digits = 3)` `r printnum(fitMeasures4_con['rmsea.ci.upper'], digits = 3)`]) but not according to others (SRMR = `r printnum(fitMeasures4_con['srmr'], digits = 3)`; CFI = `r printnum(fitMeasures4_con['cfi'], digits = 3)`).
+
+```{r echo=FALSE}
+# parameter estimates
+pe_con4 <- parameterEstimates(riclpm4_con)
+# cross-lagged effects for democrat states
+crossInj_con4_dem <- pe_con4[pe_con4$lhs == "w1_05" & pe_con4$rhs == "w2_02" & pe_con4$group == 1,]
+crossDes_con4_dem <- pe_con4[pe_con4$lhs == "w1_05" & pe_con4$rhs == "w3_02" & pe_con4$group == 1,]
+# cross-lagged effects for republican states
+crossInj_con4_rep <- pe_con4[pe_con4$lhs == "w1_05" & pe_con4$rhs == "w2_02" & pe_con4$group == 2,]
+crossDes_con4_rep <- pe_con4[pe_con4$lhs == "w1_05" & pe_con4$rhs == "w3_02" & pe_con4$group == 2,]
+```
+
+In majority-Republican states, the main results are unchanged from the full model fitted to the whole sample: perceived descriptive norms predicted future mask wearing (_b_ = `r printnum(crossDes_con4_rep[,"est"])`, 95% CI [`r printnum(crossDes_con4_rep[,"ci.lower"])` `r printnum(crossDes_con4_rep[,"ci.upper"])`], _p_ = `r printp(crossDes_con4_rep[,"pvalue"])`) while perceived injunctive norms did not (_b_ = `r printnum(crossInj_con4_rep[,"est"])`, 95% CI [`r printnum(crossInj_con4_rep[,"ci.lower"])` `r printnum(crossInj_con4_rep[,"ci.upper"])`], _p_ = `r printp(crossInj_con4_rep[,"pvalue"])`). In majority-Democrat states, perceived descriptive norms have a slightly weaker effect on future mask wearing (_b_ = `r printnum(crossDes_con4_dem[,"est"])`, 95% CI [`r printnum(crossDes_con4_dem[,"ci.lower"])` `r printnum(crossDes_con4_dem[,"ci.upper"])`], _p_ = `r printp(crossDes_con4_dem[,"pvalue"])`) but the effect of perceived injunctive norms remains non-significant (_b_ = `r printnum(crossInj_con4_dem[,"est"])`, 95% CI [`r printnum(crossInj_con4_dem[,"ci.lower"])` `r printnum(crossInj_con4_dem[,"ci.upper"])`], _p_ = `r printp(crossInj_con4_dem[,"pvalue"])`). For full list of autoregressive and cross-lagged effects from the multi-group model, see Supplementary Table \@ref(tab:constrainedTable4).
 
 \newpage
 
 ## Supplementary Figures
 
-(ref:plotUSMapCaption) _Map of the United States with participant zip code locations._
-
-```{r plotUSMap, echo=F, fig.width=5, fig.height=3, fig.cap="(ref:plotUSMapCaption)"}
-plot1
-```
-
-\newpage
-
-(ref:plotAttritionCaption) _Attrition across the course of the study._
-
-```{r plotAttrition, echo=F, fig.width=5.5, fig.height=3, fig.cap="(ref:plotAttritionCaption)"}
-plot2
-```
-
-\newpage
-
-(ref:plotAttritionBreakdownCaption) _Demographics of the sample across the course of the study._
-
-```{r plotAttritionBreakdown, echo=F, fig.width=7, fig.height=6, fig.cap="(ref:plotAttritionBreakdownCaption)"}
-plot8
-```
-
-\newpage
-
-(ref:plotDAGCaption) _Directed acyclic graph reflecting causal assumptions._ In this model, a general unobserved sensitivity to social norms (NormSens) causes perceptions of descriptive social norms (DesNorm) and perceptions of injunctive social norms (InjNorm), and perceptions of descriptive and injunctive norms directly cause mask wearing (Mask). Perceptions of descriptive and injunctive norms also indirectly cause mask wearing through non-social beliefs, specifically factual beliefs (Fact) and personal normative beliefs (PersNorm). Finally, political orientation (PolOri) is an exogenous variable that is a common cause of all other variables. Using the backdoor criterion (Pearl, 1995), this causal model implies that it is necessary to control for perceptions of injunctive norms, factual beliefs, personal normative beliefs, and political orientation to estimate the direct causal effect of perceived descriptive norms on mask wearing. Similarly, it is necessary to control for perceptions of descriptive norms, factual beliefs, personal normative beliefs, and political orientation to estimate the direct causal effect of perceived injunctive norms on mask wearing.
-
-```{r plotDAG, echo=F, fig.width=5.6, fig.height=4.5, fig.cap="(ref:plotDAGCaption)"}
-plot4
-```
-
-\newpage
-
 (ref:plotCorBehNormCaption) _Predictions from multilevel models with self-reported mask wearing as the outcome variable and (a) perceived strength of descriptive norms and (b) perceived strength of injunctive norms as independent predictor variables._ Models contain random intercepts for participants and time points. Lines are fixed effect regression lines from multilevel models, shaded areas are 95% confidence intervals.
 
 ```{r plotCorBehNorm, echo=F, fig.width=6.5, fig.height=3.8, fig.cap="(ref:plotCorBehNormCaption)"}
-plot5
+plot05
 ```
 
 \newpage
@@ -67,26 +57,84 @@ plot5
 (ref:plotCDCSensCaption) _Predictions from multilevel models with change points in line with changes in CDC mask wearing recommendations._ These models track temporal changes in (a) self-reported mask wearing, (b) perceived strength of descriptive norms, and (c) perceived strength of injunctive norms. Time is included as a continuous linear predictor, scaled between 0 and 1, with three forced change points (dashed lines). From the left, the first dashed line indicates when the CDC relaxed their mask wearing recommendations in March 2021, the second dashed line indicates when the CDC strengthened their mask wearing recommendations in July 2021, and the third dashed line indicates when the CDC updated their community levels and relaxed their mask wearing recommendations in March 2022. This results in the estimation of five fixed effect parameters: the initial intercept, the slope in the first window, the slope in the second window, the slope in the third window, and the slope is the fourth window. Bolded lines and shaded areas represent fixed effect regression lines from multilevel models and 95% confidence intervals, respectively.
 
 ```{r plotCDCSens, echo=F, fig.width=4, fig.height=6, fig.cap="(ref:plotCDCSensCaption)"}
-plot6
+plot06
+```
+
+\newpage
+
+(ref:plotDAGCaption) _Directed acyclic graph reflecting causal assumptions._ In this model, a general unobserved sensitivity to social norms (NormSens) causes perceptions of descriptive social norms (DesNorm) and perceptions of injunctive social norms (InjNorm), and perceptions of descriptive and injunctive norms directly cause mask wearing (Mask). Perceptions of descriptive and injunctive norms also indirectly cause mask wearing through non-social beliefs, specifically factual beliefs (Fact) and personal normative beliefs (PersNorm). Finally, demographic variables such as gender, age, ethnicity, socioeconomic status, and political orientation (summarised as Demographics) are exogenous variables that are common causes of all other variables. Using the backdoor criterion[@Pearl1995], this causal model implies that it is necessary to control for perceptions of injunctive norms, factual beliefs, personal normative beliefs, and all demographics to estimate the direct causal effect of perceived descriptive norms on mask wearing. Similarly, it is necessary to control for perceptions of descriptive norms, factual beliefs, personal normative beliefs, and all demographics to estimate the direct causal effect of perceived injunctive norms on mask wearing.
+
+```{r plotDAG, echo=F, fig.width=8, fig.height=7, fig.cap="(ref:plotDAGCaption)"}
+plot04
+```
+
+\newpage
+
+(ref:plotRICLPMPath2Caption) _Path diagram of ten-wave time-varying random-intercept cross-lagged panel model (with factual beliefs and personal normative beliefs removed)._ Circles represent data collection time points. Arrows represent within-person autoregressive effects (on one horizontal level) and cross-lagged effects (across levels) for mask wearing and perceived descriptive and injunctive norms, partitioning out stable between-person individual differences and controlling for demographics and political orientation. Arrow thickness is scaled according to standardized effect size. Bolded arrows indicate significantly positive parameters, _p_ < 0.05. Gray arrows indicate non-significant parameters.
+
+```{r plotRICLPMPath2, echo=F, fig.width=7.5, fig.height=3.5, fig.cap="(ref:plotRICLPMPath2Caption)"}
+plot08
+```
+
+\newpage
+
+(ref:plotRICLPMPath3Caption) _Path diagram of ten-wave time-varying random-intercept cross-lagged panel model (with factual beliefs, personal normative beliefs, and all exogenous covariates removed)._ Circles represent data collection time points. Arrows represent within-person autoregressive effects (on one horizontal level) and cross-lagged effects (across levels) for mask wearing and perceived descriptive and injunctive norms, partitioning out stable between-person individual differences. Arrow thickness is scaled according to standardized effect size. Bolded arrows indicate significantly positive parameters, _p_ < 0.05. Gray arrows indicate non-significant parameters.
+
+```{r plotRICLPMPath3, echo=F, fig.width=7.5, fig.height=3.5, fig.cap="(ref:plotRICLPMPath3Caption)"}
+plot09
+```
+
+\newpage
+
+(ref:plotRICLPMCoef2Caption) _Standardized cross-lagged coefficients for descriptive norms and injunctive norms predicting future mask wearing in the ten-wave time-varying random-intercept cross-lagged panel model (with factual beliefs and personal normative beliefs removed)._ Points are standardized estimates, lines are 95% confidence intervals.
+
+```{r plotRICLPMCoef2, echo=F, fig.width=6.5, fig.height=3, fig.cap="(ref:plotRICLPMCoef2Caption)"}
+plot11
+```
+
+\newpage
+
+(ref:plotRICLPMCoef3Caption) _Standardized cross-lagged coefficients for descriptive norms and injunctive norms predicting future mask wearing in the ten-wave time-varying random-intercept cross-lagged panel model (with factual beliefs, personal normative beliefs, and all exogenous covariates removed)._ Points are standardized estimates, lines are 95% confidence intervals.
+
+```{r plotRICLPMCoef3, echo=F, fig.width=6.5, fig.height=3, fig.cap="(ref:plotRICLPMCoef3Caption)"}
+plot12
+```
+
+\newpage
+
+(ref:plotAttritionCaption) _Attrition across the course of the study._
+
+```{r plotAttrition, echo=F, fig.width=5.5, fig.height=3, fig.cap="(ref:plotAttritionCaption)"}
+plot02
+```
+
+\newpage
+
+(ref:plotAttritionBreakdownCaption) _Demographics of the sample across the course of the study._
+
+```{r plotAttritionBreakdown, echo=F, fig.width=7, fig.height=6, fig.cap="(ref:plotAttritionBreakdownCaption)"}
+plot13
+```
+
+\newpage
+
+(ref:plotUSMapCaption) _Map of the United States with participant zip code locations._
+
+```{r plotUSMap, echo=F, fig.width=5, fig.height=3, fig.cap="(ref:plotUSMapCaption)"}
+plot01
+```
+
+\newpage
+
+(ref:plotIntFreqCaption) _The relationship between self-reported mask wearing and the logged number of in-person interactions in the last 24 hours (a) and in the last 7 days (b)._ Lines and shaded areas are predictions and 95% confidence intervals from multilevel models with random intercepts for timepoint and participant. The first multilevel model revealed a negative relationship between mask wearing and the log number of in-person interactions in the last 24 hours (b = `r printnum(fixef(intFreq24hrs)[2])`, SE = `r printnum(summary(intFreq24hrs)$coefficients["logContacts24hrs","Std. Error"])`, p = `r printp(summary(intFreq24hrs)$coefficients["logContacts24hrs","Pr(>|t|)"])`). The second multilevel model revealed a negative relationship between mask wearing and the log number of in-person interactions in the last 7 days (b = `r printnum(fixef(intFreq7days)[2])`, SE = `r printnum(summary(intFreq7days)$coefficients["logContacts7days","Std. Error"])`, p `r printp(summary(intFreq7days)$coefficients["logContacts7days","Pr(>|t|)"])`).
+
+```{r plotIntFreq, echo=F, fig.width=8, fig.height=4, fig.cap="(ref:plotIntFreqCaption)"}
+plot14
 ```
 
 \newpage
 
 ## Supplementary Tables
-
-(ref:itemTableCaption) List of norm interpretation questions asked at Time 7. _These questions were preceded by the following text:_ "There may or may not be a difference between what people around you are doing and what they should be doing. You can learn about what people are doing and what they should be doing in different ways. For each of the following information sources, we want to know if you can learn from it what people are doing, what people should be doing, or both". _Participants answered all questions on a 7-point Likert scale, from (1) Not At All to (7) Very Strongly._
-
-```{r itemTable, echo=F, warning=F, message=F}
-apa_table(
-  itemTable,
-  booktabs = TRUE,
-  longtable = TRUE,
-  align = c("m{2.5cm}", "m{2.5cm}", "m{9cm}"),
-  caption = "(ref:itemTableCaption)"
-)
-```
-
-\newpage
 
 (ref:modelSummaryTable1Caption) Unstandardized fixed effect parameters from multilevel models: perceptions of social norm strength predicting self-reported mask wearing. _Standard errors are included in brackets._
 
@@ -116,23 +164,114 @@ apa_table(
 
 \newpage
 
-(ref:lavaanTableCaption) Standardised autoregressive and cross-lagged parameters from random-intercept cross-lagged panel model. _Variable name prefixes: Mask = mask wearing, Des = perceived descriptive norms, Inj = perceived injunctive norms, Fact = factual beliefs, Pers = personal normative beliefs. Variable name suffixes indicate time points. Arrows indicate the direction of prediction._
+(ref:constrainedTable2Caption) Unstandardized autoregressive and cross-lagged parameters from time-invariant random-intercept cross-lagged panel model (with factual beliefs and personal normative beliefs removed). _Arrows indicate the direction of prediction._
 
-(ref:rightArrow) →
-
-```{r lavaanTable, echo=F, warning=F, message=F}
+```{r constrainedTable2, echo=F, warning=F, message=F}
 apa_table(
-  lavaanTable,
+  constrainedTable2,
   booktabs = TRUE,
   longtable = TRUE,
-  font_size = "footnotesize",
   align = c("l", rep("c", 5)),
-  caption = "(ref:lavaanTableCaption)"
+  caption = "(ref:constrainedTable2Caption)"
 )
 ```
 
 \newpage
 
-## Supplementary References
+(ref:constrainedTable3Caption) Unstandardized autoregressive and cross-lagged parameters from time-invariant random-intercept cross-lagged panel model (with factual beliefs, personal normative beliefs, and all exogenous covariates removed). _Arrows indicate the direction of prediction._
 
-Pearl, J. (1995). Causal diagrams for empirical research. _Biometrika_, _82_(4), 669–688, https://doi.org/10.1093/biomet/82.4.669
+```{r constrainedTable3, echo=F, warning=F, message=F}
+apa_table(
+  constrainedTable3,
+  booktabs = TRUE,
+  longtable = TRUE,
+  align = c("l", rep("c", 5)),
+  caption = "(ref:constrainedTable3Caption)"
+)
+```
+
+\newpage
+
+(ref:unconstrainedTable1Caption) Unstandardized autoregressive and cross-lagged parameters from time-varying random-intercept cross-lagged panel model (full model). _Variable name suffixes indicate time points. Arrows indicate the direction of prediction._
+
+```{r unconstrainedTable1, echo=F, warning=F, message=F}
+apa_table(
+  unconstrainedTable1,
+  booktabs = TRUE,
+  longtable = TRUE,
+  font_size = "footnotesize",
+  align = c("l", rep("c", 5)),
+  caption = "(ref:unconstrainedTable1Caption)"
+)
+```
+
+\newpage
+
+(ref:unconstrainedTable2Caption) Unstandardized autoregressive and cross-lagged parameters from time-varying random-intercept cross-lagged panel model (with factual beliefs and personal normative beliefs removed). _Variable name suffixes indicate time points. Arrows indicate the direction of prediction._
+
+```{r unconstrainedTable2, echo=F, warning=F, message=F}
+apa_table(
+  unconstrainedTable2,
+  booktabs = TRUE,
+  longtable = TRUE,
+  font_size = "footnotesize",
+  align = c("l", rep("c", 5)),
+  caption = "(ref:unconstrainedTable2Caption)"
+)
+```
+
+\newpage
+
+(ref:unconstrainedTable3Caption) Unstandardized autoregressive and cross-lagged parameters from time-varying random-intercept cross-lagged panel model (with factual beliefs, personal normative beliefs, and all exogenous covariates removed). _Variable name suffixes indicate time points. Arrows indicate the direction of prediction._
+
+```{r unconstrainedTable3, echo=F, warning=F, message=F}
+apa_table(
+  unconstrainedTable3,
+  booktabs = TRUE,
+  longtable = TRUE,
+  font_size = "footnotesize",
+  align = c("l", rep("c", 5)),
+  caption = "(ref:unconstrainedTable3Caption)"
+)
+```
+
+\newpage
+
+(ref:itemTableCaption) List of norm interpretation questions asked at Time 7. _These questions were preceded by the following text:_ "There may or may not be a difference between what people around you are doing and what they should be doing. You can learn about what people are doing and what they should be doing in different ways. For each of the following information sources, we want to know if you can learn from it what people are doing, what people should be doing, or both". _Participants answered all questions on a 7-point Likert scale, from (1) Not At All to (7) Very Strongly._
+
+```{r itemTable, echo=F, warning=F, message=F}
+apa_table(
+  itemTable,
+  booktabs = TRUE,
+  landscape = TRUE,
+  align = c("m{2.5cm}", "m{2cm}", "m{12.5cm}", "m{1cm}", "m{1cm}"),
+  caption = "(ref:itemTableCaption)"
+)
+```
+
+\newpage
+
+(ref:constructValTableCaption) Pairwise comparisons from a multilevel model testing the construct validity of the four self-reported social norm items. _Data were analysed in long format, with the self-report social norm item and the type of normative information provided (descriptive or injunctive) as predictors and a random intercept for participant. All pairwise comparisons account for multiple comparisons using Tukey adjustment._
+
+```{r constructValTable, echo=F, warning=F, message=F}
+apa_table(
+  constructValTable,
+  booktabs = TRUE,
+  longtable = TRUE,
+  caption = "(ref:constructValTableCaption)"
+)
+```
+
+\newpage
+
+(ref:constrainedTable4Caption) Unstandardized autoregressive and cross-lagged parameters from multi-group time-invariant random-intercept cross-lagged panel model, split by majority-Democrat and majority-Republican states. _The model contains all covariates. Arrows indicate the direction of prediction._
+
+```{r constrainedTable4, echo=F, warning=F, message=F}
+apa_table(
+  constrainedTable4,
+  booktabs = TRUE,
+  longtable = TRUE,
+  align = c("l", "l", rep("c", 5)),
+  caption = "(ref:constrainedTable4Caption)"
+)
+```
