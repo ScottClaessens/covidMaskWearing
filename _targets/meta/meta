@@ -59,7 +59,7 @@ makeConstructValTable|function|4ca608c7d0f88de0|||||||||||||||
 makeItemTable|function|02afd9a9f9292193|||||||||||||||
 makeLavaanTable|function|485ff1e6907b1785|||||||||||||||
 makeUnconstrainedTable|function|e72706f326ed331d|||||||||||||||
-manuscript|stem|1a6241f41640a7f1|ad093e6b67171b1e|cfa1170dffab301e|615889701|manuscript.pdf*manuscript.Rmd*manuscript_files|t19541.0645728723s|454214de1d86a9ee|1428710|file|local|vector|||70.56|Removed 115 rows containing missing values geom_point.|
+manuscript|stem|81f3caf74e97f91d|ad093e6b67171b1e|cfa1170dffab301e|615889701|manuscript.pdf*manuscript.Rmd*manuscript_files|t19558.9983289433s|c425c1bd58657be9|5096696|file|local|vector|||67.67|Removed 115 rows containing missing values geom_point.|
 owid|stem|a2cfc2a580c4e388|1d309cffe878350a|d76fe70b67fffe2b|-1640574697||t19486.9438479911s|40b33943729e0feb|122711|rds|local|vector|||0.66||
 pars2.1|stem|c56dbc3027d2ffb6|2b44538f53003a72|c2311ecf6f7d8580|1688801119||t19486.9818319537s|c3c7dad272b3f852|485|rds|local|vector|||2.42||
 pars2.2|stem|4a89656f4d9d3d6d|8963a9754d8898ac|ae60cd6283d06f3a|-461533434||t19486.9733981497s|43b0e899005c0f52|491|rds|local|vector|||3.89||

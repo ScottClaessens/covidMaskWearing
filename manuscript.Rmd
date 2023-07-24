@@ -295,8 +295,7 @@ All data and code to reproduce the statistical analyses in this manuscript are p
 \endgroup
 
 \newpage
-
-# (APPENDIX) Appendix {-}
+\vspace*{60mm}
 
 ```{r child = "appendix.Rmd"}
 ```

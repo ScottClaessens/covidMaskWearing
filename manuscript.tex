@@ -138,13 +138,13 @@
   {\normalfont\normalsize\itshape\hspace{\parindent}{#1}\textit{\addperi}}{\relax}}
 \makeatother
 
+% \usepackage{etoolbox}
 \makeatletter
-\usepackage{etoolbox}
-\patchcmd{\maketitle}
+\patchcmd{\HyOrg@maketitle}
   {\section{\normalfont\normalsize\abstractname}}
   {\section*{\normalfont\normalsize\abstractname}}
   {}{\typeout{Failed to patch abstract.}}
-\patchcmd{\maketitle}
+\patchcmd{\HyOrg@maketitle}
   {\section{\protect\normalfont{\@title}}}
   {\section*{\protect\normalfont{\@title}}}
   {}{\typeout{Failed to patch title.}}
@@ -625,28 +625,33 @@ All data and code to reproduce the statistical analyses in this manuscript are p
 \CSLLeftMargin{51. }%
 \CSLRightInline{Aust, F. \& Barth, M. \emph{\href{https://github.com/crsh/papaja}{{papaja}: {Prepare} reproducible {APA} journal articles with {R Markdown}}}. (2022).}
 
-\leavevmode\vadjust pre{\hypertarget{ref-Pearl1995}{}}%
-\CSLLeftMargin{52. }%
-\CSLRightInline{Pearl, J. \href{https://doi.org/10.2307/2337329}{Causal diagrams for empirical research}. \emph{Biometrika} \textbf{82}, 669--688 (1995).}
-
 \end{CSLReferences}
 
 \endgroup
 
 \newpage
+\vspace*{60mm}
 
-\hypertarget{appendix-appendix}{%
-\appendix}
-
-
-\renewcommand{\appendixname}{\textbf{Supplementary Material}}
 \renewcommand{\thefigure}{S\arabic{figure}} \setcounter{figure}{0}
 \renewcommand{\thetable}{S\arabic{table}} \setcounter{table}{0}
 \renewcommand{\theequation}{S\arabic{equation}} \setcounter{equation}{0}
-\pagenumbering{gobble}
 
-\hypertarget{section}{%
-\section{}\label{section}}
+\hypertarget{supplementary-material}{%
+\section{\texorpdfstring{\textbf{Supplementary Material}}{Supplementary Material}}\label{supplementary-material}}
+
+\setcounter{page}{1}
+\small
+\centering
+\setlength\parindent{8mm}
+
+Descriptive norms caused increases in mask wearing during the COVID-19 pandemic \newline
+\hspace*{8mm} Samantha L. Heiman, Scott Claessens, Jessica D. Ayers, Diego Guevara Beltrán,\newline
+\hspace*{8mm} Andrew Van Horn, Edward R. Hirt, Athena Aktipis \& Peter M. Todd \newline
+\normalsize
+
+\raggedright
+\setlength{\parindent}{40pt}
+\newpage
 
 \hypertarget{supplementary-results}{%
 \subsection{Supplementary Results}\label{supplementary-results}}
@@ -702,7 +707,7 @@ In majority-Republican states, the main results are unchanged from the full mode
 \begin{figure}
 \centering
 \includegraphics{manuscript_files/figure-latex/plotDAG-1.pdf}
-\caption{\label{fig:plotDAG}\emph{Directed acyclic graph reflecting causal assumptions.} In this model, a general unobserved sensitivity to social norms (NormSens) causes perceptions of descriptive social norms (DesNorm) and perceptions of injunctive social norms (InjNorm), and perceptions of descriptive and injunctive norms directly cause mask wearing (Mask). Perceptions of descriptive and injunctive norms also indirectly cause mask wearing through non-social beliefs, specifically factual beliefs (Fact) and personal normative beliefs (PersNorm). Finally, demographic variables such as gender, age, ethnicity, socioeconomic status, and political orientation (summarised as Demographics) are exogenous variables that are common causes of all other variables. Using the backdoor criterion\textsuperscript{52}, this causal model implies that it is necessary to control for perceptions of injunctive norms, factual beliefs, personal normative beliefs, and all demographics to estimate the direct causal effect of perceived descriptive norms on mask wearing. Similarly, it is necessary to control for perceptions of descriptive norms, factual beliefs, personal normative beliefs, and all demographics to estimate the direct causal effect of perceived injunctive norms on mask wearing.}
+\caption{\label{fig:plotDAG}\emph{Directed acyclic graph reflecting causal assumptions.} In this model, a general unobserved sensitivity to social norms (NormSens) causes perceptions of descriptive social norms (DesNorm) and perceptions of injunctive social norms (InjNorm), and perceptions of descriptive and injunctive norms directly cause mask wearing (Mask). Perceptions of descriptive and injunctive norms also indirectly cause mask wearing through non-social beliefs, specifically factual beliefs (Fact) and personal normative beliefs (PersNorm). Finally, demographic variables such as gender, age, ethnicity, socioeconomic status, and political orientation (summarised as Demographics) are exogenous variables that are common causes of all other variables. Using the backdoor criterion (Pearl, 1995), this causal model implies that it is necessary to control for perceptions of injunctive norms, factual beliefs, personal normative beliefs, and all demographics to estimate the direct causal effect of perceived descriptive norms on mask wearing. Similarly, it is necessary to control for perceptions of descriptive norms, factual beliefs, personal normative beliefs, and all demographics to estimate the direct causal effect of perceived injunctive norms on mask wearing.}
 \end{figure}
 
 \newpage
@@ -1608,6 +1613,14 @@ Republican & Descriptive norms → Descriptive norms & 0.32 & 0.04 & 0.24 & 0.39
 
 \end{ThreePartTable}
 \end{center}
+
+\newpage
+\setlength\parindent{0pt}
+
+\hypertarget{supplementary-references}{%
+\subsection{Supplementary References}\label{supplementary-references}}
+
+Pearl, J. (1995). Causal diagrams for empirical research. \emph{Biometrika}, \emph{82}(4), 669-688.
 
 
 \end{document}
